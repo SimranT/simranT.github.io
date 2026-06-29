@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simran Space</title>
+  <meta name="description" content="A beautiful personal website for Simran Tiwari featuring work, travel journey, interests, and portfolio projects." />
+  <style>
+    :root{--bg:#f7f4ef;--surface:rgba(255,255,255,.72);--surface2:#fff;--text:#1f1b17;--muted:#6c655d;--line:rgba(31,27,23,.08);--accent:#0f766e;--accent2:#3b82f6;--shadow:0 24px 60px rgba(17,24,39,.12);--radius:28px}
+    [data-theme="dark"]{--bg:#0f1115;--surface:rgba(20,24,31,.72);--surface2:#151922;--text:#f4efe8;--muted:#a8a39d;--line:rgba(255,255,255,.08);--accent:#38b2ac;--accent2:#60a5fa;--shadow:0 24px 60px rgba(0,0,0,.35)}
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:Inter,system-ui,sans-serif;background:radial-gradient(circle at top, rgba(56,178,172,.18), transparent 30%),linear-gradient(180deg,var(--bg),color-mix(in srgb,var(--bg) 88%, #ffffff));color:var(--text);overflow-x:hidden}
+    body::before{content:"";position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(var(--line) 1px, transparent 1px);background-size:28px 28px;mask-image:linear-gradient(180deg, rgba(0,0,0,.45), transparent 70%);opacity:.55}
+    a{color:inherit;text-decoration:none} .wrap{width:min(1120px,calc(100% - 32px));margin:0 auto;padding:24px 0 56px}
+    .nav{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:10px 0;position:sticky;top:0;z-index:20;backdrop-filter:blur(18px)}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:-.02em} .dot{width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 0 6px color-mix(in srgb, var(--accent) 18%, transparent)}
+    .navlinks{display:flex;gap:8px;flex-wrap:wrap} .navlinks a,.pill,.btn,.chip{transition:transform .25s ease,background .25s ease,box-shadow .25s ease,opacity .25s ease}
+    .navlinks a{padding:10px 14px;border-radius:999px;background:transparent;color:var(--muted)} .navlinks a:hover{background:var(--surface);color:var(--text);transform:translateY(-1px)}
+    .toggle{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;width:46px;height:46px;box-shadow:var(--shadow)}
+    .hero{margin-top:22px;padding:36px;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(135deg, color-mix(in srgb, var(--accent) 18%, transparent), color-mix(in srgb, var(--accent2) 14%, transparent)), var(--surface);box-shadow:var(--shadow);position:relative;overflow:hidden}
+    .hero::after{content:"";position:absolute;right:-120px;top:-140px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle, color-mix(in srgb,var(--accent2) 28%, transparent), transparent 70%);filter:blur(8px)}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+    .eyebrow::before{content:"";width:26px;height:1px;background:var(--muted);opacity:.55}
+    h1,h2,h3{font-family:Georgia,serif;line-height:1.02;letter-spacing:-.03em;margin:0} h1{font-size:clamp(3rem,8vw,6.2rem);max-width:10ch}
+    .lead{font-size:1.08rem;line-height:1.8;color:var(--muted);max-width:68ch;margin-top:18px}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px} .btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow)} .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border:none}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:28px} .stat{padding:18px;border-radius:22px;background:var(--surface);border:1px solid var(--line);backdrop-filter:blur(16px)} .stat strong{display:block;font-size:1.6rem;margin-bottom:4px}
+    section{padding:42px 0} .head{display:flex;justify-content:space-between;gap:18px;align-items:end;margin-bottom:18px} .head p{color:var(--muted);max-width:62ch}
+    h2{font-size:clamp(2rem,4vw,3.2rem)} .grid{display:grid;gap:16px} .grid.cols3{grid-template-columns:repeat(3,1fr)} .grid.cols2{grid-template-columns:repeat(2,1fr)}
+    .card{padding:22px;border-radius:24px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);transform:translateY(0);transition:transform .35s ease,box-shadow .35s ease} .card:hover{transform:translateY(-6px);box-shadow:0 30px 70px rgba(17,24,39,.16)}
+    .card p{color:var(--muted);line-height:1.75} .meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px} .chip{padding:8px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-size:.86rem;color:var(--muted)}
+    .timeline{display:grid;gap:14px} .item{padding:20px 22px;border-radius:24px;background:var(--surface);border:1px solid var(--line)} .item small{text-transform:uppercase;letter-spacing:.12em;color:var(--muted)} .item h3{font-size:1.2rem;margin-top:10px;margin-bottom:8px;font-family:Inter,sans-serif;font-weight:700}
+    .travel{display:grid;grid-template-columns:1.2fr .8fr;gap:16px} .photo{min-height:320px;border-radius:28px;background:linear-gradient(135deg, color-mix(in srgb,var(--accent) 28%, transparent), color-mix(in srgb,var(--accent2) 18%, transparent)), var(--surface);border:1px solid var(--line);position:relative;overflow:hidden;box-shadow:var(--shadow)}
+    .photo::after{content:"";position:absolute;inset:auto -10% -25% -10%;height:50%;background:radial-gradient(circle at 50% 20%, rgba(255,255,255,.5), transparent 55%);transform:rotate(-6deg)}
+    .quote{padding:22px;border-radius:24px;background:linear-gradient(180deg,var(--surface),color-mix(in srgb,var(--bg) 75%, var(--accent) 10%));border:1px solid var(--line)} .quote p{color:var(--muted);line-height:1.85}
+    .footer{padding:30px 0 0;color:var(--muted)} .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s ease}.reveal.show{opacity:1;transform:none}
+    @media (max-width: 920px){.stats,.grid.cols3,.grid.cols2,.travel{grid-template-columns:1fr 1fr}.head,.nav{flex-direction:column;align-items:flex-start}} @media (max-width: 640px){.stats,.grid.cols3,.grid.cols2,.travel{grid-template-columns:1fr}.hero{padding:26px}.navlinks{display:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="nav reveal">
+      <a class="brand" href="#top"><span class="dot"></span> Simran Space</a>
+      <nav class="navlinks">
+        <a href="#work">Work</a><a href="#journey">Journey</a><a href="#travel">Travel</a><a href="#contact">Contact</a>
+      </nav>
+      <button class="toggle" id="theme">◐</button>
+    </header>
+
+    <main id="top">
+      <section class="hero reveal">
+        <div class="eyebrow">Data analyst · DWH developer · traveler</div>
+        <h1>A beautiful personal space for work and life.</h1>
+        <p class="lead">I build with data, design ETL pipelines, shape warehouse models, and share the travel journey, interests, and small moments that make life feel complete.</p>
+        <div class="actions">
+          <a class="btn primary" href="#work">See my work</a>
+          <a class="btn" href="#travel">Explore travel</a>
+        </div>
+        <div class="stats">
+          <div class="stat"><strong>ETL</strong><span>Pentaho & SQL</span></div>
+          <div class="stat"><strong>DWH</strong><span>Modeling & KPIs</span></div>
+          <div class="stat"><strong>Travel</strong><span>Road trips & nature</span></div>
+          <div class="stat"><strong>Life</strong><span>Stargazing & planning</span></div>
+        </div>
+      </section>
+
+      <section id="work" class="reveal">
+        <div class="head"><div><div class="eyebrow">Featured work</div><h2>Projects worth sharing</h2></div><p>Use these cards for real case studies, screenshots, data models, and links to your GitHub or live pages.</p></div>
+        <div class="grid cols3">
+          <article class="card"><h3>Pentaho ETL pipeline</h3><p>Clean source data, apply transformations, validate loads, and produce reporting-ready tables with a polished case study.</p><div class="meta"><span class="chip">Pentaho</span><span class="chip">ETL</span><span class="chip">Validation</span></div></article>
+          <article class="card"><h3>Warehouse model</h3><p>Star schema design, facts and dimensions, KPI queries, and a business-friendly output layer.</p><div class="meta"><span class="chip">DWH</span><span class="chip">SQL</span><span class="chip">Analytics</span></div></article>
+          <article class="card"><h3>Data quality layer</h3><p>Row-count checks, reconciliation, duplicate detection, null auditing, and logging that makes the pipeline trustworthy.</p><div class="meta"><span class="chip">Testing</span><span class="chip">Audit</span><span class="chip">Monitoring</span></div></article>
+        </div>
+      </section>
+
+      <section id="journey" class="reveal">
+        <div class="head"><div><div class="eyebrow">Journey</div><h2>How I grow</h2></div><p>This is the space for your story: how you think, build, learn, and improve over time.</p></div>
+        <div class="grid cols2">
+          <div class="timeline">
+            <div class="item"><small>Work</small><h3>Building reliable data systems</h3><p>Turning raw data into clean reporting layers is the thread that connects the technical side of the website.</p></div>
+            <div class="item"><small>Growth</small><h3>Learning in public</h3><p>Projects, case studies, blog-style notes, and experiments all become part of the portfolio story.</p></div>
+          </div>
+          <div class="quote"><p>“A portfolio feels premium when it is calm, personal, and precise — not crowded.”</p></div>
+        </div>
+      </section>
+
+      <section id="travel" class="reveal">
+        <div class="head"><div><div class="eyebrow">Travel</div><h2>Journeys and favorite places</h2></div><p>A nice place for road trips, scenic drives, birthday journeys, and travel photos.</p></div>
+        <div class="travel">
+          <div class="photo"></div>
+          <div class="grid" style="gap:16px">
+            <div class="card"><h3>Road trip notes</h3><p>Add route maps, quick reflections, and favorite stops from each trip.</p></div>
+            <div class="card"><h3>Stargazing</h3><p>Save night-sky photos, thoughts, and places with open horizons.</p></div>
+            <div class="card"><h3>Future places</h3><p>Put dream destinations and next travel ideas here.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="reveal">
+        <div class="head"><div><div class="eyebrow">Contact</div><h2>Shareable and easy to reach</h2></div><p>Add your email, LinkedIn, GitHub, and resume links here.</p></div>
+        <div class="grid cols3">
+          <div class="card"><h3>Email</h3><p>yourname@email.com</p></div>
+          <div class="card"><h3>LinkedIn</h3><p>linkedin.com/in/yourprofile</p></div>
+          <div class="card"><h3>GitHub</h3><p>github.com/yourprofile</p></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer reveal">Built to feel beautiful, personal, and alive.</footer>
+  </div>
+  <script>
+    const t=document.getElementById('theme'),r=document.documentElement,io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('show')}),{threshold:.12});document.querySelectorAll('.reveal').forEach(el=>io.observe(el));let d='light';t.onclick=()=>{d=d==='light'?'dark':'light';r.setAttribute('data-theme',d);t.textContent=d==='dark'?'☀':'◐'};
+  </script>
+</body>
+</html>
