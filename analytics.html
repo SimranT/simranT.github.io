@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analytics Playground — Simran's Space</title>
+  <meta name="description" content="An analytics playground by Simran Tiwari — interactive labs and case studies, each one a real working tool, not a screenshot." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* How it works */
+    .how-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    @media (max-width:760px){.how-steps{grid-template-columns:1fr}}
+    .how-step{padding:20px;border-radius:20px;background:var(--surface);border:1px solid var(--w08)}
+    .how-step .step-num{font-family:Fraunces,serif;font-size:1.2rem;color:var(--tce1,var(--hero1));margin-bottom:6px}
+    .how-step h4{margin:0 0 6px;font-size:1rem}
+    .how-step p{color:var(--muted);font-size:.88rem;line-height:1.65;margin:0}
+
+    /* Labs grid */
+    .lab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    @media (max-width:720px){.lab-grid{grid-template-columns:1fr}}
+    .lab-card{
+      padding:22px;border-radius:24px;background:var(--surface);border:1px solid var(--w08);
+      box-shadow:var(--glow);position:relative;overflow:hidden;isolation:isolate;
+      transition:transform .35s ease,box-shadow .35s ease;
+    }
+    .lab-card::before{
+      content:"";position:absolute;inset:-30% auto auto -20%;width:180px;height:180px;
+      border-radius:50%;filter:blur(20px);opacity:.28;pointer-events:none;transition:transform .45s ease;
+    }
+    .lab-card.live:hover{transform:translateY(-7px);box-shadow:0 24px 70px rgba(0,0,0,.32)}
+    .lab-card.live:hover::before{transform:translate(10px,8px) scale(1.12)}
+    .lab-card.tce::before{background:radial-gradient(circle, rgba(70,217,192,.46), transparent 68%)}
+    .lab-card.tce{border-color:rgba(70,217,192,.32)}
+    .lab-card.kpi::before{background:radial-gradient(circle, rgba(63,184,138,.4), transparent 68%)}
+    .lab-card.kpi{border-color:rgba(63,184,138,.28)}
+    .lab-card.det::before{background:radial-gradient(circle, rgba(212,175,90,.4), transparent 68%)}
+    .lab-card.det{border-color:rgba(212,175,90,.28)}
+    .lab-card.soon{opacity:.6;border-style:dashed}
+    .lab-icon{font-size:1.7rem;margin-bottom:10px;display:block}
+    .lab-tags{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 14px}
+    .lab-tag{padding:5px 11px;border-radius:999px;background:var(--w05);border:1px solid var(--w08);font-size:.74rem;color:var(--muted)}
+    .lab-tag.soon-badge{color:var(--tce1);border-color:rgba(70,217,192,.3)}
+    .lab-dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px}
+
+    .lab-thumb{border-radius:16px;overflow:hidden;aspect-ratio:16/9;margin-bottom:14px}
+    .lab-thumb img,.lab-thumb svg{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}
+    .lab-card.live:hover .lab-thumb svg{transform:scale(1.06)}
+
+    /* Featured case study — text + mini visual */
+    .feature-flex{display:flex;justify-content:space-between;align-items:center;gap:26px;flex-wrap:wrap}
+    .feature-text{flex:1;min-width:260px}
+    .feature-visual{
+      display:flex;align-items:center;gap:18px;padding:18px 22px;border-radius:20px;
+      background:var(--w04);border:1px solid var(--w08);flex:0 0 auto;
+    }
+    @media (max-width:760px){.feature-visual{display:none}}
+    .mini-ring{position:relative;width:88px;height:88px;flex:0 0 auto}
+    .mini-ring svg{transform:rotate(-90deg)}
+    .mini-ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Fraunces,serif;font-size:1.25rem}
+    .mini-kpis{display:flex;flex-direction:column;gap:10px}
+    .mini-kpis .mk-lbl{display:block;color:var(--muted);font-size:.7rem;letter-spacing:.04em;text-transform:uppercase}
+    .mini-kpis .mk-val{font-family:Fraunces,serif;font-size:1.05rem;color:var(--money1)}
+  </style>
+</head>
+<body class="rich-bg-subtle">
+  <div class="progress" id="progress"></div>
+  <div class="cursor" id="cursor"></div>
+
+  <div class="wrap">
+    <header class="nav reveal">
+      <a class="brand" href="index.html#top"><span class="dot"></span> Simran's Space</a>
+      <nav class="navlinks">
+        <a href="index.html">Home</a>
+        <a href="work.html">Work</a>
+        <a href="travel.html">Travel</a>
+        <a href="itineraries.html">Shop</a>
+        <a href="analytics.html" class="active">Analytics</a>
+      </nav>
+      <button class="toggle" id="theme" aria-label="Toggle theme">◐</button>
+    </header>
+
+    <main id="top">
+      <section class="page-hero reveal">
+        <div class="eyebrow">Analytics Playground</div>
+        <h1>Real problems, built to actually play with.</h1>
+        <p>Every experience here is a full working tool, not a screenshot of one. Pick a lab below and put your own numbers into it — nothing to sign up for, nothing to install.</p>
+      </section>
+
+      <section id="how" class="reveal">
+        <div class="how-steps">
+          <div class="how-step">
+            <div class="step-num">01</div>
+            <h4>Browse</h4>
+            <p>Each lab tackles one real problem, with its own colors and its own way of thinking about it.</p>
+          </div>
+          <div class="how-step">
+            <div class="step-num">02</div>
+            <h4>Open one</h4>
+            <p>No sign-up, no account, no download — just click in and it's ready.</p>
+          </div>
+          <div class="how-step">
+            <div class="step-num">03</div>
+            <h4>Play with it</h4>
+            <p>Every number you enter changes the output live, right there in your browser.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="labs" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Labs</div>
+            <h2 class="section-title">Step into a lab</h2>
+            <p>Each lab is its own small world inside the Playground — its own colors, its own way of thinking, built around one real problem. Start with whichever one sounds interesting; more are on the way.</p>
+          </div>
+        </div>
+
+        <div class="lab-grid">
+          <a class="lab-card tce live" href="travel-explorer.html">
+            <div class="lab-thumb">
+              <svg viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="tceIllusGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#46d9c0"/><stop offset="100%" stop-color="#f0c28a"/>
+                  </linearGradient>
+                  <radialGradient id="tceGlow1" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#46d9c0" stop-opacity=".35"/><stop offset="100%" stop-color="#46d9c0" stop-opacity="0"/>
+                  </radialGradient>
+                </defs>
+                <rect width="400" height="220" fill="#0c1f1c"/>
+                <circle cx="70" cy="170" r="110" fill="url(#tceGlow1)"/>
+                <circle cx="330" cy="50" r="90" fill="#f0c28a" opacity=".12"/>
+                <path d="M50,175 Q200,20 350,60" fill="none" stroke="url(#tceIllusGrad)" stroke-width="2" stroke-dasharray="2 8" stroke-linecap="round"/>
+                <circle cx="50" cy="175" r="5" fill="#f0c28a"/>
+                <g transform="translate(205,63) rotate(-28)">
+                  <path d="M0,-9 L4,0 L0,9 L-9,4 L-16,6 L-11,0 L-16,-6 L-9,-4 Z" fill="#eafffb"/>
+                </g>
+                <g transform="translate(350,60)">
+                  <path d="M0,0 C-10,-14 -10,-26 0,-26 C10,-26 10,-14 0,0 Z" fill="url(#tceIllusGrad)"/>
+                  <circle cx="0" cy="-20" r="4" fill="#0c1f1c"/>
+                </g>
+              </svg>
+            </div>
+            <span class="lab-icon">✈️</span>
+            <h3>Travel Cost Explorer</h3>
+            <p>Compare destinations side by side, simulate trip costs, and explore seasonal pricing before you book anything.</p>
+            <div class="lab-tags">
+              <span class="lab-tag">Beginner friendly</span>
+              <span class="lab-tag">~10 min</span>
+              <span class="lab-tag">New</span>
+            </div>
+          </a>
+
+          <a class="lab-card det live" href="data-detective.html">
+            <div class="lab-thumb">
+              <svg viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="detGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#c9a44e"/><stop offset="100%" stop-color="#3a5fd9"/>
+                  </linearGradient>
+                </defs>
+                <rect width="400" height="220" fill="#10152b"/>
+                <circle cx="330" cy="180" r="110" fill="#3a5fd9" opacity=".14"/>
+                <rect x="60" y="40" width="52" height="38" rx="4" fill="none" stroke="#c9a44e" stroke-width="1.4" transform="rotate(-6 86 59)"/>
+                <rect x="150" y="110" width="52" height="38" rx="4" fill="none" stroke="#c9a44e" stroke-width="1.4" transform="rotate(4 176 129)"/>
+                <rect x="70" y="140" width="46" height="34" rx="4" fill="none" stroke="#3a5fd9" stroke-width="1.4" transform="rotate(-3 93 157)"/>
+                <line x1="90" y1="70" x2="170" y2="118" stroke="#c9a44e" stroke-width="1" opacity=".6"/>
+                <line x1="176" y1="118" x2="95" y2="148" stroke="#3a5fd9" stroke-width="1" opacity=".6"/>
+                <line x1="112" y1="60" x2="240" y2="90" stroke="#c9a44e" stroke-width="1" opacity=".5"/>
+                <g transform="translate(255,95)">
+                  <circle r="26" fill="none" stroke="url(#detGrad)" stroke-width="4"/>
+                  <line x1="19" y1="19" x2="40" y2="40" stroke="url(#detGrad)" stroke-width="5" stroke-linecap="round"/>
+                </g>
+              </svg>
+            </div>
+            <span class="lab-icon">🕵️</span>
+            <h3>Data Detective</h3>
+            <p>Turn a business mystery into an investigation — dashboards, SQL clues, and a case to crack.</p>
+            <div class="lab-tags">
+              <span class="lab-tag">Medium</span>
+              <span class="lab-tag">~15 min</span>
+              <span class="lab-tag">New</span>
+            </div>
+          </a>
+
+          <a class="lab-card kpi live" href="kpi-builder.html">
+            <div class="lab-thumb">
+              <svg viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="kpiGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                    <stop offset="0%" stop-color="#3fb88a"/><stop offset="100%" stop-color="#7fa8a0"/>
+                  </linearGradient>
+                </defs>
+                <rect width="400" height="220" fill="#0e1a17"/>
+                <circle cx="80" cy="60" r="100" fill="#3fb88a" opacity=".14"/>
+                <rect x="60" y="140" width="30" height="50" rx="4" fill="url(#kpiGrad)" opacity=".8"/>
+                <rect x="105" y="110" width="30" height="80" rx="4" fill="url(#kpiGrad)" opacity=".85"/>
+                <rect x="150" y="80" width="30" height="110" rx="4" fill="url(#kpiGrad)" opacity=".9"/>
+                <rect x="195" y="50" width="30" height="140" rx="4" fill="url(#kpiGrad)"/>
+                <polyline points="65,130 120,100 165,65 210,38" fill="none" stroke="#eafff5" stroke-width="1.6" stroke-linecap="round"/>
+                <circle cx="65" cy="130" r="3.5" fill="#eafff5"/>
+                <circle cx="120" cy="100" r="3.5" fill="#eafff5"/>
+                <circle cx="165" cy="65" r="3.5" fill="#eafff5"/>
+                <circle cx="210" cy="38" r="3.5" fill="#eafff5"/>
+                <g transform="translate(330,45)">
+                  <circle r="24" fill="none" stroke="#3fb88a" stroke-width="2"/>
+                  <path d="M-9,0 L-2,8 L11,-9" fill="none" stroke="#3fb88a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </g>
+              </svg>
+            </div>
+            <span class="lab-icon">📉</span>
+            <h3>KPI Builder</h3>
+            <p>Pick an industry and objective, get back the KPIs, SQL starters, and dashboard layout that actually fit.</p>
+            <div class="lab-tags">
+              <span class="lab-tag">Beginner friendly</span>
+              <span class="lab-tag">~10 min</span>
+              <span class="lab-tag">New</span>
+            </div>
+          </a>
+
+          <div class="lab-card soon">
+            <div class="lab-thumb">
+              <svg viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="bccGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#e08a3c"/><stop offset="100%" stop-color="#8a6a4f"/>
+                  </linearGradient>
+                </defs>
+                <rect width="400" height="220" fill="#1c1712"/>
+                <circle cx="320" cy="170" r="110" fill="#e08a3c" opacity=".14"/>
+                <path d="M90,160 L90,90 L140,90 L155,75 L230,75 L230,160 Z" fill="none" stroke="url(#bccGrad)" stroke-width="2"/>
+                <path d="M90,160 L60,105 L200,105 L230,160 Z" fill="#241d16" stroke="url(#bccGrad)" stroke-width="2"/>
+                <rect x="245" y="55" width="16" height="34" fill="#e08a3c" opacity=".8"/>
+                <rect x="268" y="40" width="16" height="49" fill="#e08a3c"/>
+                <rect x="291" y="65" width="16" height="24" fill="#e08a3c" opacity=".6"/>
+                <circle cx="330" cy="52" r="3" fill="#f2c79a"/>
+              </svg>
+            </div>
+            <span class="lab-icon">📦</span>
+            <h3><span class="lab-dot" style="background:#e08a3c"></span>Business Case Challenge</h3>
+            <p>Work a realistic consulting case end to end — data, dashboards, and a recommendation.</p>
+            <div class="lab-tags"><span class="lab-tag soon-badge">Coming soon</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="finance-feature" class="reveal">
+        <div class="section-band" style="background:linear-gradient(135deg, rgba(142,255,201,.16), rgba(142,203,255,.10));">
+          <div class="feature-flex">
+            <div class="feature-text">
+              <div class="eyebrow">Featured · Case Study</div>
+              <h2 class="section-title" style="font-size:1.9rem">A Personal Finance Dashboard, built like a real BI project</h2>
+              <p class="section-sub">A fully interactive dashboard — net worth, cash flow, savings rate, FIRE progress, and a financial health score, all live in your browser. Try it with your own numbers, then see how it was designed underneath.</p>
+              <div class="lab-tags" style="margin-top:14px">
+                <span class="lab-tag">Live tool</span>
+                <span class="lab-tag">~15 min</span>
+                <span class="lab-tag">Most popular</span>
+              </div>
+              <div class="actions" style="margin-top:16px">
+                <a class="btn primary" href="finance-dashboard.html">Try the live dashboard →</a>
+              </div>
+            </div>
+            <div class="feature-visual">
+              <div class="mini-ring">
+                <svg width="88" height="88" viewBox="0 0 88 88">
+                  <defs>
+                    <linearGradient id="miniGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="var(--hero1)"/>
+                      <stop offset="100%" stop-color="var(--hero2)"/>
+                    </linearGradient>
+                  </defs>
+                  <circle cx="44" cy="44" r="36" fill="none" stroke="var(--w08)" stroke-width="8"/>
+                  <circle cx="44" cy="44" r="36" fill="none" stroke="url(#miniGrad)" stroke-width="8" stroke-linecap="round" stroke-dasharray="226" stroke-dashoffset="52"/>
+                </svg>
+                <div class="mini-ring-num">77</div>
+              </div>
+              <div class="mini-kpis">
+                <div><span class="mk-lbl">Net worth</span><span class="mk-val">$26,870</span></div>
+                <div><span class="mk-lbl">Savings rate</span><span class="mk-val">14%</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer reveal">
+      <a href="index.html#contact">Contact</a> · Built to feel beautiful, personal, and alive.
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

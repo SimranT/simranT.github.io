@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bali Itinerary — Simran's Space</title>
+  <meta name="description" content="A real 10-day Bali itinerary by Simran Tiwari: Ubud, Gili Trawangan, Uluwatu, Nusa Penida, and Canggu." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="cursor" id="cursor"></div>
+
+  <div class="wrap">
+    <header class="nav reveal">
+      <a class="brand" href="index.html#top"><span class="dot"></span> Simran's Space</a>
+      <nav class="navlinks">
+        <a href="index.html">Home</a>
+        <a href="work.html">Work</a>
+        <a href="travel.html">Travel</a>
+        <a href="itineraries.html" class="active">Shop</a>
+        <a href="analytics.html">Analytics</a>
+      </nav>
+      <button class="toggle" id="theme" aria-label="Toggle theme">◐</button>
+    </header>
+
+    <main id="top">
+      <section class="page-hero reveal">
+        <div class="eyebrow">Itinerary · Bali</div>
+        <h1>10 days, five bases, one real trip.</h1>
+        <p>Jungle mornings in Ubud, an island with no cars, cliffside temples, a boat trip to Bali's wildest coastline, and cafe-hopping to close it out. Built from my own notes and saved places from an October trip.</p>
+        <div class="route-line">
+          <span>Ubud</span><span>→</span><span>Gili Trawangan</span><span>→</span><span>Uluwatu</span><span>→</span><span>Nusa Penida</span><span>→</span><span>Canggu</span>
+        </div>
+      </section>
+
+      <section class="reveal">
+        <div class="route-map">
+          <svg viewBox="0 0 700 160" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="routeGradient" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#ff8fd8"/>
+                <stop offset="100%" stop-color="#8ecbff"/>
+              </linearGradient>
+            </defs>
+            <path class="route-path" d="M 50 100 C 130 30, 210 30, 260 90 S 400 150, 450 90 S 560 20, 630 60"/>
+            <circle class="route-dot" cx="50" cy="100" r="7"/>
+            <circle class="route-dot" cx="260" cy="90" r="7" style="animation-delay:.3s"/>
+            <circle class="route-dot" cx="450" cy="90" r="7" style="animation-delay:.6s"/>
+            <circle class="route-dot" cx="550" cy="40" r="7" style="animation-delay:.9s"/>
+            <circle class="route-dot" cx="630" cy="60" r="7" style="animation-delay:1.2s"/>
+            <text class="route-label" x="50" y="125" text-anchor="middle">Ubud</text>
+            <text class="route-label" x="260" y="115" text-anchor="middle">Gili T</text>
+            <text class="route-label" x="450" y="115" text-anchor="middle">Uluwatu</text>
+            <text class="route-label" x="550" y="25" text-anchor="middle">Nusa Penida</text>
+            <text class="route-label" x="630" y="85" text-anchor="middle">Canggu</text>
+          </svg>
+        </div>
+      </section>
+
+      <section class="reveal">
+        <div class="draft-note">
+          <strong>Note from Simran:</strong> this is a first draft pieced together from my trip notes and saved maps — I'll be refining exact timings, restaurant picks, and costs as I finish writing it up properly.
+        </div>
+      </section>
+
+      <section id="itinerary-legs" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">The route</div>
+            <h2 class="section-title">Base by base</h2>
+          </div>
+        </div>
+
+        <div class="leg-card travel-accent">
+          <div class="leg-label"><span class="leg-num">Ubud</span><span class="leg-days">3 days</span></div>
+          <h3>Jungle air and a slower pace</h3>
+          <ul>
+            <li><strong>Jatiluwih Rice Terraces</strong> in the morning light, then <strong>Pura Tirta Empul</strong> for the holy spring water ritual.</li>
+            <li><strong>Waterfall day</strong> — Sekumpul was the standout, with Tibumana, Kanto Lampo, and Tukad Cepung as backups if you have time.</li>
+            <li>Dinner at <strong>The Sayan House</strong> for a proper sunset over the valley.</li>
+          </ul>
+          <p class="stay-note">Stayed: Suite Room with Mountain View — ~$48/night</p>
+          <div class="fun-fact">Ubud's Sacred Monkey Forest is home to over 1,200 long-tailed macaques and three centuries-old temples — all inside a single patch of jungle in the middle of town.</div>
+        </div>
+
+        <div class="leg-card money-accent">
+          <div class="leg-label"><span class="leg-num">Gili Trawangan</span><span class="leg-days">2 days</span></div>
+          <h3>No cars, no scooters, no rush</h3>
+          <ul>
+            <li>Fast boat transfer from Bali — book ahead in high season.</li>
+            <li><strong>Snorkeling</strong> straight off the beach, plus a full loop of the island by bike.</li>
+            <li>Sunset from the <strong>west side</strong> of the island is the one not to miss.</li>
+          </ul>
+          <p class="stay-note">Stayed: Kecamatan Pemenang, Gili T — ~$32/night</p>
+          <div class="fun-fact">None of the three Gili Islands allow cars or motorbikes — the only ways around are on foot, by bike, or by cidomo, a traditional horse-drawn cart.</div>
+        </div>
+
+        <div class="leg-card work-accent">
+          <div class="leg-label"><span class="leg-num">Uluwatu</span><span class="leg-days">2 days</span></div>
+          <h3>Cliffs, temples, and sunset crowds</h3>
+          <ul>
+            <li><strong>Uluwatu Temple</strong>, <strong>Suluban Beach</strong>, and <strong>Melasti Beach</strong> across a couple of unhurried days.</li>
+            <li>The <strong>Kecak Dance at Melasti Beach</strong> at sunset — touristy, but worth it once.</li>
+            <li>Iron Fairies or Savaya after, if you want a nightcap with a view.</li>
+          </ul>
+          <div class="fun-fact">Uluwatu Temple sits on a 70-metre cliff and is one of Bali's six key directional temples, believed to guard the island from evil sea spirits.</div>
+        </div>
+
+        <div class="leg-card about-accent">
+          <div class="leg-label"><span class="leg-num">Nusa Penida</span><span class="leg-days">1 day</span></div>
+          <h3>A day trip to Bali's wildest coastline</h3>
+          <ul>
+            <li><strong>Paluang Cliff</strong> for the kind of viewpoint that doesn't look real.</li>
+            <li><strong>Tembeling Beach and Forest</strong> — a forest walk that opens onto a hidden beach.</li>
+            <li><strong>Pasih Andus (Smoky Beach)</strong>, named for the sea spray that looks like smoke against the cliffs.</li>
+          </ul>
+          <div class="fun-fact">Nusa Penida's coastline was carved by strong ocean currents, which is why most of its famous spots are dramatic viewpoints rather than swimming beaches.</div>
+        </div>
+
+        <div class="leg-card travel-accent">
+          <div class="leg-label"><span class="leg-num">Canggu</span><span class="leg-days">2 days</span></div>
+          <h3>Cafes, surf, and a slow finish</h3>
+          <ul>
+            <li>Cafe-hopping at <strong>Suburbia Cafe</strong>, <strong>AKASA</strong>, and <strong>Paperhills</strong>.</li>
+            <li>A look around <strong>Nuanu Creative City</strong> if you want something different from beach clubs.</li>
+            <li>Close to the airport, which makes it the easiest last stop before flying out.</li>
+          </ul>
+          <div class="fun-fact">Canggu was mostly rice fields and quiet surf breaks until the 2010s — it's now one of Bali's fastest-growing digital nomad hubs.</div>
+        </div>
+      </section>
+
+      <section id="itinerary-cta" class="reveal">
+        <div class="section-band">
+          <div class="eyebrow">Want the full version?</div>
+          <h2 class="section-title" style="font-size:1.6rem">Full write-up coming soon</h2>
+          <p class="section-sub">The finished version will include exact costs per day, restaurant menus worth ordering from, transport booking notes, and the Airbnb links for every stay.</p>
+          <div class="actions" style="margin-top:16px">
+            <a class="btn primary" href="mailto:simran.st1197@gmail.com">Get notified when it's ready</a>
+            <a class="btn" href="itineraries.html">Back to Shop</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer reveal">
+      <a href="index.html#contact">Contact</a> · Built to feel beautiful, personal, and alive.
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

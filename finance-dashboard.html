@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personal Finance Dashboard — A Data Analyst's Case Study | Simran's Space</title>
+  <meta name="description" content="An interactive personal finance dashboard case study by Simran Tiwari — track net worth, cash flow, savings rate, FIRE progress, and a financial health score, built the way a real BI project is designed." />
+  <meta name="keywords" content="personal finance dashboard, net worth tracker, FIRE calculator, financial health score, budgeting tool, savings rate calculator, data analyst portfolio project" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .fin-hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+
+    .fin-panel{padding:26px;border-radius:28px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--glow);margin-bottom:20px}
+    .fin-panel h3{margin-bottom:6px}
+    .fin-panel .tool-sub{color:var(--muted);margin:0 0 18px;line-height:1.7}
+
+    .fin-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:20px;align-items:start}
+    @media (max-width:900px){.fin-grid{grid-template-columns:1fr}}
+
+    .fin-field-group{margin-bottom:18px}
+    .fin-field-group h4{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:700}
+    .fin-field-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:10px}
+    .fin-field{display:flex;flex-direction:column;gap:6px}
+    .fin-field label{font-size:.8rem;color:var(--muted)}
+    .fin-field input{
+      padding:10px 12px;border-radius:12px;border:1px solid var(--line);
+      background:var(--w04);color:var(--text);font-family:inherit;font-size:.95rem;
+    }
+    .fin-field input:focus{outline:1px solid var(--hero1)}
+
+    .sub-row{display:grid;grid-template-columns:1fr 100px 34px;gap:8px;margin-bottom:8px;align-items:center}
+    .sub-row input{padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--w04);color:var(--text);font-size:.88rem}
+    .sub-remove{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--w04);color:var(--muted);cursor:pointer;font-size:.9rem}
+    .sub-add{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--w04);color:var(--text);cursor:pointer;font-size:.85rem;margin-top:4px}
+
+    .fin-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+    @media (max-width:640px){.fin-kpis{grid-template-columns:repeat(2,1fr)}}
+    .fin-kpi{padding:16px;border-radius:18px;background:var(--surface2);border:1px solid var(--line);text-align:center}
+    .fin-kpi .lbl{font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+    .fin-kpi .val{font-family:Fraunces,serif;font-size:1.4rem;margin-top:6px}
+    .fin-kpi .val.good{color:var(--money1)}
+    .fin-kpi .val.bad{color:#ff8f8f}
+    .fin-kpi .val.neutral{color:var(--hero1)}
+
+    .score-ring-wrap{display:flex;align-items:center;gap:20px;margin-bottom:18px}
+    .score-ring{position:relative;width:120px;height:120px;flex:0 0 auto}
+    .score-ring svg{transform:rotate(-90deg)}
+    .score-ring .ring-bg{fill:none;stroke:var(--w08);stroke-width:10}
+    .score-ring .ring-fill{fill:none;stroke:url(#healthGrad);stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
+    .score-ring .ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Fraunces,serif;font-size:1.9rem}
+    .score-desc{flex:1}
+    .score-desc .score-verdict{font-weight:700;margin-bottom:4px}
+    .score-desc p{color:var(--muted);font-size:.9rem;line-height:1.7;margin:0}
+
+    .fin-bar-row{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-bottom:5px}
+    .fin-bar-track{height:9px;border-radius:999px;background:var(--w08);overflow:hidden;margin-bottom:14px}
+    .fin-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--hero1),var(--hero2))}
+    .fin-bar-fill.over{background:linear-gradient(90deg,#ff8f8f,#ffb37a)}
+
+    .fin-insight{background:linear-gradient(135deg, rgba(255,208,168,.14), rgba(255,159,203,.10));border:1px solid var(--line);border-radius:16px;padding:14px 16px;font-size:.88rem;line-height:1.6;margin-bottom:16px}
+
+    .goal-row{margin-bottom:16px}
+    .goal-head{display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:6px}
+    .goal-head input{width:110px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--w04);color:var(--text);font-size:.82rem;text-align:right}
+
+    .fin-log-btn{padding:10px 20px;border-radius:999px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--hero1),var(--hero2));color:#06101a;font-weight:700;transition:transform .2s ease}
+    .fin-log-btn:hover{transform:scale(1.04)}
+    .fin-history{margin-top:14px;font-size:.85rem;color:var(--muted)}
+    .history-chart{margin-top:14px}
+    .history-bar-row{display:grid;grid-template-columns:64px 1fr 80px;align-items:center;gap:10px;margin-top:6px;font-size:.8rem;color:var(--muted)}
+    .history-track{height:8px;border-radius:999px;background:var(--w08);overflow:hidden}
+    .history-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--money1),var(--money2))}
+    .history-fill.neg{background:linear-gradient(90deg,#ff8f8f,#ffb37a)}
+    .history-note-small{font-size:.78rem;color:var(--muted);opacity:.8;margin-top:8px}
+
+    .build-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    @media (max-width:900px){.build-steps{grid-template-columns:repeat(2,1fr)}}
+    .build-step{padding:18px;border-radius:20px;background:var(--surface);border:1px solid var(--line)}
+    .build-step .step-num{font-family:Fraunces,serif;font-size:1.3rem;color:var(--hero1);margin-bottom:6px}
+    .build-step h4{margin:0 0 6px;font-size:.98rem}
+    .build-step p{color:var(--muted);font-size:.85rem;line-height:1.6;margin:0}
+
+    .skill-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+
+    .lesson-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    @media (max-width:720px){.lesson-grid{grid-template-columns:1fr}}
+
+    .not-advice{font-size:.78rem;color:var(--muted);opacity:.8;margin-top:10px;line-height:1.6}
+  </style>
+</head>
+<body class="rich-bg-subtle">
+  <div class="progress" id="progress"></div>
+  <div class="cursor" id="cursor"></div>
+
+  <div class="wrap">
+    <header class="nav reveal">
+      <a class="brand" href="index.html#top"><span class="dot"></span> Simran's Space</a>
+      <nav class="navlinks">
+        <a href="index.html">Home</a>
+        <a href="work.html">Work</a>
+        <a href="travel.html">Travel</a>
+        <a href="itineraries.html">Shop</a>
+        <a href="analytics.html" class="active">Analytics</a>
+      </nav>
+      <button class="toggle" id="theme" aria-label="Toggle theme">◐</button>
+    </header>
+
+    <main id="top">
+      <!-- HERO -->
+      <section class="page-hero reveal">
+        <div class="eyebrow">Analytics Playground · Case Study</div>
+        <h1>A Personal Finance Dashboard, built like a real BI project.</h1>
+        <p>Most budgeting apps hand you a wall of numbers. Good BI hands you one answer: <em>am I okay, and what should I do next?</em> This is what that looks like when it's designed the way I'd design it for a client — a single health score, real net worth tracking, and zero guesswork. Enter your own numbers below; nothing leaves your browser.</p>
+        <div class="fin-hero-stats">
+          <div class="stat hero-accent"><strong>Who it's for</strong><span>Professionals who want clarity, not spreadsheets</span></div>
+          <div class="stat hero-accent"><strong>What it answers</strong><span>Am I healthy? Am I on track? Where's my money going?</span></div>
+          <div class="stat hero-accent"><strong>Why it exists</strong><span>Because 12 scattered numbers beat nobody, but 1 clear score wins</span></div>
+        </div>
+        <div class="actions" style="margin-top:20px">
+          <a class="btn primary" href="#dashboard">Try the live dashboard ↓</a>
+        </div>
+      </section>
+
+      <!-- LIVE DASHBOARD -->
+      <section id="dashboard" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Try it yourself</div>
+            <h2 class="section-title">Your numbers, your dashboard</h2>
+            <p>Fill in what applies to you. Everything recalculates live and saves only in this browser — refresh and it's still here, close the tab and it's still yours.</p>
+          </div>
+        </div>
+
+        <div class="fin-grid">
+          <!-- INPUTS -->
+          <div class="fin-panel work-accent">
+            <h3>Enter your numbers</h3>
+            <p class="tool-sub">Monthly figures, in whatever currency you think in.</p>
+
+            <div class="fin-field-group">
+              <h4>Income</h4>
+              <div class="fin-field-row">
+                <div class="fin-field"><label for="f-income">Monthly net salary</label><input type="number" id="f-income" min="0" value="0"></div>
+                <div class="fin-field"><label for="f-taxrate">Effective tax rate already applied?</label><input type="number" id="f-taxrate" min="0" max="100" value="0"></div>
+              </div>
+            </div>
+
+            <div class="fin-field-group">
+              <h4>Monthly Expenses</h4>
+              <div class="fin-field-row">
+                <div class="fin-field"><label for="f-housing">Housing</label><input type="number" id="f-housing" min="0" value="0"></div>
+                <div class="fin-field"><label for="f-food">Food</label><input type="number" id="f-food" min="0" value="0"></div>
+                <div class="fin-field"><label for="f-transport">Transport</label><input type="number" id="f-transport" min="0" value="0"></div>
+                <div class="fin-field"><label for="f-utilities">Utilities</label><input type="number" id="f-utilities" min="0" value="0"></div>
+                <div class="fin-field"><label for="f-entertainment">Entertainment</label><input type="number" id="f-entertainment" min="0" value="0"></div>
+                <div class="fin-field"><label for="f-other">Other</label><input type="number" id="f-other" min="0" value="0"></div>
+              </div>
+            </div>
+
+            <div class="fin-field-group">
+              <h4>Subscriptions</h4>
+              <div id="subList"></div>
+              <button class="sub-add" id="subAdd" type="button">+ Add subscription</button>
+            </div>
+
+            <div class="fin-field-group">
+              <h4>Savings &amp; Investments</h4>
+              <div class="fin-field-row">
+                <div class="fin-field"><label for="f-savingsbal">Savings balance</label><input type="number" id="f-savingsbal" min="0" value="0"></div>
+                <div class="fin-field"><label for="f-savingscontrib">Monthly savings contribution</label><input type="number" id="f-savingscontrib" min="0" value="0"></div>
+                <div class="fin-field"><label for="f-investbal">Investment balance</label><input type="number" id="f-investbal" min="0" value="0"></div>
+                <div class="fin-field"><label for="f-investcontrib">Monthly investment contribution</label><input type="number" id="f-investcontrib" min="0" value="0"></div>
+              </div>
+              <div class="fin-field-row">
+                <div class="fin-field"><label for="f-alloc-stocks">Allocation — stocks %</label><input type="number" id="f-alloc-stocks" min="0" max="100" value="60"></div>
+                <div class="fin-field"><label for="f-alloc-bonds">Allocation — bonds %</label><input type="number" id="f-alloc-bonds" min="0" max="100" value="20"></div>
+                <div class="fin-field"><label for="f-alloc-cash">Allocation — cash %</label><input type="number" id="f-alloc-cash" min="0" max="100" value="10"></div>
+                <div class="fin-field"><label for="f-alloc-other">Allocation — other %</label><input type="number" id="f-alloc-other" min="0" max="100" value="10"></div>
+              </div>
+            </div>
+
+            <div class="fin-field-group">
+              <h4>Emergency Fund &amp; Debt</h4>
+              <div class="fin-field-row">
+                <div class="fin-field"><label for="f-ef">Emergency fund balance</label><input type="number" id="f-ef" min="0" value="0"></div>
+                <div class="fin-field"><label for="f-debtbal">Total debt balance</label><input type="number" id="f-debtbal" min="0" value="0"></div>
+                <div class="fin-field"><label for="f-debtpay">Monthly debt payment</label><input type="number" id="f-debtpay" min="0" value="0"></div>
+              </div>
+            </div>
+
+            <div class="fin-field-group">
+              <h4>Yearly Goals</h4>
+              <div class="goal-row">
+                <div class="goal-head"><span>Net worth goal</span><input type="number" id="goal-networth" value="0"></div>
+              </div>
+              <div class="goal-row">
+                <div class="goal-head"><span>Savings balance goal</span><input type="number" id="goal-savings" value="0"></div>
+              </div>
+              <div class="goal-row">
+                <div class="goal-head"><span>Debt payoff goal (balance to reach)</span><input type="number" id="goal-debt" value="0"></div>
+              </div>
+            </div>
+
+            <button class="fin-log-btn" id="logMonth" type="button">Log this month's snapshot</button>
+            <div class="fin-history" id="historyNote"></div>
+            <div id="historyChart"></div>
+          </div>
+
+          <!-- OUTPUTS -->
+          <div>
+            <div class="fin-panel money-accent">
+              <h3>Financial Health Score</h3>
+              <div class="score-ring-wrap">
+                <div class="score-ring">
+                  <svg width="120" height="120" viewBox="0 0 120 120">
+                    <defs>
+                      <linearGradient id="healthGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="var(--hero1)"/>
+                        <stop offset="100%" stop-color="var(--hero2)"/>
+                      </linearGradient>
+                    </defs>
+                    <circle class="ring-bg" cx="60" cy="60" r="50"></circle>
+                    <circle class="ring-fill" id="healthRing" cx="60" cy="60" r="50" stroke-dasharray="314" stroke-dashoffset="314"></circle>
+                  </svg>
+                  <div class="ring-num" id="healthNum">—</div>
+                </div>
+                <div class="score-desc">
+                  <div class="score-verdict" id="healthVerdict">Enter your income to see your score</div>
+                  <p>A weighted blend of savings rate, emergency fund coverage, debt load, and monthly cash flow — the same way a Trip Health Score works, just for your finances.</p>
+                </div>
+              </div>
+
+              <div class="fin-kpis">
+                <div class="fin-kpi"><div class="lbl">Net Worth</div><div class="val" id="kpiNetWorth">$0</div></div>
+                <div class="fin-kpi"><div class="lbl">Monthly Cash Flow</div><div class="val" id="kpiCashFlow">$0</div></div>
+                <div class="fin-kpi"><div class="lbl">Savings Rate</div><div class="val" id="kpiSavingsRate">0%</div></div>
+                <div class="fin-kpi"><div class="lbl">Emergency Fund</div><div class="val" id="kpiEF">0 mo</div></div>
+                <div class="fin-kpi"><div class="lbl">FIRE Progress</div><div class="val" id="kpiFire">0%</div></div>
+                <div class="fin-kpi"><div class="lbl">Debt-to-Income</div><div class="val" id="kpiDTI">0%</div></div>
+              </div>
+
+              <div class="fin-insight" id="finInsight">Start entering your numbers to see a live insight here.</div>
+            </div>
+
+            <div class="fin-panel about-accent">
+              <h3>Budget vs. the 50/30/20 rule</h3>
+              <p class="tool-sub">Needs, wants, and savings — compared to the classic benchmark.</p>
+              <div id="budgetBars"></div>
+            </div>
+
+            <div class="fin-panel travel-accent">
+              <h3>Investment allocation</h3>
+              <div id="allocBars"></div>
+            </div>
+
+            <div class="fin-panel contact-accent">
+              <h3>Yearly goals</h3>
+              <div id="goalBars"></div>
+            </div>
+          </div>
+        </div>
+        <p class="not-advice">This tool is for directional, educational purposes — it's a portfolio project demonstrating BI design, not licensed financial or tax advice. For real decisions, talk to a financial advisor.</p>
+      </section>
+
+      <!-- BUILD PROCESS -->
+      <section class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">How it's built</div>
+            <h2 class="section-title">The thinking behind the dashboard</h2>
+          </div>
+        </div>
+        <div class="build-steps">
+          <div class="build-step">
+            <div class="step-num">01</div>
+            <h4>Planning</h4>
+            <p>Started with the question a real client would ask: "am I financially healthy?" — then worked backward to the inputs needed to answer it.</p>
+          </div>
+          <div class="build-step">
+            <div class="step-num">02</div>
+            <h4>Data model</h4>
+            <p>One input layer (income, expenses, subscriptions, debt, savings, investments) feeding a calculation layer that never touches raw entry fields directly.</p>
+          </div>
+          <div class="build-step">
+            <div class="step-num">03</div>
+            <h4>Formula logic</h4>
+            <p>Net worth, savings rate, FIRE number, and a weighted health score — each formula named, testable, and explainable in one sentence.</p>
+          </div>
+          <div class="build-step">
+            <div class="step-num">04</div>
+            <h4>Automation &amp; charts</h4>
+            <p>Everything recalculates on input, no "submit" button required — the same live-refresh feel as a proper BI dashboard.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXCEL SKILLS -->
+      <section class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Coming to the premium template</div>
+            <h2 class="section-title">What the full Excel version will include</h2>
+            <p>This web version proves the design. The downloadable template goes further with real spreadsheet engineering.</p>
+          </div>
+        </div>
+        <div class="card work-accent">
+          <div class="skill-chips">
+            <span class="chip">XLOOKUP</span>
+            <span class="chip">INDEX / MATCH</span>
+            <span class="chip">Power Query</span>
+            <span class="chip">Dynamic Arrays</span>
+            <span class="chip">Named Ranges</span>
+            <span class="chip">Pivot Tables &amp; Charts</span>
+            <span class="chip">Data Validation</span>
+            <span class="chip">Conditional Formatting</span>
+            <span class="chip">Interactive Dashboards</span>
+            <span class="chip">Forecasting</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- LESSONS -->
+      <section class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">What I'd tell you at work</div>
+            <h2 class="section-title">A few lessons this dashboard is built on</h2>
+          </div>
+        </div>
+        <div class="lesson-grid">
+          <div class="card about-accent">
+            <h3>One score beats ten numbers</h3>
+            <p>Most people don't act on 12 metrics. They act on one clear signal. That's why the health score exists — it's a summary, not a replacement, for the detail underneath.</p>
+          </div>
+          <div class="card travel-accent">
+            <h3>The 50/30/20 rule is a benchmark, not a rule</h3>
+            <p>50% needs, 30% wants, 20% savings is a useful default — not a law. The point is knowing where you stand against it, then deciding on purpose to deviate.</p>
+          </div>
+          <div class="card money-accent">
+            <h3>Your FIRE number moves when your spending does</h3>
+            <p>Financial independence is 25x your annual expenses, not your income. Cut spending and the target gets closer from both directions at once.</p>
+          </div>
+          <div class="card contact-accent">
+            <h3>Cash flow is the number that catches problems early</h3>
+            <p>Net worth can look fine while cash flow quietly goes negative every month. This dashboard surfaces cash flow on its own so it can't hide.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- DOWNLOAD / CTA -->
+      <section id="get-it" class="reveal">
+        <div class="section-band">
+          <div class="eyebrow">Want the full version?</div>
+          <h2 class="section-title" style="font-size:1.6rem">This page is the free version</h2>
+          <p class="section-sub">The interactive dashboard above is free, forever — no download needed. A premium downloadable Excel template (with the full spreadsheet engineering above) is in production. Email me and I'll let you know the moment it's ready.</p>
+          <div class="actions" style="margin-top:16px">
+            <a class="btn primary" href="mailto:simran.st1197@gmail.com">Email me for updates</a>
+            <a class="btn" href="analytics.html">Back to the Data Playground</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer reveal">
+      <a href="index.html#contact">Contact</a> · Built to feel beautiful, personal, and alive.
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    const STORE_KEY = 'financeDashboardV1';
+    const HISTORY_KEY = 'financeDashboardHistoryV1';
+
+    const fieldIds = [
+      'f-income','f-taxrate','f-housing','f-food','f-transport','f-utilities','f-entertainment','f-other',
+      'f-savingsbal','f-savingscontrib','f-investbal','f-investcontrib',
+      'f-alloc-stocks','f-alloc-bonds','f-alloc-cash','f-alloc-other',
+      'f-ef','f-debtbal','f-debtpay','goal-networth','goal-savings','goal-debt'
+    ];
+
+    let subscriptions = [];
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORE_KEY);
+        if (!raw) return;
+        const state = JSON.parse(raw);
+        fieldIds.forEach(id => {
+          if (state[id] !== undefined) {
+            const el = document.getElementById(id);
+            if (el) el.value = state[id];
+          }
+        });
+        subscriptions = state.subscriptions || [];
+      } catch (e) { /* ignore corrupted state */ }
+    }
+
+    function saveState() {
+      const state = {};
+      fieldIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) state[id] = el.value;
+      });
+      state.subscriptions = subscriptions;
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* storage unavailable */ }
+    }
+
+    function renderSubscriptions() {
+      const list = document.getElementById('subList');
+      list.innerHTML = subscriptions.map((s, i) => `
+        <div class="sub-row">
+          <input type="text" placeholder="Name (e.g. Netflix)" value="${s.name || ''}" data-sub-name="${i}">
+          <input type="number" placeholder="0" min="0" value="${s.amount || 0}" data-sub-amount="${i}">
+          <button class="sub-remove" type="button" data-sub-remove="${i}" aria-label="Remove">✕</button>
+        </div>
+      `).join('');
+
+      list.querySelectorAll('[data-sub-name]').forEach(inp => {
+        inp.addEventListener('input', e => {
+          subscriptions[+e.target.dataset.subName].name = e.target.value;
+          saveState();
+        });
+      });
+      list.querySelectorAll('[data-sub-amount]').forEach(inp => {
+        inp.addEventListener('input', e => {
+          subscriptions[+e.target.dataset.subAmount].amount = Number(e.target.value) || 0;
+          saveState();
+          recalc();
+        });
+      });
+      list.querySelectorAll('[data-sub-remove]').forEach(btn => {
+        btn.addEventListener('click', e => {
+          subscriptions.splice(+e.target.dataset.subRemove, 1);
+          saveState();
+          renderSubscriptions();
+          recalc();
+        });
+      });
+    }
+
+    document.getElementById('subAdd').addEventListener('click', () => {
+      subscriptions.push({ name: '', amount: 0 });
+      renderSubscriptions();
+      saveState();
+    });
+
+    function num(id) {
+      const el = document.getElementById(id);
+      return el ? (Number(el.value) || 0) : 0;
+    }
+
+    function fmt(n) {
+      const sign = n < 0 ? '-' : '';
+      return sign + '$' + Math.abs(Math.round(n)).toLocaleString();
+    }
+
+    function recalc() {
+      const income = num('f-income');
+      const expenses = num('f-housing') + num('f-food') + num('f-transport') + num('f-utilities') + num('f-entertainment') + num('f-other');
+      const subsTotal = subscriptions.reduce((s, x) => s + (Number(x.amount) || 0), 0);
+      const savingsBal = num('f-savingsbal'), savingsContrib = num('f-savingscontrib');
+      const investBal = num('f-investbal'), investContrib = num('f-investcontrib');
+      const efBal = num('f-ef');
+      const debtBal = num('f-debtbal'), debtPay = num('f-debtpay');
+
+      const totalOutgoings = expenses + subsTotal;
+      const cashFlow = income - expenses - subsTotal - debtPay - savingsContrib - investContrib;
+      const netWorth = savingsBal + investBal + efBal - debtBal;
+      const savingsRate = income > 0 ? (savingsContrib + investContrib) / income * 100 : 0;
+      const efMonths = totalOutgoings > 0 ? efBal / totalOutgoings : 0;
+      const fireNumber = totalOutgoings * 12 * 25;
+      const fireProgress = fireNumber > 0 ? (savingsBal + investBal) / fireNumber * 100 : 0;
+      const dti = income > 0 ? debtPay / income * 100 : 0;
+
+      document.getElementById('kpiNetWorth').textContent = fmt(netWorth);
+      document.getElementById('kpiNetWorth').className = 'val ' + (netWorth >= 0 ? 'good' : 'bad');
+      document.getElementById('kpiCashFlow').textContent = fmt(cashFlow);
+      document.getElementById('kpiCashFlow').className = 'val ' + (cashFlow >= 0 ? 'good' : 'bad');
+      document.getElementById('kpiSavingsRate').textContent = savingsRate.toFixed(0) + '%';
+      document.getElementById('kpiEF').textContent = efMonths.toFixed(1) + ' mo';
+      document.getElementById('kpiFire').textContent = Math.min(fireProgress, 999).toFixed(1) + '%';
+      document.getElementById('kpiDTI').textContent = dti.toFixed(0) + '%';
+
+      const ring = document.getElementById('healthRing');
+      const num_ring = document.getElementById('healthNum');
+      const verdict = document.getElementById('healthVerdict');
+
+      if (income <= 0) {
+        ring.style.strokeDashoffset = 314;
+        num_ring.textContent = '—';
+        verdict.textContent = 'Enter your income to see your score';
+      } else {
+        const savingsScore = Math.min(savingsRate / 20 * 100, 100);
+        const efScore = Math.min(efMonths / 6 * 100, 100);
+        const debtScore = Math.max(0, 100 - dti * 4);
+        const cashScore = cashFlow >= 0 ? 100 : Math.max(0, 100 + (cashFlow / income * 100 * 2));
+        const healthScore = (savingsScore + efScore + debtScore + cashScore) / 4;
+
+        const circumference = 314;
+        ring.style.strokeDashoffset = circumference - (circumference * Math.min(healthScore, 100) / 100);
+        num_ring.textContent = Math.round(healthScore);
+
+        let v = 'Needs attention';
+        if (healthScore >= 80) v = 'Excellent shape';
+        else if (healthScore >= 60) v = 'Solid, room to grow';
+        else if (healthScore >= 40) v = 'Getting there';
+        verdict.textContent = v;
+      }
+
+      // Insight
+      const insight = document.getElementById('finInsight');
+      if (income <= 0) {
+        insight.textContent = 'Start entering your numbers to see a live insight here.';
+      } else {
+        const parts = [];
+        if (cashFlow < 0) parts.push(`you're spending ${fmt(Math.abs(cashFlow))} more than you're bringing in every month`);
+        if (efMonths < 3) parts.push(`your emergency fund covers only ${efMonths.toFixed(1)} months (aim for 3–6)`);
+        if (dti > 20) parts.push(`debt payments eat up ${dti.toFixed(0)}% of your income`);
+        if (parts.length === 0) parts.push(`your numbers look solid — ${savingsRate.toFixed(0)}% savings rate and ${efMonths.toFixed(1)} months of runway`);
+        insight.textContent = parts[0].charAt(0).toUpperCase() + parts[0].slice(1) + '.';
+      }
+
+      // Budget vs 50/30/20
+      const needs = num('f-housing') + num('f-food') + num('f-transport') + num('f-utilities') + debtPay;
+      const wants = num('f-entertainment') + num('f-other') + subsTotal;
+      const savingsAlloc = savingsContrib + investContrib;
+      const base = income > 0 ? income : Math.max(needs + wants + savingsAlloc, 1);
+      const needsPct = needs / base * 100, wantsPct = wants / base * 100, savePct = savingsAlloc / base * 100;
+      const budgetRows = [
+        ['Needs', needsPct, 50],
+        ['Wants', wantsPct, 30],
+        ['Savings', savePct, 20]
+      ];
+      document.getElementById('budgetBars').innerHTML = budgetRows.map(([label, pct, target]) => `
+        <div class="fin-bar-row"><span>${label}</span><span>${pct.toFixed(0)}% (target ${target}%)</span></div>
+        <div class="fin-bar-track"><div class="fin-bar-fill ${pct > target + 5 ? 'over' : ''}" style="width:${Math.min(pct,100).toFixed(0)}%"></div></div>
+      `).join('');
+
+      // Allocation
+      const allocs = [
+        ['Stocks', num('f-alloc-stocks')],
+        ['Bonds', num('f-alloc-bonds')],
+        ['Cash', num('f-alloc-cash')],
+        ['Other', num('f-alloc-other')]
+      ];
+      document.getElementById('allocBars').innerHTML = allocs.map(([label, pct]) => `
+        <div class="fin-bar-row"><span>${label}</span><span>${pct}%</span></div>
+        <div class="fin-bar-track"><div class="fin-bar-fill" style="width:${Math.min(pct,100)}%"></div></div>
+      `).join('');
+
+      // Goals
+      const goals = [
+        ['Net worth', netWorth, num('goal-networth')],
+        ['Savings balance', savingsBal, num('goal-savings')],
+        ['Debt payoff (lower is better)', debtBal, num('goal-debt')]
+      ];
+      document.getElementById('goalBars').innerHTML = goals.map(([label, current, target]) => {
+        const isDebt = label.startsWith('Debt');
+        let pct;
+        if (isDebt) {
+          pct = target >= current ? 100 : (target === 0 && current === 0 ? 100 : Math.max(0, 100 - (current - target) / Math.max(current, 1) * 100));
+        } else {
+          pct = target > 0 ? Math.min(current / target * 100, 100) : 0;
+        }
+        return `
+          <div class="fin-bar-row"><span>${label}</span><span>${fmt(current)} / ${fmt(target)}</span></div>
+          <div class="fin-bar-track"><div class="fin-bar-fill" style="width:${pct.toFixed(0)}%"></div></div>
+        `;
+      }).join('');
+
+      saveState();
+    }
+
+    document.getElementById('subAdd');
+    fieldIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', recalc);
+    });
+
+    function renderHistory() {
+      let history = [];
+      try { history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) {}
+      const note = document.getElementById('historyNote');
+      const chart = document.getElementById('historyChart');
+
+      if (history.length === 0) {
+        note.textContent = 'No months logged yet — log this month to start tracking your trend over time.';
+        chart.innerHTML = '';
+        return;
+      }
+
+      const last = history[history.length - 1];
+      note.textContent = `${history.length} month${history.length > 1 ? 's' : ''} logged. Last: ${last.date} — net worth ${fmt(last.netWorth)}.`;
+
+      const recent = history.slice(-12);
+      const values = recent.map(h => h.netWorth);
+      const maxAbs = Math.max(...values.map(v => Math.abs(v)), 1);
+
+      const rows = recent.map(h => {
+        const pct = Math.abs(h.netWorth) / maxAbs * 100;
+        const isNeg = h.netWorth < 0;
+        return `
+          <div class="history-bar-row">
+            <span>${h.date}</span>
+            <div class="history-track"><div class="history-fill ${isNeg ? 'neg' : ''}" style="width:${pct.toFixed(0)}%"></div></div>
+            <span>${fmt(h.netWorth)}</span>
+          </div>
+        `;
+      }).join('');
+
+      chart.innerHTML = `
+        <div class="history-chart">${rows}</div>
+        <div class="history-note-small">Net worth trend, logged month over month — right here in this browser. This is exactly the kind of multi-month history the premium Excel version tracks properly across any device.</div>
+      `;
+    }
+
+    document.getElementById('logMonth').addEventListener('click', () => {
+      const savingsBal = num('f-savingsbal'), investBal = num('f-investbal'), efBal = num('f-ef'), debtBal = num('f-debtbal');
+      const netWorth = savingsBal + investBal + efBal - debtBal;
+      let history = [];
+      try { history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) {}
+      history.push({ date: new Date().toLocaleDateString(undefined, { month: 'short', year: 'numeric' }), netWorth });
+      try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch (e) {}
+      renderHistory();
+    });
+
+    loadState();
+    renderSubscriptions();
+    renderHistory();
+    recalc();
+  </script>
+</body>
+</html>
