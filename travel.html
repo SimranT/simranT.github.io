@@ -4,11 +4,96 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Travel — Simran's Space</title>
-  <meta name="description" content="Simran Tiwari's travel history, countries visited, and shortlisted Airbnb stays." />
+  <meta name="description" content="Simran Tiwari's travel notes — countries visited, road trips, and shortlisted Airbnb stays." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .story-toggle{
+      background:none;border:none;color:var(--sunset1);cursor:pointer;font-size:.85rem;font-weight:600;
+      padding:8px 0 0;margin-top:6px;display:inline-flex;align-items:center;gap:4px;
+    }
+    .story-toggle:hover{opacity:.8}
+
+    .country-story{
+      margin-top:24px;padding:28px;border-radius:28px;
+      background:var(--surface);border:1px solid var(--w08);box-shadow:var(--glow);
+    }
+    .country-story h3{font-size:1.5rem;margin:0 0 10px}
+    .country-story h4{font-size:1rem;margin:22px 0 8px;color:var(--sunset1)}
+    .story-lede{color:var(--muted);line-height:1.75;max-width:70ch;margin:0 0 18px}
+    .story-bridge{margin:22px 0;padding:14px 18px;border-left:3px solid var(--sunset1);background:var(--w03);border-radius:0 14px 14px 0}
+    .story-bridge .sb-label{display:block;font-size:.75rem;letter-spacing:.04em;text-transform:uppercase;color:var(--sunset1);font-weight:700;margin-bottom:6px}
+    .story-bridge p{margin:0;color:var(--muted);line-height:1.7;font-size:.92rem}
+    .story-hero{max-width:340px;margin:0 auto 22px;padding:8px;border-radius:22px;background:var(--w04);border:1px solid var(--w08);box-shadow:0 20px 50px rgba(0,0,0,.32)}
+    .story-hero img{width:100%;height:auto;border-radius:16px;display:block}
+    @media (max-width:640px){.story-hero{max-width:260px}}
+    .story-list{margin:0;padding-left:18px;color:var(--muted);line-height:1.8}
+    .story-list li strong{color:var(--text)}
+
+    .route-journey{
+      display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:center;gap:10px 2px;
+      margin:20px 0 26px;padding:26px 20px 20px;border-radius:22px;
+      background:linear-gradient(135deg, color-mix(in srgb, var(--sunset1) 12%, transparent), color-mix(in srgb, var(--sunset2) 7%, transparent));
+      border:1px solid var(--w08);
+    }
+    .rj-stop{display:flex;flex-direction:column;align-items:center;gap:9px;width:82px}
+    .rj-dot{
+      width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      font-size:1.3rem;background:var(--surface2);border:2px solid #ff9d5c;flex:0 0 auto;
+      box-shadow:0 0 0 5px var(--w04), 0 8px 20px rgba(0,0,0,.25);
+      animation:rjPulse 3s ease-in-out infinite;
+    }
+    @keyframes rjPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+    .rj-info{text-align:center;line-height:1.3}
+    .rj-info strong{display:block;font-size:.8rem}
+    .rj-info span{display:block;font-size:.7rem;color:var(--muted);margin-top:2px}
+    .rj-arrow{align-self:center;padding-top:12px;color:var(--muted);font-size:1rem;flex:0 0 auto}
+    @media (max-width:640px){.route-journey{gap:16px 2px}}
+
+    .map-highlight{
+      display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:18px;
+      background:var(--surface);border:1px solid color-mix(in srgb, var(--sunset1) 28%, var(--w08));
+      box-shadow:var(--glow);transition:transform .25s ease, box-shadow .25s ease;margin-top:20px;
+    }
+    .map-highlight:hover{transform:translateY(-3px);box-shadow:0 20px 54px rgba(0,0,0,.26)}
+    .mh-icon{font-size:1.7rem;flex:0 0 auto}
+    .mh-text{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+    .mh-text strong{font-size:1rem}
+    .mh-text span{color:var(--muted);font-size:.85rem;line-height:1.5}
+    .mh-arrow{font-size:1.3rem;color:var(--sunset1);flex:0 0 auto;transition:transform .25s ease}
+    .map-highlight:hover .mh-arrow{transform:translateX(4px)}
+
+    .pull-quote{
+      margin:0 0 22px;padding:20px 26px;border-left:3px solid var(--sunset1);
+      font-family:Fraunces,serif;font-size:1.25rem;line-height:1.5;font-style:italic;color:var(--text);
+    }
+
+    .moment-tags{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:18px 0 4px}
+    .moment-tag{padding:16px 18px;border-radius:18px;background:var(--w04);border:1px solid var(--w08)}
+    .moment-tag .mt-label{display:flex;align-items:center;gap:8px;font-size:.78rem;letter-spacing:.03em;text-transform:uppercase;color:var(--sunset1);margin-bottom:6px;font-weight:700}
+    .moment-tag p{margin:0;color:var(--text);font-size:.9rem;line-height:1.55}
+    @media (max-width:640px){.moment-tags{grid-template-columns:1fr}}
+
+    .gem-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .gem-card{
+      padding:16px 18px;border-radius:18px;
+      background:linear-gradient(135deg, color-mix(in srgb, var(--sunset1) 10%, var(--w04)), var(--w03));
+      border:1px solid color-mix(in srgb, var(--sunset1) 22%, var(--w08));
+    }
+    .gem-card strong{display:block;margin-bottom:4px;font-size:.92rem}
+    .gem-card span{color:var(--muted);font-size:.85rem;line-height:1.55}
+    @media (max-width:640px){.gem-grid{grid-template-columns:1fr}}
+    .highlight-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .highlight-card{padding:16px 18px;border-radius:18px;background:var(--w04);border:1px solid var(--w08)}
+    .highlight-card strong{display:block;margin-bottom:4px;font-size:.92rem}
+    .highlight-card span{color:var(--muted);font-size:.85rem;line-height:1.55}
+    @media (max-width:640px){.highlight-grid{grid-template-columns:1fr}}
+    .gem-grid .gem-card:last-child:nth-child(odd),
+    .moment-tags .moment-tag:last-child:nth-child(odd),
+    .highlight-grid .highlight-card:last-child:nth-child(odd){grid-column:1/-1}
+  </style>
 </head>
 <body class="rich-bg-journey">
   <div class="progress" id="progress"></div>
@@ -31,17 +116,13 @@
       <section class="page-hero reveal">
         <div class="eyebrow">Journey</div>
         <h1>Notes from the road</h1>
-        <p>Travel is my pause button. I'm most drawn to scenic drives, slow discoveries, and the feeling of being somewhere new.</p>
+        <p>Seven countries, one running theme: I slow down, notice details, and let the trip surprise me.</p>
       </section>
 
       <section id="journey" class="reveal">
         <div class="journey-center-card">
           <div class="eyebrow" style="margin-bottom:0;">Travel mood</div>
           <h3>Travel is my pause button.</h3>
-          <p>
-            I love places that feel alive, calm, and memorable. I'm most drawn to scenic drives,
-            slow discoveries, and the feeling of being somewhere new.
-          </p>
 
           <div class="journey-stats">
             <div class="journey-stat">
@@ -61,14 +142,16 @@
 
         <div class="countries-title">
           <h3>Countries visited</h3>
+          <p>Southeast Asia to the Middle East to the open road back home.</p>
         </div>
 
-        <div class="travel-grid travel-grid-visual">
+        <div class="travel-grid travel-grid-visual stagger">
           <article class="travel-card">
             <img src="singapore.jpeg" alt="Singapore">
             <div class="travel-copy">
               <h3>Singapore</h3>
               <p>Futuristic, polished, and full of evening glow.</p>
+              <button class="story-toggle" id="singaporeStoryToggle" type="button">Read the full story <span id="singaporeStoryArrow">▾</span></button>
             </div>
           </article>
 
@@ -77,22 +160,7 @@
             <div class="travel-copy">
               <h3>Thailand</h3>
               <p>Warm, vibrant, and easy to fall into.</p>
-            </div>
-          </article>
-
-          <article class="travel-card">
-            <img src="UAE.jpeg" alt="UAE">
-            <div class="travel-copy">
-              <h3>UAE</h3>
-              <p>Bold skylines and bright-city energy.</p>
-            </div>
-          </article>
-
-          <article class="travel-card">
-            <img src="turkey.jpeg" alt="Turkey">
-            <div class="travel-copy">
-              <h3>Turkey</h3>
-              <p>Where history feels beautifully alive.</p>
+              <button class="story-toggle" id="thailandStoryToggle" type="button">Read the full story <span id="thailandStoryArrow">▾</span></button>
             </div>
           </article>
 
@@ -101,14 +169,34 @@
             <div class="travel-copy">
               <h3>Vietnam</h3>
               <p>Scenic, dynamic, and full of motion.</p>
+              <button class="story-toggle" id="vietnamStoryToggle" type="button">Read the full story <span id="vietnamStoryArrow">▾</span></button>
             </div>
           </article>
 
           <article class="travel-card">
             <img src="bali.jpeg" alt="Indonesia">
             <div class="travel-copy">
-              <h3>Indonesia</h3>
+              <h3>Indonesia · Bali</h3>
               <p>Slow, dreamy, and deeply refreshing.</p>
+              <button class="story-toggle" id="baliStoryToggle" type="button">Read the full story <span id="baliStoryArrow">▾</span></button>
+            </div>
+          </article>
+
+          <article class="travel-card">
+            <img src="UAE.jpeg" alt="UAE">
+            <div class="travel-copy">
+              <h3>UAE</h3>
+              <p>Bold skylines and bright-city energy.</p>
+              <button class="story-toggle" id="uaeStoryToggle" type="button">Read the full story <span id="uaeStoryArrow">▾</span></button>
+            </div>
+          </article>
+
+          <article class="travel-card">
+            <img src="turkey.jpeg" alt="Turkey">
+            <div class="travel-copy">
+              <h3>Turkey</h3>
+              <p>Where history feels beautifully alive.</p>
+              <button class="story-toggle" id="turkeyStoryToggle" type="button">Read the full story <span id="turkeyStoryArrow">▾</span></button>
             </div>
           </article>
 
@@ -117,53 +205,490 @@
             <div class="travel-copy">
               <h3>USA</h3>
               <p>Wide-open, road-trip ready, and unforgettable.</p>
+              <button class="story-toggle" id="usaStoryToggle" type="button">Read the full story <span id="usaStoryArrow">▾</span></button>
             </div>
           </article>
         </div>
 
-        <div class="section-band" style="margin-top:16px;">
-          <p class="section-sub" style="margin:0;">
-            From dashboards to destinations — travel keeps teaching me how to notice, slow down, and enjoy the journey as much as the place itself.
-          </p>
-        </div>
-      </section>
+        <div class="country-story" id="baliStory" style="display:none">
+          <div class="story-hero">
+            <img src="bali.jpeg" alt="Bali, Indonesia — rice terraces and coastline">
+          </div>
+          <h3>Bali: the pause-button trip.</h3>
+          <blockquote class="pull-quote">"The kind of place that resets you without you noticing it's happening."</blockquote>
+          <p class="story-lede">Jungle mornings in Ubud, an island with no cars, cliffside temples, and a boat ride to Bali's wildest coastline — ten days, five bases, real notes from an October trip.</p>
 
-      <section id="stays" class="reveal">
-        <div class="head">
-          <div>
-            <div class="eyebrow">Shortlisted stays</div>
-            <h2 class="section-title">Airbnbs I'd actually book</h2>
-            <p>Five bases from my Bali trip, one per region — real listings I shortlisted and stayed near.</p>
+          <div class="route-journey">
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:0s">🌿</div>
+              <div class="rj-info"><strong>Ubud</strong><span>3 days</span></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.3s">🏝️</div>
+              <div class="rj-info"><strong>Gili T</strong><span>2 days</span></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.6s">🛕</div>
+              <div class="rj-info"><strong>Uluwatu</strong><span>2 days</span></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.9s">🌊</div>
+              <div class="rj-info"><strong>Nusa Penida</strong><span>1 day</span></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:1.2s">☕</div>
+              <div class="rj-info"><strong>Canggu</strong><span>2 days</span></div>
+            </div>
+          </div>
+
+          <div class="journey-stats" style="margin-top:0">
+            <div class="journey-stat"><strong>Best time</strong><span>April–October (dry season) — I went in October, mostly clear skies.</span></div>
+            <div class="journey-stat"><strong>Budget</strong><span>Mid-range — stays ran $32–48/night, plus day tours and cafes.</span></div>
+            <div class="journey-stat"><strong>Duration</strong><span>10 days across 5 bases.</span></div>
+          </div>
+
+          <div class="story-bridge">
+            <span class="sb-label">📍 The postcard stuff</span>
+            <p>Jatiluwih's rice terraces at sunrise, Uluwatu Temple's cliffside sunset, Nusa Penida's cliffs in one wild day, Gili Trawangan's car-free pace — all worth it, all exactly as photographed. What I'd actually plan a return trip around is below.</p>
+          </div>
+
+          <h4>Off the beaten path</h4>
+          <div class="gem-grid">
+            <div class="gem-card"><strong>Bukit Trunyan</strong><span>A hiking area up north almost nobody visiting Bali bothers with.</span></div>
+            <div class="gem-card"><strong>Goa Garba</strong><span>A quiet cave and creek that barely shows up in reviews — exactly the appeal.</span></div>
+            <div class="gem-card"><strong>Lovina Beach</strong><span>Dolphin-watching on the north coast — a totally different Bali from Canggu/Uluwatu.</span></div>
+            <div class="gem-card"><strong>El Kabron</strong><span>A cliffside sunset spot in Uluwatu that isn't the one every itinerary sends you to.</span></div>
+          </div>
+
+          <h4>Moments that stuck</h4>
+          <div class="moment-tags">
+            <div class="moment-tag"><div class="mt-label">🍜 Best meal</div><p>Sunset dinner at The Sayan House in Ubud — I still think about it.</p></div>
+            <div class="moment-tag"><div class="mt-label">☕ Favourite café</div><p>Crate Cafe near Uluwatu — smaller and quieter than anything on a "best cafes" list.</p></div>
+            <div class="moment-tag"><div class="mt-label">🌅 Favourite sunset</div><p>Gili T's west side — the whole island turns for it, but this side isn't the crowded one.</p></div>
+            <div class="moment-tag"><div class="mt-label">❤️ Would I return?</div><p>Yes — Nusa Penida and Ubud again, without hesitation.</p></div>
+          </div>
+
+          <h4>A few tips</h4>
+          <ul class="story-list">
+            <li>Book the Gili T fast boat ahead in high season — it sells out.</li>
+            <li>The Kecak Dance is touristy — do it once anyway.</li>
+            <li>Give Nusa Penida a full day. It's a ferry ride, not a quick stop.</li>
+          </ul>
+
+          <a class="map-highlight" href="https://maps.app.goo.gl/VoKZXnSaCEsf39QJ8" target="_blank" rel="noopener">
+            <span class="mh-icon">🗺️</span>
+            <span class="mh-text">
+              <strong>Every place I saved, on one map</strong>
+              <span>44 pins from planning this trip — cafes, waterfalls, viewpoints, all of it.</span>
+            </span>
+            <span class="mh-arrow">→</span>
+          </a>
+
+          <div class="section-band" style="margin-top:22px;">
+            <p class="section-sub" style="margin:0 0 12px;">The exact costs, the fast-boat booking window, and three more places like Goa Garba that didn't make this page are in the Bali Travel Pack.</p>
+            <a class="btn primary" href="itineraries.html#bali-pack">See the Bali Travel Pack →</a>
           </div>
         </div>
 
-        <div class="grid cols3 stagger">
-          <a class="card travel-accent airbnb-card" href="https://www.airbnb.co.in/wishlists/1761021582" target="_blank" rel="noopener">
-            <h3>Ubud</h3>
-            <p>Pacekan Private Villa and Pool, 2BR — rated 4.87. Rice-terrace views without leaving the villa.</p>
-            <span class="price">★ 4.87</span>
-          </a>
-          <a class="card travel-accent airbnb-card" href="https://www.airbnb.co.in/wishlists/1837178490" target="_blank" rel="noopener">
-            <h3>Kintamani / Mt Batur</h3>
-            <p>7 Dreams Glamping — rated 4.87. Cool mountain air and volcano views, a nice contrast to the coast.</p>
-            <span class="price">★ 4.87</span>
-          </a>
-          <a class="card travel-accent airbnb-card" href="https://www.airbnb.co.in/wishlists/1836268791" target="_blank" rel="noopener">
-            <h3>Canggu</h3>
-            <p>Spacious 2BR apartment, walk to the beach — rated 4.89. Best base for cafe-hopping and surf towns.</p>
-            <span class="price">★ 4.89</span>
-          </a>
-          <a class="card travel-accent airbnb-card" href="https://www.airbnb.co.in/wishlists/1830770780" target="_blank" rel="noopener">
-            <h3>Uluwatu</h3>
-            <p>Villa in Kuta Selatan, close to Pandawa Beach — rated 4.73. Quiet, cliffside, great for the last stretch of a trip.</p>
-            <span class="price">★ 4.73</span>
-          </a>
-          <a class="card travel-accent airbnb-card" href="https://www.airbnb.co.in/wishlists/1828139744" target="_blank" rel="noopener">
-            <h3>Gili Trawangan</h3>
-            <p>Rumah Cahaya — Lotus Suite — rated 4.91. No cars on the island, just bikes and horse carts.</p>
-            <span class="price">★ 4.91</span>
-          </a>
+        <div class="country-story" id="turkeyStory" style="display:none">
+          <div class="story-hero">
+            <img src="turkey.jpeg" alt="Turkey — Cappadocia and the Turquoise Coast">
+          </div>
+          <h3>Turkey: twelve days, eight stops, one road trip.</h3>
+          <blockquote class="pull-quote">"History doesn't stay in museums here — it's in the marina cafés, the canyon trails, and the balloons overhead at sunrise."</blockquote>
+          <p class="story-lede">Byzantine and Ottoman history in Istanbul, sunrise balloons over Cappadocia, ancient ruins down the Turquoise Coast, and Aegean towns to finish. A proper self-driven road trip — the real route I planned and drove in August.</p>
+
+          <div class="route-journey">
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:0s">🕌</div>
+              <div class="rj-info"><strong>Istanbul</strong><span>5 days</span></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.15s">🎈</div>
+              <div class="rj-info"><strong>Cappadocia</strong><span>2 days</span></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.3s">⚓</div>
+              <div class="rj-info"><strong>Antalya</strong><span>1 day</span></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.45s">🌊</div>
+              <div class="rj-info"><strong>Kaş</strong><span>1 day</span></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.6s">🪂</div>
+              <div class="rj-info"><strong>Fethiye</strong><span>1 day</span></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.75s">🏛️</div>
+              <div class="rj-info"><strong>Pamukkale &amp; Ephesus</strong><span>Day trip</span></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.9s">🏰</div>
+              <div class="rj-info"><strong>Bodrum</strong><span>1 day</span></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:1.05s">🌅</div>
+              <div class="rj-info"><strong>Izmir</strong><span>1 day</span></div>
+            </div>
+          </div>
+
+          <div class="journey-stats" style="margin-top:0">
+            <div class="journey-stat"><strong>Why I went</strong><span>Wanted one trip that covered history, nature, and coastline without switching countries — Turkey's rare in doing all three.</span></div>
+            <div class="journey-stat"><strong>Best time</strong><span>I went in August — hot on the coast, but Cappadocia mornings stayed cool for the balloon ride. April–June or Sept–Oct skips the peak heat.</span></div>
+            <div class="journey-stat"><strong>Budget</strong><span>Mid-range — multi-currency trip, budget tracked by category (stay, food, misc) per stop.</span></div>
+            <div class="journey-stat"><strong>Duration</strong><span>12 days across 8 stops.</span></div>
+          </div>
+
+          <div class="story-bridge">
+            <span class="sb-label">📍 The must-dos</span>
+            <p>The sunrise balloon ride over Cappadocia's fairy chimneys, Ephesus and Pamukkale back to back, paragliding over Ölüdeniz's blue lagoon, crossing Europe to Asia over the Bosphorus in fifteen minutes — all of it lives up to the photos. The quieter half of the trip is below.</p>
+          </div>
+
+          <h4>Off the beaten path</h4>
+          <div class="gem-grid">
+            <div class="gem-card"><strong>Balat</strong><span>Istanbul's colorful backstreets, a quieter contrast to the Grand Bazaar crowds.</span></div>
+            <div class="gem-card"><strong>Ihlara Valley</strong><span>A canyon hike in Cappadocia dotted with rock-cut churches, well past where the balloon-tour crowds go.</span></div>
+            <div class="gem-card"><strong>Saklıkent Canyon</strong><span>Icy water and canyon trails near Fethiye that most coastal-town visitors skip.</span></div>
+            <div class="gem-card"><strong>Asansör</strong><span>A historic elevator in Izmir with a panoramic view — a quiet way to end the trip.</span></div>
+          </div>
+
+          <h4>Moments that stuck</h4>
+          <div class="moment-tags">
+            <div class="moment-tag"><div class="mt-label">🎈 Best experience</div><p>The sunrise balloon launch over Cappadocia — hundreds of them lifting off at once.</p></div>
+            <div class="moment-tag"><div class="mt-label">☕ Favourite spot</div><p>Seaside cafes at Bodrum Marina and the promenade along Kordonboyu in Izmir — good coffee, better views.</p></div>
+            <div class="moment-tag"><div class="mt-label">🌉 Most memorable crossing</div><p>Istanbul, ferry deck, Europe behind me and Asia ahead — about fifteen minutes across the Bosphorus.</p></div>
+            <div class="moment-tag"><div class="mt-label">❤️ Would I return?</div><p>Yes — I'd slow down the coastal half and give Istanbul a couple more days.</p></div>
+          </div>
+
+          <h4>A few tips</h4>
+          <ul class="story-list">
+            <li>Rent a car for the coastal stretch — Antalya to Izmir doesn't work well without one.</li>
+            <li>Book the Cappadocia balloon slot the night before; weather cancels flights often.</li>
+            <li>Do Pamukkale and Ephesus as one combined day, not two separate stops.</li>
+          </ul>
+
+          <div class="section-band" style="margin-top:22px;">
+            <p class="section-sub" style="margin:0 0 12px;">The day-by-day driving times, exact costs per leg, and where I stayed in every town are in the Turkey Travel Pack.</p>
+            <a class="btn primary" href="itineraries.html#turkey-pack">See the Turkey Travel Pack →</a>
+          </div>
         </div>
+
+        <div class="country-story" id="vietnamStory" style="display:none">
+          <div class="story-hero">
+            <img src="vietnam.jpeg" alt="Vietnam — from Ho Chi Minh City to Sapa">
+          </div>
+          <h3>Vietnam: a trip you taste and feel more than you see.</h3>
+          <blockquote class="pull-quote">"Motorbike chaos in the south, mountain silence in the north — and somehow the food was the constant."</blockquote>
+          <p class="story-lede">A February run down the country's whole spine, Ho Chi Minh City to Hanoi, five stops, never sitting still for long.</p>
+
+          <div class="route-journey">
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:0s">🛵</div>
+              <div class="rj-info"><strong>Ho Chi Minh City</strong></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.2s">🌉</div>
+              <div class="rj-info"><strong>Da Nang</strong></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.4s">🏮</div>
+              <div class="rj-info"><strong>Hoi An</strong></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.6s">⛰️</div>
+              <div class="rj-info"><strong>Sapa</strong></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.8s">🍜</div>
+              <div class="rj-info"><strong>Hanoi</strong></div>
+            </div>
+          </div>
+
+          <div class="journey-stats" style="margin-top:0">
+            <div class="journey-stat"><strong>Best time</strong><span>February — dry heat in the south, cold and foggy up in Sapa.</span></div>
+            <div class="journey-stat"><strong>Budget</strong><span>Budget-to-mid-range — stretches further than almost anywhere else on this list.</span></div>
+            <div class="journey-stat"><strong>Duration</strong><span>One trip, five stops, south to north.</span></div>
+          </div>
+
+          <div class="story-bridge">
+            <span class="sb-label">📍 The names everyone knows</span>
+            <p>Ba Na Hills' Golden Bridge, Hoi An's lantern-lit old town, Fansipan's cable car, the Cu Chi Tunnels, Da Nang's Dragon Bridge — all worth the crowds. The parts I'd build a return trip around are quieter.</p>
+          </div>
+
+          <h4>Off the beaten path</h4>
+          <div class="gem-grid">
+            <div class="gem-card"><strong>Cat Cat Village</strong><span>A H'mong village near Sapa, a short walk from the cable car crowds.</span></div>
+            <div class="gem-card"><strong>Ta Van &amp; Lao Chai</strong><span>Rice-terrace villages that most Fansipan day-trippers skip entirely.</span></div>
+            <div class="gem-card"><strong>Silver &amp; Love Waterfall</strong><span>Both far quieter than anything near the main Sapa strip.</span></div>
+            <div class="gem-card"><strong>The Lonely Tree of O Quy Ho</strong><span>A single tree on a mountain pass that's become its own small pilgrimage.</span></div>
+          </div>
+
+          <h4>Moments that stuck</h4>
+          <div class="moment-tags">
+            <div class="moment-tag"><div class="mt-label">🍜 Best meal</div><p>King Koi Coffee near Ho Chi Minh City — a fish-themed cafe that had no business being that good.</p></div>
+            <div class="moment-tag"><div class="mt-label">☕ Favourite café</div><p>The Cafe Apartment — an entire building of stacked cafes, pick a floor and a view.</p></div>
+            <div class="moment-tag"><div class="mt-label">🌧 Unexpected moment</div><p>Bui Vien Walking Street at night — chaotic once, memorable exactly because of it.</p></div>
+            <div class="moment-tag"><div class="mt-label">❤️ Would I return?</div><p>Yes — more time in Sapa's villages, less in Ho Chi Minh City.</p></div>
+          </div>
+
+          <h4>A few tips</h4>
+          <ul class="story-list">
+            <li>Do Ba Na Hills' Golden Bridge before 9am — tour buses arrive fast.</li>
+            <li>Book the Fansipan cable car early or expect a long queue.</li>
+            <li>Sapa in February is genuinely cold and often foggy — pack layers, don't count on views.</li>
+          </ul>
+
+          <a class="map-highlight" href="https://maps.app.goo.gl/vcC76hSoY7Y2hK647" target="_blank" rel="noopener">
+            <span class="mh-icon">🗺️</span>
+            <span class="mh-text">
+              <strong>Every place I saved, on one map</strong>
+              <span>23 pins from planning this trip — waterfalls, villages, cafes, all of it.</span>
+            </span>
+            <span class="mh-arrow">→</span>
+          </a>
+
+          <div class="section-band" style="margin-top:22px;">
+            <p class="section-sub" style="margin:0 0 12px;">The exact route, budget, and a couple more finds like the Lonely Tree are in the Vietnam Travel Pack.</p>
+            <a class="btn primary" href="itineraries.html#vietnam-pack">See the Vietnam Travel Pack →</a>
+          </div>
+        </div>
+
+        <div class="country-story" id="usaStory" style="display:none">
+          <div class="story-hero">
+            <img src="usa.JPG" alt="USA — a coast-to-desert-to-mountains road trip loop">
+          </div>
+          <h3>USA: a loop, not a line.</h3>
+          <blockquote class="pull-quote">"Coastline to desert to alpine lake — the same trip, three completely different worlds."</blockquote>
+          <p class="story-lede">Down the coast on Highway 1, out through the desert lights of Vegas, up into canyon and mountain country, and back through the Sierra — a road trip that starts and ends in San Francisco without ever repeating a road.</p>
+
+          <div class="route-journey">
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:0s">🌉</div>
+              <div class="rj-info"><strong>San Francisco</strong></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.15s">🎬</div>
+              <div class="rj-info"><strong>Los Angeles</strong></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.3s">🎰</div>
+              <div class="rj-info"><strong>Las Vegas</strong></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.45s">🏜️</div>
+              <div class="rj-info"><strong>Arizona</strong></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.6s">🏔️</div>
+              <div class="rj-info"><strong>Colorado</strong></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.75s">🪨</div>
+              <div class="rj-info"><strong>Utah</strong></div>
+            </div>
+            <div class="rj-arrow">→</div>
+            <div class="rj-stop">
+              <div class="rj-dot" style="animation-delay:.9s">🚤</div>
+              <div class="rj-info"><strong>Lake Tahoe</strong></div>
+            </div>
+          </div>
+
+          <div class="journey-stats" style="margin-top:0">
+            <div class="journey-stat"><strong>Why I went</strong><span>Wanted one drive that hit coastline, desert, and mountains without flying anywhere in between.</span></div>
+            <div class="journey-stat"><strong>Best time</strong><span>Warmer months work best — some high-elevation roads through Colorado and Utah close for snow otherwise.</span></div>
+            <div class="journey-stat"><strong>Budget</strong><span>Mid-range — park fees, gas, and a mix of budget motels with a couple of splurge nights.</span></div>
+            <div class="journey-stat"><strong>Duration</strong><span>One big loop, coast to desert to mountains and back.</span></div>
+          </div>
+
+          <div class="story-bridge">
+            <span class="sb-label">📍 The bucket-list stops</span>
+            <p>San Francisco's Painted Ladies and Palace of Fine Arts, Griffith Observatory and the Walt Disney Concert Hall in LA, Fremont Street lit up in Vegas, Rocky Mountain National Park and Red Rocks in Colorado — all exactly as advertised. The finds I'd send someone back for are quieter.</p>
+          </div>
+
+          <h4>Off the beaten path</h4>
+          <div class="gem-grid">
+            <div class="gem-card"><strong>Seven Magic Mountains</strong><span>A quick, strange, brightly-painted detour right off the road into Vegas.</span></div>
+            <div class="gem-card"><strong>St. Mary's Glacier</strong><span>A short hike in Colorado to a genuine glacier, far quieter than the national park.</span></div>
+            <div class="gem-card"><strong>Photo Booth Museum by Photomatica</strong><span>A small, odd museum in San Francisco most itineraries never mention.</span></div>
+          </div>
+
+          <h4>Moments that stuck</h4>
+          <div class="moment-tags">
+            <div class="moment-tag"><div class="mt-label">🍔 Favourite food</div><p>Arsicault Bakery in San Francisco, worth the line — and yes, In-N-Out is a real road-trip checkpoint, not a joke.</p></div>
+            <div class="moment-tag"><div class="mt-label">🏔️ Favourite stop</div><p>Rocky Mountain National Park into Hanging Lake — the day the "nature" part of the trip actually hit.</p></div>
+            <div class="moment-tag"><div class="mt-label">🎰 Most surreal moment</div><p>Seven Magic Mountains at dusk, neon rock stacks in the middle of the desert, twenty minutes off the highway.</p></div>
+            <div class="moment-tag"><div class="mt-label">❤️ Would I return?</div><p>Yes — I'd trade Colorado's extra time for more of Utah and Arizona.</p></div>
+          </div>
+
+          <h4>A few tips</h4>
+          <ul class="story-list">
+            <li>Book Rocky Mountain National Park's timed entry ahead in peak season — it sells out.</li>
+            <li>Hanging Lake requires a permit/reservation in season — check before you drive up.</li>
+            <li>This is a loop with real elevation changes — check mountain pass conditions before locking in a date.</li>
+          </ul>
+
+          <a class="map-highlight" href="https://maps.app.goo.gl/oTMoZ7Zk1GUhNSFx5" target="_blank" rel="noopener">
+            <span class="mh-icon">🗺️</span>
+            <span class="mh-text">
+              <strong>Every place I saved, on one map</strong>
+              <span>44 pins across the whole loop — cafes, parks, and detours, all of it.</span>
+            </span>
+            <span class="mh-arrow">→</span>
+          </a>
+
+          <div class="section-band" style="margin-top:22px;">
+            <p class="section-sub" style="margin:0 0 12px;">The day-by-day route, exact budget, and every stop I made are in the USA Travel Pack.</p>
+            <a class="btn primary" href="itineraries.html#usa-pack">See the USA Travel Pack →</a>
+          </div>
+        </div>
+
+        <div class="country-story" id="singaporeStory" style="display:none">
+          <div class="story-hero">
+            <img src="singapore.jpeg" alt="Singapore skyline in the evening">
+          </div>
+          <h3>Singapore: five to seven days, one city, no rush.</h3>
+          <blockquote class="pull-quote">"A city so well-run it makes you wonder why anywhere else bothers being complicated."</blockquote>
+          <p class="story-lede">A short trip, not a route — futuristic architecture, hawker food, and green space stitched into every block. Compact enough to cover well without ever feeling rushed.</p>
+
+          <div class="journey-stats" style="margin-top:0">
+            <div class="journey-stat"><strong>Best time</strong><span>Tropical year-round — February to April tends to be the driest stretch.</span></div>
+            <div class="journey-stat"><strong>Budget</strong><span>Mid-to-high — one of the pricier stops on this list, though transit keeps daily costs down.</span></div>
+            <div class="journey-stat"><strong>Duration</strong><span>5–7 days, whole city.</span></div>
+          </div>
+
+          <h4>Where I spent my time</h4>
+          <div class="highlight-grid">
+            <div class="highlight-card"><strong>Gardens by the Bay</strong><span>The Supertree Grove at night and the Cloud Forest by day.</span></div>
+            <div class="highlight-card"><strong>Marina Bay Sands SkyPark</strong><span>The skyline view the postcards use.</span></div>
+            <div class="highlight-card"><strong>Chinatown &amp; Little India</strong><span>Two completely different moods a short walk apart.</span></div>
+            <div class="highlight-card"><strong>Sentosa Island</strong><span>A beach-and-theme-park day off from the city.</span></div>
+          </div>
+
+          <h4>Moments that stuck</h4>
+          <div class="moment-tags">
+            <div class="moment-tag"><div class="mt-label">🍜 Favourite food</div><p>Maxwell Food Centre and Lau Pa Sat — chili crab and Hainanese chicken rice at a fraction of restaurant prices.</p></div>
+            <div class="moment-tag"><div class="mt-label">🌆 Favourite view</div><p>The Supertree Grove lighting up at Gardens by the Bay, right as it gets dark.</p></div>
+            <div class="moment-tag"><div class="mt-label">❤️ Would I return?</div><p>Yes — easily one of the most efficient short trips on this list.</p></div>
+          </div>
+
+          <h4>A few tips</h4>
+          <ul class="story-list">
+            <li>Get an EZ-Link card on arrival — the MRT covers almost everything you'll want to see.</li>
+            <li>Time Gardens by the Bay for the evening light show, not just daytime photos.</li>
+            <li>Hawker centers are cash-and-queue — have small bills ready.</li>
+          </ul>
+
+          <div class="section-band" style="margin-top:22px;">
+            <p class="section-sub" style="margin:0 0 12px;">The week-by-week plan, budget breakdown, and where I stayed are in the Singapore Travel Pack.</p>
+            <a class="btn primary" href="itineraries.html#singapore-pack">See the Singapore Travel Pack →</a>
+          </div>
+        </div>
+
+        <div class="country-story" id="thailandStory" style="display:none">
+          <div class="story-hero">
+            <img src="Thailand.jpeg" alt="Bangkok temples and river life">
+          </div>
+          <h3>Thailand: five to seven days in Bangkok.</h3>
+          <blockquote class="pull-quote">"Bangkok never really slows down — except right before the food does."</blockquote>
+          <p class="story-lede">Temples, river life, and some of the best street food anywhere — a city that moves at double speed but rewards slowing down for the right meal.</p>
+
+          <div class="journey-stats" style="margin-top:0">
+            <div class="journey-stat"><strong>Best time</strong><span>November to February — cooler and drier than the rest of the year.</span></div>
+            <div class="journey-stat"><strong>Budget</strong><span>Budget-friendly — one of the best value cities on this whole list.</span></div>
+            <div class="journey-stat"><strong>Duration</strong><span>5–7 days, Bangkok.</span></div>
+          </div>
+
+          <h4>The essentials</h4>
+          <div class="highlight-grid">
+            <div class="highlight-card"><strong>Grand Palace &amp; Wat Phra Kaew</strong><span>The obvious must-see, and worth the crowds.</span></div>
+            <div class="highlight-card"><strong>Wat Arun</strong><span>At sunset, best seen from across the river.</span></div>
+            <div class="highlight-card"><strong>Chatuchak Weekend Market</strong><span>Thousands of stalls — easy to lose an afternoon.</span></div>
+            <div class="highlight-card"><strong>Chao Phraya river boat</strong><span>Transport that doubles as sightseeing.</span></div>
+          </div>
+
+          <h4>Moments that stuck</h4>
+          <div class="moment-tags">
+            <div class="moment-tag"><div class="mt-label">🍜 Favourite food</div><p>Street food stalls over sit-down restaurants — pad thai, mango sticky rice, whatever the longest local queue is pointing at.</p></div>
+            <div class="moment-tag"><div class="mt-label">🌇 Favourite view</div><p>Wat Arun at sunset, seen from across the river as the light hits the spires.</p></div>
+            <div class="moment-tag"><div class="mt-label">❤️ Would I return?</div><p>Yes — and next time I'd add an island leg onto the same trip.</p></div>
+          </div>
+
+          <h4>A few tips</h4>
+          <ul class="story-list">
+            <li>Dress modestly for temples — shoulders and knees covered, or you'll be turned away.</li>
+            <li>Bargain at markets; the first price is never the real one.</li>
+            <li>Grab is more predictable than street-hailed tuk-tuks for longer distances.</li>
+          </ul>
+
+          <div class="section-band" style="margin-top:22px;">
+            <p class="section-sub" style="margin:0 0 12px;">The full 5-7 day plan, budget breakdown, and stay recommendations are in the Thailand Travel Pack.</p>
+            <a class="btn primary" href="itineraries.html#thailand-pack">See the Thailand Travel Pack →</a>
+          </div>
+        </div>
+
+        <div class="country-story" id="uaeStory" style="display:none">
+          <div class="story-hero">
+            <img src="UAE.jpeg" alt="Dubai skyline">
+          </div>
+          <h3>UAE: five to seven days in Dubai.</h3>
+          <blockquote class="pull-quote">"Fifteen minutes can take you from the tallest building on Earth to a spice souk that hasn't changed in decades."</blockquote>
+          <p class="story-lede">Record-breaking buildings, desert on the edge of the city, and a skyline that seems to change every year — a short trip that swings between hyper-modern and old-town in the same afternoon.</p>
+
+          <div class="journey-stats" style="margin-top:0">
+            <div class="journey-stat"><strong>Best time</strong><span>November to March — before the summer heat makes daytime plans difficult.</span></div>
+            <div class="journey-stat"><strong>Budget</strong><span>Mid-to-high — costs add up fast around the Marina and Downtown areas.</span></div>
+            <div class="journey-stat"><strong>Duration</strong><span>5–7 days, Dubai.</span></div>
+          </div>
+
+          <h4>The big-ticket stuff</h4>
+          <div class="highlight-grid">
+            <div class="highlight-card"><strong>Burj Khalifa</strong><span>Observation deck, timed for sunset if you can get the slot.</span></div>
+            <div class="highlight-card"><strong>Dubai Mall &amp; Fountain</strong><span>The show right outside it.</span></div>
+            <div class="highlight-card"><strong>Desert safari</strong><span>Dune bashing by day, a Bedouin-style camp dinner after dark.</span></div>
+            <div class="highlight-card"><strong>Old Dubai's souks</strong><span>Spice and gold markets across the creek from the modern skyline.</span></div>
+          </div>
+
+          <h4>Moments that stuck</h4>
+          <div class="moment-tags">
+            <div class="moment-tag"><div class="mt-label">🍢 Favourite food</div><p>Arabic mezze and shawarma in Old Dubai — smaller restaurants near the souks beat almost anything closer to the Marina.</p></div>
+            <div class="moment-tag"><div class="mt-label">🏜️ Best experience</div><p>The desert safari — dune bashing by day, a Bedouin-style camp dinner once the sun went down.</p></div>
+            <div class="moment-tag"><div class="mt-label">❤️ Would I return?</div><p>Yes — I'd trade a day in the Marina for more time in Old Dubai.</p></div>
+          </div>
+
+          <h4>A few tips</h4>
+          <ul class="story-list">
+            <li>Book desert safaris a day ahead — the good operators fill up.</li>
+            <li>Dress code matters more in Old Dubai and at religious sites than in the Marina.</li>
+            <li>Avoid outdoor plans in peak summer heat — this is a cooler-season city trip.</li>
+          </ul>
+
+          <div class="section-band" style="margin-top:22px;">
+            <p class="section-sub" style="margin:0 0 12px;">The full 5-7 day plan, budget breakdown, and stay recommendations are in the UAE Travel Pack.</p>
+            <a class="btn primary" href="itineraries.html#uae-pack">See the UAE Travel Pack →</a>
+          </div>
+        </div>
+
       </section>
 
       <section id="guides" class="reveal">
@@ -175,11 +700,6 @@
           </div>
         </div>
         <div class="grid cols2 stagger">
-          <div class="card travel-accent disabled">
-            <h3>Weekend Trips</h3>
-            <p>Short, high-value getaways for when you only have 2-3 days — where to go and how to not waste travel time.</p>
-            <span class="badge-soon">Coming soon</span>
-          </div>
           <div class="card work-accent disabled">
             <h3>Budget Travel</h3>
             <p>How to travel well without overspending — real numbers from real trips, not vague tips.</p>
@@ -188,11 +708,6 @@
           <div class="card about-accent disabled">
             <h3>Solo Travel</h3>
             <p>Safety, planning, and making the most of traveling alone — lessons from doing it myself.</p>
-            <span class="badge-soon">Coming soon</span>
-          </div>
-          <div class="card money-accent disabled">
-            <h3>Visa Guides</h3>
-            <p>Country-by-country visa requirements and application notes, kept current and easy to skim.</p>
             <span class="badge-soon">Coming soon</span>
           </div>
         </div>
@@ -205,5 +720,20 @@
   </div>
 
   <script src="script.js"></script>
+  <script>
+    function wireStoryToggle(prefix){
+      const btn = document.getElementById(prefix + 'StoryToggle');
+      if (!btn) return;
+      btn.addEventListener('click', () => {
+        const area = document.getElementById(prefix + 'Story');
+        const arrow = document.getElementById(prefix + 'StoryArrow');
+        const open = area.style.display !== 'none';
+        area.style.display = open ? 'none' : 'block';
+        arrow.textContent = open ? '▾' : '▴';
+        if (!open) area.scrollIntoView({ behavior:'smooth', block:'start' });
+      });
+    }
+    ['bali','turkey','vietnam','usa','singapore','thailand','uae'].forEach(wireStoryToggle);
+  </script>
 </body>
 </html>
