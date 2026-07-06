@@ -37,7 +37,8 @@
     .salary-bar .sb-amt{font-size:.85rem;font-weight:700;margin-bottom:6px}
     .salary-bar .sb-label{font-size:.72rem;color:var(--muted);margin-top:8px;text-align:center}
 
-    .assess-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--w03);border:1px solid var(--w07);margin-bottom:8px;cursor:pointer}
+    .assess-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--w03);border:1px solid var(--w07);margin-bottom:8px;cursor:pointer;transition:.2s ease}
+    .assess-item:hover{background:var(--w08)}
     .assess-item input{width:18px;height:18px;accent-color:var(--hero1)}
     .assess-score{margin-top:16px;padding:18px;border-radius:18px;background:var(--surface2);border:1px solid var(--w08);text-align:center}
     .assess-score .score-num{font-family:Fraunces,serif;font-size:2.4rem;color:var(--hero1)}
@@ -53,7 +54,8 @@
     .locked-card .lock-badge{position:absolute;top:14px;right:14px;font-size:18px;opacity:.6}
 
     .sql-panel{background:#0a0e1a;border:1px solid var(--w10);border-radius:18px;padding:18px;font-family:'Courier New',monospace;font-size:.85rem;color:#c9f2d8;overflow-x:auto;margin-bottom:14px}
-    .reveal-btn{padding:10px 18px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-weight:700;font-size:.85rem;color:var(--text)}
+    .reveal-btn{padding:10px 18px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-weight:700;font-size:.85rem;color:var(--text);transition:.2s ease}
+    .reveal-btn:hover{background:var(--w08);transform:translateY(-2px)}
     .sql-solution{display:none;margin-top:14px}
     .sql-solution.show{display:block}
 
@@ -73,20 +75,6 @@
       .badge-grid{grid-template-columns:repeat(2,1fr)}
       .salary-bars{height:140px}
     }
-
-    /* Jump nav — lets visitors skip straight to a section instead of scrolling the whole page */
-    .jump-nav{
-      display:flex;gap:8px;flex-wrap:wrap;padding:12px;border-radius:999px;
-      background:var(--surface);border:1px solid var(--line);box-shadow:var(--glow);
-      position:sticky;top:76px;z-index:15;margin:18px 0;
-    }
-    .jump-nav a{
-      padding:8px 15px;border-radius:999px;font-size:.82rem;color:var(--muted);
-      transition:.2s ease;white-space:nowrap;
-    }
-    .jump-nav a:hover{background:var(--w06);color:var(--text)}
-    .jump-nav a.active{background:linear-gradient(135deg,var(--hero1),var(--hero2));color:#06101a;font-weight:700}
-    @media (max-width:720px){.jump-nav{overflow-x:auto;justify-content:flex-start}}
   </style>
 </head>
 <body>
@@ -224,12 +212,12 @@
             <h2 class="section-title">Three skill tracks, eight levels to unlock them</h2>
           </div>
         </div>
-        <div class="grid cols3">
+        <div class="grid cols3 stagger">
           <div class="card money-accent"><h3>🧩 SQL Track</h3><p>SELECT → JOINs → window functions → query optimization. From "what's a JOIN" to writing queries senior engineers respect.</p></div>
           <div class="card money-accent"><h3>📊 Excel &amp; Power BI Track</h3><p>Pivot tables → DAX → data modeling → building dashboards executives actually open.</p></div>
           <div class="card money-accent"><h3>🐍 Python Track</h3><p>pandas basics → automation scripts → your first end-to-end data pipeline.</p></div>
         </div>
-        <div class="grid cols3" style="margin-top:14px">
+        <div class="grid cols3 stagger" style="margin-top:14px">
           <div class="card work-accent locked-card"><span class="lock-badge">🔒</span><h3>Level 4: Automation Wizard</h3><p>The chapter where you stop doing the same report by hand every Monday. Teaser: the "3-click report" challenge.</p></div>
           <div class="card work-accent locked-card"><span class="lock-badge">🔒</span><h3>Level 6: Data Detective</h3><p>Root-cause analysis, A/B testing, and the "someone's wrong in the dashboard" boss battle.</p></div>
           <div class="card work-accent locked-card"><span class="lock-badge">🔒</span><h3>Level 8: Analytics Leader</h3><p>Managing stakeholders, mentoring juniors, and the quarterly review that becomes a promotion case.</p></div>

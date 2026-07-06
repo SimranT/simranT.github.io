@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Work — Simran's Space</title>
-  <meta name="description" content="Simran Tiwari's career trajectory and public dashboard work." />
+  <meta name="description" content="Simran Tiwari's career trajectory as a data analytics engineer — pipelines, systems, and applied intelligence." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -30,11 +30,11 @@
     <main id="top">
       <section class="page-hero reveal">
         <div class="eyebrow">Career</div>
-        <h1>Six years, five roles, one obsession with clean data.</h1>
-        <p>From writing my first lines of code to owning BI for products with millions of users — here's the path, the tools, and the numbers that came with it.</p>
+        <h1>Six years, five roles, one obsession with turning data into intelligence.</h1>
+        <p>From writing my first lines of code to owning analytics systems for products with millions of users — here's the path, the tools, and the numbers that came with it.</p>
         <div class="stats" style="margin-top:22px">
-          <div class="stat hero-accent"><strong>6+ yrs</strong><span>In data &amp; BI roles</span></div>
-          <div class="stat hero-accent"><strong>90+</strong><span>Dashboards &amp; reports shipped</span></div>
+          <div class="stat hero-accent"><strong>6+ yrs</strong><span>In data &amp; analytics engineering</span></div>
+          <div class="stat hero-accent"><strong>90+</strong><span>Analytics solutions shipped</span></div>
           <div class="stat hero-accent"><strong>7%</strong><span>ROI lift delivered</span></div>
           <div class="stat hero-accent"><strong>35%</strong><span>Faster pipelines shipped</span></div>
         </div>
@@ -52,7 +52,7 @@
             <div>
               <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:8px">
                 <img src="alison.webp" alt="Alison logo" style="width:44px;height:44px;border-radius:14px;object-fit:cover;box-shadow:0 0 0 1px var(--w14)">
-                <h3 style="margin:0">Alison · Data Analyst</h3>
+                <h3 style="margin:0">Alison · Data Analytics Engineer</h3>
               </div>
               <p>Optimized 15+ KPIs and cut ETL loading time 35% by rebuilding pipelines in Pentaho. Manage large-scale datasets across MySQL, MS SQL, and BigQuery, and lifted report automation efficiency 30% through Looker and AWS QuickSight — shipping 30+ end-to-end reports and dynamic stakeholder dashboards along the way.</p>
               <div class="meta">
@@ -142,30 +142,14 @@
       </section>
 
       <section class="reveal" style="padding-top:14px">
-        <div class="head">
-          <div>
-            <div class="eyebrow">Public work</div>
-            <h2 class="section-title" style="font-size:1.4rem">A couple of dashboards, for context</h2>
-          </div>
-        </div>
-        <div class="browser-stack">
-          <article class="browser-mock-sm work-accent">
-            <div class="browser-bar"><span></span><span></span><span></span></div>
-            <div class="thumb-frame"><img src="Nails.png" alt="Nail Salon Dashboard snapshot"></div>
-            <div class="dash-info-sm">
-              <h3>Nail Salon Dashboard</h3>
-              <span class="chip">Looker Studio</span>
-            </div>
-          </article>
-          <article class="browser-mock-sm travel-accent">
-            <div class="browser-bar"><span></span><span></span><span></span></div>
-            <div class="thumb-frame"><img src="TVS.png" alt="Product Sale Dashboard snapshot"></div>
-            <div class="dash-info-sm">
-              <h3>Product Sale Dashboard</h3>
-              <span class="chip">Looker Studio</span>
-            </div>
-          </article>
-        </div>
+        <a class="lab-highlight" href="analytics.html">
+          <span class="lh-icon">🔒</span>
+          <span class="lh-text">
+            <strong>Proof of work <span class="nda-badge" title="Real work is under NDA — these tools show my style and curiosity instead">NDA</span></strong>
+            <span>Real dashboards are under NDA — see the same style and curiosity in the Analytics Playground.</span>
+          </span>
+          <span class="lh-arrow">→</span>
+        </a>
       </section>
 
       <section class="reveal" style="padding-top:14px">
@@ -242,27 +226,6 @@
     </footer>
   </div>
 
-  <div class="lightbox" id="lightbox">
-    <button class="lightbox-close" id="lightboxClose" aria-label="Close">✕</button>
-    <img id="lightboxImg" src="" alt="Full dashboard screenshot">
-  </div>
-
   <script src="script.js"></script>
-  <script>
-    document.querySelectorAll('.thumb-frame img').forEach(img => {
-      img.addEventListener('click', () => {
-        const lb = document.getElementById('lightbox');
-        const lbImg = document.getElementById('lightboxImg');
-        lbImg.src = img.src;
-        lb.classList.add('show');
-      });
-    });
-    const lb = document.getElementById('lightbox');
-    lb.addEventListener('click', () => lb.classList.remove('show'));
-    document.getElementById('lightboxClose').addEventListener('click', e => {
-      e.stopPropagation();
-      lb.classList.remove('show');
-    });
-  </script>
 </body>
 </html>

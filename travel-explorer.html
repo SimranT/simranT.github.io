@@ -41,7 +41,8 @@
     .dest-card-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
     .dest-card-title{font-family:Fraunces,serif;font-size:1.2rem}
     .dest-card-region{color:var(--muted);font-size:.78rem;letter-spacing:.04em;text-transform:uppercase}
-    .dest-remove{width:30px;height:30px;border-radius:10px;border:1px solid var(--line);background:var(--w04);color:var(--muted);cursor:pointer;font-size:.85rem;flex:0 0 auto}
+    .dest-remove{width:30px;height:30px;border-radius:10px;border:1px solid var(--line);background:var(--w04);color:var(--muted);cursor:pointer;font-size:.85rem;flex:0 0 auto;transition:.2s ease}
+    .dest-remove:hover{background:var(--w08);color:var(--text)}
     .dest-field-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
     .dest-field{display:flex;flex-direction:column;gap:5px}
     .dest-field label{font-size:.76rem;color:var(--muted)}
@@ -106,8 +107,10 @@
     /* hotel comparison */
     .hotel-row{display:grid;grid-template-columns:1.4fr .8fr .8fr 34px;gap:8px;margin-bottom:8px;align-items:center}
     .hotel-row input{padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--w04);color:var(--text);font-size:.86rem}
-    .hotel-remove{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--w04);color:var(--muted);cursor:pointer;font-size:.85rem}
-    .hotel-add{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--w04);color:var(--text);cursor:pointer;font-size:.85rem;margin-top:6px}
+    .hotel-remove{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--w04);color:var(--muted);cursor:pointer;font-size:.85rem;transition:.2s ease}
+    .hotel-remove:hover{background:var(--w08);color:var(--text)}
+    .hotel-add{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--w04);color:var(--text);cursor:pointer;font-size:.85rem;margin-top:6px;transition:.2s ease}
+    .hotel-add:hover{background:var(--w08);transform:translateY(-2px)}
     .hotel-best{margin-top:14px;padding:12px 14px;border-radius:14px;background:linear-gradient(135deg, rgba(142,255,201,.14), rgba(142,203,255,.10));border:1px solid var(--line);font-size:.88rem}
 
     /* activity planner */
@@ -116,6 +119,7 @@
       padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--w04);
       color:var(--muted);cursor:pointer;font-size:.86rem;transition:.2s ease;user-select:none;
     }
+    .tag-pill:hover:not(.active){background:var(--w08);color:var(--text)}
     .tag-pill.active{background:linear-gradient(135deg,var(--tce1),var(--tce2));color:#06231d;font-weight:700;border-color:transparent}
     .activity-checklist{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-top:6px}
     .activity-checklist label{display:flex;gap:10px;align-items:center;padding:9px 12px;border-radius:12px;background:var(--w03);border:1px solid var(--w08);font-size:.9rem}
@@ -185,6 +189,17 @@
           <a class="btn primary" href="#planner">Start exploring ↓</a>
         </div>
       </section>
+
+      <!-- JUMP NAV -->
+      <nav class="jump-nav reveal" aria-label="Page sections">
+        <a href="#planner">Planner</a>
+        <a href="#compare">Compare</a>
+        <a href="#details">Destination</a>
+        <a href="#convert">Convert</a>
+        <a href="#hotels">Hotels</a>
+        <a href="#activities">Activities</a>
+        <a href="#map">Map</a>
+      </nav>
 
       <!-- TRIP PLANNER -->
       <section id="planner" class="reveal">
@@ -270,7 +285,7 @@
       </section>
 
       <!-- CURRENCY CONVERTER -->
-      <section class="reveal">
+      <section id="convert" class="reveal">
         <div class="head">
           <div>
             <div class="eyebrow">Currency Converter</div>
@@ -290,7 +305,7 @@
       </section>
 
       <!-- HOTEL COMPARISON -->
-      <section class="reveal">
+      <section id="hotels" class="reveal">
         <div class="head">
           <div>
             <div class="eyebrow">Hotel Comparison</div>
@@ -306,7 +321,7 @@
       </section>
 
       <!-- ACTIVITY PLANNER -->
-      <section class="reveal">
+      <section id="activities" class="reveal">
         <div class="head">
           <div>
             <div class="eyebrow">Activity Planner</div>
@@ -321,7 +336,7 @@
       </section>
 
       <!-- MAP -->
-      <section class="reveal">
+      <section id="map" class="reveal">
         <div class="head">
           <div>
             <div class="eyebrow">Trip Map</div>
@@ -770,6 +785,23 @@
     computeBestHotel();
     renderTags();
     renderActivities();
+
+    // Jump-nav scrollspy — always show which section you're in
+    if ('IntersectionObserver' in window) {
+      const jumpLinks = document.querySelectorAll('.jump-nav a');
+      const jumpTargets = [...jumpLinks].map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+      const spy = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          const link = document.querySelector(`.jump-nav a[href="#${entry.target.id}"]`);
+          if (!link) return;
+          if (entry.isIntersecting) {
+            jumpLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+          }
+        });
+      }, { rootMargin: '-40% 0px -50% 0px' });
+      jumpTargets.forEach(t => spy.observe(t));
+    }
   </script>
 </body>
 </html>

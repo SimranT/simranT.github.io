@@ -33,8 +33,10 @@
 
     .sub-row{display:grid;grid-template-columns:1fr 100px 34px;gap:8px;margin-bottom:8px;align-items:center}
     .sub-row input{padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--w04);color:var(--text);font-size:.88rem}
-    .sub-remove{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--w04);color:var(--muted);cursor:pointer;font-size:.9rem}
-    .sub-add{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--w04);color:var(--text);cursor:pointer;font-size:.85rem;margin-top:4px}
+    .sub-remove{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--w04);color:var(--muted);cursor:pointer;font-size:.9rem;transition:.2s ease}
+    .sub-remove:hover{background:var(--w08);color:var(--text)}
+    .sub-add{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--w04);color:var(--text);cursor:pointer;font-size:.85rem;margin-top:4px;transition:.2s ease}
+    .sub-add:hover{background:var(--w08);transform:translateY(-2px)}
 
     .fin-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
     @media (max-width:640px){.fin-kpis{grid-template-columns:repeat(2,1fr)}}

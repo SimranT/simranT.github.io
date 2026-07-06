@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Business Case Challenge — Practice Strategic Decisions | Simran's Space</title>
+  <meta name="description" content="An interactive strategy game by Simran Tiwari — read a real business situation, weigh the data, and pick the recommendation you'd actually defend to a board." />
+  <meta name="keywords" content="business case study, strategic decision making, data-driven decisions, product prioritization, pricing strategy, analyst portfolio project" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .biz-hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+    @media (max-width:720px){.biz-hero-stats{grid-template-columns:1fr}}
+
+    .biz-panel{padding:26px;border-radius:16px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--glow);margin-bottom:20px}
+    .biz-panel h3{margin-bottom:6px}
+    .biz-panel .tool-sub{color:var(--muted);margin:0 0 18px;line-height:1.7}
+    .biz-subhead{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 14px;font-weight:700}
+    .hint-toggle{
+      background:none;border:none;color:var(--biz1);cursor:pointer;font-size:.82rem;font-weight:600;
+      padding:8px 0;margin:6px 0 0;display:inline-flex;align-items:center;gap:4px;
+    }
+    .hint-toggle:hover{opacity:.75}
+
+    /* Strategist profile bar */
+    .profile-bar{display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:18px 22px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)}
+    .profile-name-field{display:flex;flex-direction:column;gap:4px}
+    .profile-name-field label{font-size:.7rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+    .profile-name-field input{padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--w04);color:var(--text);font-family:inherit;font-size:.86rem}
+    .profile-stat{text-align:center}
+    .profile-stat .ps-lbl{font-size:.68rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+    .profile-stat .ps-val{font-family:Fraunces,serif;font-size:1.3rem;color:var(--biz1)}
+    .profile-badges{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+    .badge-chip{padding:5px 11px;border-radius:6px;background:linear-gradient(135deg,var(--biz1),var(--biz2));color:#fff;font-size:.72rem;font-weight:700}
+    .badge-chip.locked{background:var(--w05);color:var(--muted);font-weight:500;border:1px dashed var(--w14)}
+
+    /* Case library — folder-tab cards, straight edges, boardroom-binder feel */
+    .biz-case-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px 14px}
+    .biz-case-file{
+      padding:20px;border-radius:0 12px 12px 12px;background:var(--w03);border:1px solid var(--w08);
+      cursor:pointer;transition:.25s ease;position:relative;
+    }
+    .biz-case-file::before{
+      content:"";position:absolute;top:-10px;left:0;width:58px;height:10px;
+      background:linear-gradient(135deg,var(--biz1),var(--biz2));border-radius:6px 6px 0 0;
+    }
+    .biz-case-file:hover{transform:translateY(-4px);border-color:rgba(232,130,63,.4)}
+    .biz-case-file.solved{border-color:rgba(63,184,138,.4)}
+    .biz-case-file .cf-check{position:absolute;top:14px;right:14px;color:var(--money1);font-size:1.1rem}
+    .cf-diff{font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;color:var(--biz1);margin-bottom:8px}
+    .biz-case-file h4{margin:0 0 8px;font-size:1.05rem;font-family:Fraunces,serif}
+    .biz-case-file p{color:var(--muted);font-size:.84rem;line-height:1.6;margin:0 0 10px}
+    .cf-meta{display:flex;gap:8px;font-size:.72rem;color:var(--muted)}
+
+    .featured-case{
+      border-radius:0 14px 14px 14px;padding:22px;position:relative;
+      background:linear-gradient(135deg, rgba(232,130,63,.1), rgba(74,74,82,.14));
+      border:1px solid rgba(232,130,63,.3);cursor:pointer;
+    }
+    .featured-case::before{
+      content:"";position:absolute;top:-10px;left:0;width:64px;height:10px;
+      background:linear-gradient(135deg,var(--biz1),var(--biz2));border-radius:6px 6px 0 0;
+    }
+    .featured-case:hover{transform:translateY(-3px)}
+    .featured-case .fc-tag{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--biz1);font-weight:700;margin-bottom:8px}
+
+    /* Strategy room */
+    .briefing-box{
+      background:linear-gradient(135deg, rgba(232,130,63,.1), rgba(74,74,82,.14));
+      border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:20px;
+      font-size:.96rem;line-height:1.75;
+    }
+    .material-board{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-bottom:20px}
+    .brief-card{
+      padding:16px;border-radius:0 10px 10px 10px;position:relative;font-size:.86rem;
+      background:var(--surface2);border:1px solid var(--w10);
+    }
+    .brief-card::before{
+      content:"";position:absolute;top:-8px;left:14px;width:44px;height:8px;
+      background:var(--biz1);border-radius:5px 5px 0 0;opacity:.85;
+    }
+    .brief-card.type-note{font-family:Fraunces,serif;font-style:italic}
+    .brief-card.type-sql{background:#0a0a0a;color:#ffd8a8;font-family:'JetBrains Mono',monospace;font-size:.74rem;border:1px solid var(--w10)}
+    .brief-card.type-sql::before{background:var(--biz2)}
+    .brief-card .bc-title{font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;opacity:.7;margin-bottom:8px;font-family:Inter,sans-serif;font-style:normal}
+    .brief-card pre{margin:0;white-space:pre-wrap;word-break:break-word}
+    .bc-chart-row{display:grid;grid-template-columns:1fr 50px 50px;gap:6px;align-items:center;font-size:.76rem;margin-bottom:5px}
+    .bc-chart-track{height:7px;border-radius:999px;background:var(--w08);overflow:hidden}
+    .bc-chart-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--biz1),var(--biz2))}
+
+    .hint-area{margin-bottom:20px}
+    .hint-btn{
+      padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--w04);
+      color:var(--text);cursor:pointer;font-size:.85rem;margin-bottom:10px;transition:.2s ease;
+    }
+    .hint-btn:hover:not(:disabled){background:var(--w08);transform:translateY(-2px)}
+    .hint-btn:disabled{opacity:.4;cursor:not-allowed}
+    .hint-item{padding:10px 14px;border-radius:10px;background:var(--w04);border:1px dashed var(--w14);font-size:.86rem;margin-bottom:8px;color:var(--muted)}
+
+    .recommendation-list{display:grid;gap:8px;margin-bottom:16px}
+    .recommendation-opt{
+      padding:12px 16px;border-radius:10px;border:1px solid var(--line);background:var(--w03);
+      cursor:pointer;font-size:.92rem;transition:.2s ease;
+    }
+    .recommendation-opt:hover{border-color:rgba(232,130,63,.4)}
+    .recommendation-opt.selected{border-color:var(--biz1);background:rgba(232,130,63,.1)}
+    .recommend-btn{
+      padding:11px 22px;border-radius:8px;border:none;cursor:pointer;
+      background:linear-gradient(135deg,var(--biz1),var(--biz2));color:#fff;font-weight:700;transition:.2s ease;
+    }
+    .recommend-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 20px rgba(232,130,63,.3)}
+    .recommend-btn:disabled{opacity:.4;cursor:not-allowed}
+
+    .result-panel{padding:16px 18px;border-radius:12px;margin-top:16px;font-size:.92rem;line-height:1.7}
+    .result-panel.correct{background:rgba(63,184,138,.12);border:1px solid rgba(63,184,138,.35)}
+    .result-panel.wrong{background:rgba(255,120,120,.1);border:1px solid rgba(255,120,120,.3)}
+
+    .biz-empty{text-align:center;padding:36px 20px;border-radius:14px;border:1px dashed var(--line);background:var(--w03);color:var(--muted)}
+    .biz-empty .empty-glyph{font-size:2rem;margin-bottom:10px;display:block;opacity:.7}
+
+    /* Certificate */
+    .certificate{
+      border:2px solid var(--biz1);border-radius:14px;padding:36px;text-align:center;
+      background:linear-gradient(180deg, rgba(232,130,63,.08), rgba(74,74,82,.08));
+      position:relative;
+    }
+    .certificate::before{content:"";position:absolute;inset:8px;border:1px solid rgba(232,130,63,.35);border-radius:8px;pointer-events:none}
+    .certificate .cert-eyebrow{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--biz1);margin-bottom:10px}
+    .certificate h2{font-size:2rem;margin-bottom:6px}
+    .certificate .cert-name{font-family:Fraunces,serif;font-style:italic;font-size:1.5rem;margin:14px 0;color:var(--biz1)}
+    .certificate p{color:var(--muted);line-height:1.7}
+
+    .cert-teaser{text-align:center;color:var(--muted);font-size:.9rem;padding:14px;border-radius:12px;border:1px dashed var(--line);background:var(--w03)}
+
+    .lesson-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    @media (max-width:720px){.lesson-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body class="rich-bg-biz">
+  <div class="progress" id="progress"></div>
+  <div class="cursor" id="cursor"></div>
+
+  <div class="wrap">
+    <header class="nav reveal">
+      <a class="brand" href="index.html#top"><span class="dot"></span> Simran's Space</a>
+      <nav class="navlinks">
+        <a href="index.html">Home</a>
+        <a href="work.html">Work</a>
+        <a href="travel.html">Travel</a>
+        <a href="itineraries.html">Shop</a>
+        <a href="analytics.html" class="active">Analytics</a>
+      </nav>
+      <button class="toggle" id="theme" aria-label="Toggle theme">◐</button>
+    </header>
+
+    <main id="top">
+      <!-- HERO -->
+      <section class="page-hero reveal">
+        <div class="eyebrow">Analytics Playground · Business Case Challenge</div>
+        <h1>Every case has a best answer. Can you find it before the explanation does?</h1>
+        <p>Four real business situations — a pricing call, a market bet, a product trade-off, a margin squeeze — each with data, a briefing, and four ways to go. Pick the recommendation you'd actually defend to a board, then see if the evidence agrees with you.</p>
+        <div class="biz-hero-stats">
+          <div class="stat biz-accent"><strong>4</strong><span>Cases across pricing, growth, product, and strategy</span></div>
+          <div class="stat charcoal-accent"><strong>Weekly</strong><span>A featured case rotates every week</span></div>
+          <div class="stat biz-accent"><strong>XP &amp; rank</strong><span>Earn more for a clean, first-try call</span></div>
+        </div>
+        <div class="actions" style="margin-top:20px">
+          <a class="btn primary" href="#cases">Open the case library ↓</a>
+        </div>
+      </section>
+
+      <!-- PROFILE -->
+      <section id="profile" class="reveal">
+        <div class="profile-bar">
+          <div class="profile-name-field">
+            <label for="bizName">Strategist name</label>
+            <input type="text" id="bizName" placeholder="Type your name" maxlength="30">
+          </div>
+          <div class="profile-stat"><div class="ps-lbl">XP</div><div class="ps-val" id="profXp">0</div></div>
+          <div class="profile-stat"><div class="ps-lbl">Rank</div><div class="ps-val" id="profRank" style="font-size:1rem">Analyst Trainee</div></div>
+          <div class="profile-stat"><div class="ps-lbl">Solved</div><div class="ps-val" id="profSolved">0/4</div></div>
+          <div class="profile-badges" id="profBadges"></div>
+        </div>
+      </section>
+
+      <!-- CASE LIBRARY -->
+      <section id="cases" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Case Library</div>
+            <h2 class="section-title">Pick a case to work</h2>
+            <p>Every case is open from the start — work them in any order. The one below is this week's featured pick.</p>
+          </div>
+        </div>
+        <div class="featured-case" id="featuredCase" style="margin-bottom:16px"></div>
+        <div class="biz-case-grid" id="caseGrid"></div>
+      </section>
+
+      <!-- STRATEGY ROOM -->
+      <section id="strategy-room" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Strategy Room</div>
+            <h2 class="section-title" id="invTitle">Pick a case above</h2>
+          </div>
+        </div>
+
+        <div id="invEmpty" class="biz-empty">
+          <span class="empty-glyph">💼</span>
+          <p>Open a case file above to see the briefing and the numbers behind it.</p>
+        </div>
+
+        <div id="invContent" style="display:none">
+          <div class="briefing-box" id="invBriefing"></div>
+
+          <div class="biz-panel">
+            <h4 class="biz-subhead">Briefing materials</h4>
+            <div class="material-board" id="materialBoard"></div>
+
+            <button class="hint-toggle" id="hintToggle" type="button">Need a second opinion? <span id="hintToggleArrow">▾</span></button>
+            <div class="hint-area" id="hintArea" style="display:none">
+              <p class="tool-sub" style="margin-top:10px">A nudge costs a little XP off this case's total — but a wrong call costs more.</p>
+              <button class="hint-btn" id="hintBtn" type="button">Get a nudge (−15 XP)</button>
+              <div id="hintList"></div>
+            </div>
+
+            <h4 class="biz-subhead" style="margin-top:22px">Make your recommendation</h4>
+            <div class="recommendation-list" id="recommendationList"></div>
+            <button class="recommend-btn" id="recommendBtn" type="button" disabled>Submit recommendation</button>
+            <div id="resultPanel"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CERTIFICATE -->
+      <section id="certificate-section" class="reveal">
+        <div id="certOutput"></div>
+      </section>
+
+      <!-- LESSONS -->
+      <section class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">What this taught me</div>
+            <h2 class="section-title">A couple of lessons baked into this lab</h2>
+          </div>
+        </div>
+        <div class="lesson-grid">
+          <div class="card biz-accent">
+            <h3>The loudest request isn't always the highest-impact one</h3>
+            <p>Sales wants the integration, Twitter wants the redesign — but the number that actually moves retention or revenue is the one worth building around.</p>
+          </div>
+          <div class="card about-accent">
+            <h3>Sometimes the right call is just the more defensible one</h3>
+            <p>Not every decision has a clean, no-downside answer. Naming the trade-off you're accepting is part of making the recommendation, not a weakness in it.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="footer reveal">
+      <a href="index.html#contact">Contact</a> · Built to feel beautiful, personal, and alive.
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    // ---------- Case data ----------
+    const CASES = [
+      {
+        id:'pricing_fork', title:'The Pricing Fork in the Road', difficulty:'Easy', baseXp:70,
+        briefing:"TaskFlow, a project-management SaaS with 40,000 customers, has flat, low churn — but it's losing more competitive deals than expected. Leadership needs a pricing recommendation before the next board meeting.",
+        materials:[
+          { type:'chart', title:'Win rate by deal size — last quarter', rows:[['Deals under $20/user/mo',18,null],['Deals $20–40/user/mo',52,null],['Deals over $40/user/mo',61,null]], singleSeries:true, unit:'%' },
+          { type:'note', title:'Sales team debrief, last Friday',
+            text:'"We keep losing small-team deals to a cheaper competitor before we even get to a demo — they simply won\'t consider us above their budget line."' },
+          { type:'sql', title:'Monthly churn by plan tier',
+            code:"SELECT plan_tier, monthly_churn_rate\nFROM subscriptions\nGROUP BY plan_tier;\n\n-- results:\n-- starter     2.1%\n-- pro         1.9%\n-- enterprise  1.8%" }
+        ],
+        options:[
+          'Raise prices 20% across all tiers to offset rising costs',
+          'Introduce a lower-priced tier aimed at small teams',
+          'Bundle an existing premium feature into the current plan at no extra cost',
+          'Keep pricing as-is and increase marketing spend on new customer acquisition'
+        ],
+        correct:1,
+        rationale:"Churn is low and flat across every tier — current customers aren't unhappy with price or value, which rules out a straight price hike or a value-bundling fix. The real problem shows up before anyone becomes a customer: deals under $20/user/mo are won only 18% of the time, meaning TaskFlow is priced out of an entire segment before sales gets a chance. A lower tier meets that segment where it already is, instead of trying to out-market a price objection."
+      },
+      {
+        id:'market_first', title:'Which Market First?', difficulty:'Medium', baseXp:100,
+        briefing:"Northloom, an $8M/yr direct-to-consumer apparel brand, is ready for its first international market. Three candidates are on the table, and the board wants a recommendation, not just a data dump.",
+        materials:[
+          { type:'chart', title:'Paid CAC by market — 6-week pilot ($)', rows:[['UK',31,null],['Australia',54,null],['Germany',22,null]], singleSeries:true, unit:'' },
+          { type:'note', title:'Analytics note',
+            text:'"UK already gets ~3,400 organic site visits a month with zero marketing spend behind them — highest of the three, and the highest average order value too. Australia gets about 200/month; Germany gets almost none."' },
+          { type:'sql', title:'Estimated return rate by market (apparel category benchmark)',
+            code:"-- Germany:    ~30%  (strict sizing norms, high return culture)\n-- UK:         ~14%  (sizing close to home market)\n-- Australia:  ~16%" }
+        ],
+        options:[
+          'Germany — it has the lowest paid customer acquisition cost',
+          'UK — it already has organic demand and the fewest logistics complications',
+          'Australia — English-speaking, so it should be the easiest to localize',
+          'Launch all three at once and see which one performs best'
+        ],
+        correct:1,
+        rationale:"Germany's lowest CAC comes from a single six-week pilot — too short to trust on its own — and it carries the highest return-rate risk plus the most complex logistics (customs, VAT, reverse shipping) for a brand with no international operations yet. The stronger signal is unpaid, organic demand that already exists: UK traffic and order value are highest with zero spend behind them, and its return-rate and shipping profile are closest to the home market. That's proof of real demand, not just a cheap pilot number."
+      },
+      {
+        id:'feature_bet', title:'Three Features, One Quarter', difficulty:'Medium', baseXp:100,
+        briefing:"The product team can ship exactly one of three features this quarter. Sales wants an integration, social media wants dark mode, and the retention data is pointing somewhere else entirely.",
+        materials:[
+          { type:'chart', title:'90-day retention by activation status', rows:[['Reached "first value" within 3 days',74,null],['Did not reach it within 3 days',31,null]], singleSeries:true, unit:'%' },
+          { type:'note', title:'Signup funnel snapshot',
+            text:'"46% of new signups never reach a first-value moment at all, in any timeframe. That number hasn\'t moved in two quarters."' },
+          { type:'sql', title:'Adoption of a comparable past integration (6 months post-launch)',
+            code:"SELECT feature, eligible_users, users_enabled\nFROM feature_adoption\nWHERE feature = 'slack_integration_v1';\n\n-- eligible_users: 8,400\n-- users_enabled:    504   (6.0%)" }
+        ],
+        options:[
+          'Build the requested Slack/Teams integration',
+          'Redesign self-serve onboarding to get more users to "first value" faster',
+          'Ship the dark mode / visual refresh',
+          'Split the quarter across all three at reduced scope'
+        ],
+        correct:1,
+        rationale:'Onboarding is the one lever tied to a number that actually moves the business: users who hit first value early retain at 74% vs. 31%, and nearly half of signups never get there at all — the biggest, most expensive problem on the table. The integration is loudly requested, but a near-identical past launch was only adopted by 6% of eligible users, and dark mode has no retention or revenue evidence behind it — just visibility. Splitting focus three ways would under-deliver on the one thing with proven impact.'
+      },
+      {
+        id:'margin_squeeze', title:'The Margin Squeeze Decision', difficulty:'Hard', baseXp:140,
+        briefing:"Gross margin has compressed for two straight quarters as paid acquisition costs climb, and a well-funded competitor just entered the same market. The board wants a plan, not a margin apology.",
+        materials:[
+          { type:'chart', title:'CAC by channel, this year ($)', rows:[['Paid — this year',86,null],['Paid — last year',61,null],['Organic/content — this year',24,null]], singleSeries:true, unit:'' },
+          { type:'note', title:'Finance note',
+            text:'"LTV is healthy and stable — this isn\'t a retention problem. It\'s an acquisition-cost problem, and it\'s concentrated almost entirely in paid channels."' },
+          { type:'sql', title:'Budget allocation vs. channel cost',
+            code:"SELECT channel, pct_of_budget, cac\nFROM acquisition_channels;\n\n-- paid       92%   $86\n-- organic     8%   $24\n-- (organic channel ramp time: 9-12 months to scale)" }
+        ],
+        options:[
+          'Cut marketing spend hard to protect margin now',
+          'Raise prices across the board to offset rising CAC',
+          'Match the competitor and increase paid spend to defend market share',
+          'Shift budget mix toward organic/content, which has a much lower CAC'
+        ],
+        correct:3,
+        rationale:"LTV is healthy — the problem is specifically that paid CAC has climbed 41% while 92% of budget still sits in that one channel, and organic costs a third as much per customer. Cutting spend hard cedes the market to a better-funded rival without fixing the underlying cost problem; matching their paid spend means out-bidding a deeper-pocketed competitor on their strongest channel; a price hike doesn't touch acquisition cost either, and risks demand just as a new rival arrives. Shifting mix toward the cheaper channel is slower to ramp — worth naming as the real trade-off — but it's the only option that treats the root cause instead of the symptom."
+      }
+    ];
+
+    const RANKS = [
+      { min:0, label:'Analyst Trainee' },
+      { min:90, label:'Case Cracker' },
+      { min:200, label:'Strategy Associate' },
+      { min:320, label:'Senior Strategist' },
+      { min:410, label:'Managing Partner' }
+    ];
+    const ALL_BADGES = [
+      { key:'first_reco', label:'First Call', desc:'Submit your first correct recommendation' },
+      { key:'sharp_read', label:'Sharp Read', desc:'Solve a case with no hints and no wrong tries' },
+      { key:'iterated', label:'Iterated', desc:'Solve a case after 2+ wrong tries' },
+      { key:'managing_partner', label:'Managing Partner', desc:'Solve all 4 cases' }
+    ];
+
+    // ---------- State ----------
+    const STORE_KEY = 'businessCaseV1';
+    let profile = { name:'', xp:0, badges:[], progress:{} };
+    let currentCaseId = null;
+    let selectedOption = null;
+
+    function defaultProgress(){
+      return { solved:false, hintsUsed:0, wrongGuesses:0 };
+    }
+    function getProgress(caseId){
+      if (!profile.progress[caseId]) profile.progress[caseId] = defaultProgress();
+      return profile.progress[caseId];
+    }
+
+    function loadProfile(){
+      try{
+        const raw = localStorage.getItem(STORE_KEY);
+        if (raw) profile = Object.assign({ name:'', xp:0, badges:[], progress:{} }, JSON.parse(raw));
+      }catch(e){}
+    }
+    function saveProfile(){
+      try{ localStorage.setItem(STORE_KEY, JSON.stringify(profile)); }catch(e){}
+    }
+
+    function rankFor(xp){
+      let r = RANKS[0];
+      for (const entry of RANKS) if (xp >= entry.min) r = entry;
+      return r.label;
+    }
+
+    function isoWeek(d = new Date()){
+      const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      const dayNum = date.getUTCDay() || 7;
+      date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+      return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+    }
+
+    function renderProfile(){
+      document.getElementById('bizName').value = profile.name || '';
+      document.getElementById('profXp').textContent = profile.xp;
+      document.getElementById('profRank').textContent = rankFor(profile.xp);
+      const solvedCount = CASES.filter(c => getProgress(c.id).solved).length;
+      document.getElementById('profSolved').textContent = `${solvedCount}/${CASES.length}`;
+      document.getElementById('profBadges').innerHTML = ALL_BADGES.map(b => {
+        const earned = profile.badges.includes(b.key);
+        return `<span class="badge-chip ${earned?'':'locked'}" title="${b.desc}">${earned?'🏅 ':'🔒 '}${b.label}</span>`;
+      }).join('');
+    }
+
+    document.getElementById('bizName').addEventListener('input', e => {
+      profile.name = e.target.value;
+      saveProfile();
+      renderCertificate();
+    });
+
+    document.getElementById('hintToggle').addEventListener('click', () => {
+      const area = document.getElementById('hintArea');
+      const arrow = document.getElementById('hintToggleArrow');
+      const open = area.style.display !== 'none';
+      area.style.display = open ? 'none' : 'block';
+      arrow.textContent = open ? '▾' : '▴';
+    });
+
+    function awardBadge(key){
+      if (!profile.badges.includes(key)) profile.badges.push(key);
+    }
+
+    function renderFeatured(){
+      const idx = isoWeek() % CASES.length;
+      const c = CASES[idx];
+      const solved = getProgress(c.id).solved;
+      document.getElementById('featuredCase').innerHTML = `
+        <div class="fc-tag">Week ${isoWeek()} · ${c.difficulty}${solved ? ' · Already solved' : ''}</div>
+        <h3>${c.title}</h3>
+        <p style="color:var(--muted);line-height:1.7;margin:8px 0 14px">${c.briefing}</p>
+        <button class="btn primary" type="button" data-open-case="${c.id}">Work this case →</button>
+      `;
+      document.querySelector('[data-open-case]').addEventListener('click', e => openCase(e.target.dataset.openCase));
+    }
+
+    function renderCaseGrid(){
+      document.getElementById('caseGrid').innerHTML = CASES.map(c => {
+        const solved = getProgress(c.id).solved;
+        return `
+        <div class="biz-case-file ${solved?'solved':''}" data-case="${c.id}">
+          ${solved ? '<span class="cf-check">✓</span>' : ''}
+          <div class="cf-diff">${c.difficulty}</div>
+          <h4>${c.title}</h4>
+          <p>${c.briefing.slice(0, 90)}${c.briefing.length > 90 ? '…' : ''}</p>
+          <div class="cf-meta"><span>${c.materials.length} briefing items</span><span>·</span><span>${c.baseXp} XP</span></div>
+        </div>`;
+      }).join('');
+      document.querySelectorAll('[data-case]').forEach(el => {
+        el.addEventListener('click', () => openCase(el.dataset.case));
+      });
+    }
+
+    function chartRows(m){
+      const max = Math.max(...m.rows.map(r => Math.max(r[1]||0, r[2]||0)), 1);
+      return m.rows.map(r => `
+        <div class="bc-chart-row">
+          <span>${r[0]}</span>
+          <div class="bc-chart-track"><div class="bc-chart-fill" style="width:${((r[1]||0)/max*100).toFixed(0)}%"></div></div>
+          <span>${r[1]}${m.unit||''}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderMaterials(c){
+      document.getElementById('materialBoard').innerHTML = c.materials.map(m => {
+        if (m.type === 'note') {
+          return `<div class="brief-card type-note"><div class="bc-title">${m.title}</div><p style="margin:0">${m.text}</p></div>`;
+        }
+        if (m.type === 'sql') {
+          return `<div class="brief-card type-sql"><div class="bc-title" style="color:#ffd8a8">${m.title}</div><pre>${m.code}</pre></div>`;
+        }
+        return `<div class="brief-card type-chart"><div class="bc-title">${m.title}</div>${chartRows(m)}</div>`;
+      }).join('');
+    }
+
+    function renderHints(c){
+      const prog = getProgress(c.id);
+      const hints = [
+        'Which number here is actually stable, and which one is the anomaly? The stable one usually rules out an entire category of answer.',
+        'Read every option as something a smart team would genuinely propose — then ask which one the data would survive being challenged on.'
+      ];
+      const btn = document.getElementById('hintBtn');
+      const list = document.getElementById('hintList');
+      const revealed = Math.min(prog.hintsUsed, hints.length);
+      list.innerHTML = hints.slice(0, revealed).map((h,i) => `<div class="hint-item">Nudge ${i+1}: ${h}</div>`).join('');
+      btn.disabled = revealed >= hints.length || prog.solved;
+      btn.textContent = prog.solved ? 'Case already solved' : (revealed >= hints.length ? 'No more nudges for this case' : 'Get a nudge (−15 XP)');
+      btn.onclick = () => {
+        if (prog.solved || prog.hintsUsed >= hints.length) return;
+        prog.hintsUsed++;
+        saveProfile();
+        renderHints(c);
+      };
+    }
+
+    function renderRecommendation(c){
+      const prog = getProgress(c.id);
+      selectedOption = null;
+      document.getElementById('recommendationList').innerHTML = c.options.map((h,i) => `
+        <div class="recommendation-opt" data-idx="${i}">${h}</div>
+      `).join('');
+      const recommendBtn = document.getElementById('recommendBtn');
+      const resultPanel = document.getElementById('resultPanel');
+      recommendBtn.disabled = true;
+      recommendBtn.textContent = prog.solved ? 'Case closed' : 'Submit recommendation';
+
+      document.querySelectorAll('.recommendation-opt').forEach(el => {
+        el.addEventListener('click', () => {
+          if (prog.solved) return;
+          document.querySelectorAll('.recommendation-opt').forEach(o => o.classList.remove('selected'));
+          el.classList.add('selected');
+          selectedOption = +el.dataset.idx;
+          recommendBtn.disabled = false;
+        });
+      });
+
+      if (prog.solved) {
+        resultPanel.innerHTML = `<div class="result-panel correct"><strong>Case closed.</strong> ${c.rationale}</div>`;
+        document.querySelectorAll('.recommendation-opt')[c.correct]?.classList.add('selected');
+      } else {
+        resultPanel.innerHTML = '';
+      }
+
+      recommendBtn.onclick = () => {
+        if (prog.solved || selectedOption === null) return;
+        if (selectedOption === c.correct) {
+          const penalty = prog.hintsUsed * 15 + prog.wrongGuesses * 10;
+          const earned = Math.max(Math.round(c.baseXp * 0.2), c.baseXp - penalty);
+          prog.solved = true;
+          profile.xp += earned;
+          awardBadge('first_reco');
+          if (prog.hintsUsed === 0 && prog.wrongGuesses === 0) awardBadge('sharp_read');
+          if (prog.wrongGuesses >= 2) awardBadge('iterated');
+          if (CASES.every(cc => getProgress(cc.id).solved)) awardBadge('managing_partner');
+          saveProfile();
+          resultPanel.innerHTML = `<div class="result-panel correct"><strong>Case closed — +${earned} XP.</strong> ${c.rationale}</div>`;
+          renderProfile();
+          renderCaseGrid();
+          renderCertificate();
+          recommendBtn.disabled = true;
+          recommendBtn.textContent = 'Case closed';
+        } else {
+          prog.wrongGuesses++;
+          saveProfile();
+          resultPanel.innerHTML = `<div class="result-panel wrong"><strong>Not the call the data supports.</strong> That's a defensible instinct, but something in the briefing points the other way. Look again, or get a nudge.</div>`;
+        }
+      };
+    }
+
+    function openCase(caseId){
+      currentCaseId = caseId;
+      const c = CASES.find(x => x.id === caseId);
+      if (!c) return;
+      document.getElementById('invEmpty').style.display = 'none';
+      document.getElementById('invContent').style.display = 'block';
+      document.getElementById('invTitle').textContent = c.title;
+      document.getElementById('invBriefing').innerHTML = `<strong>The situation:</strong> ${c.briefing}`;
+      document.getElementById('hintArea').style.display = 'none';
+      document.getElementById('hintToggleArrow').textContent = '▾';
+      renderMaterials(c);
+      renderHints(c);
+      renderRecommendation(c);
+      document.getElementById('strategy-room').scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    function renderCertificate(){
+      const out = document.getElementById('certOutput');
+      const allSolved = CASES.every(c => getProgress(c.id).solved);
+      if (!allSolved) {
+        const solvedCount = CASES.filter(c => getProgress(c.id).solved).length;
+        out.innerHTML = `<p class="cert-teaser">🏆 Solve all ${CASES.length} cases to unlock your Managing Partner certificate — ${solvedCount}/${CASES.length} so far.</p>`;
+        return;
+      }
+      const name = profile.name && profile.name.trim() ? profile.name.trim() : 'Anonymous Strategist';
+      out.innerHTML = `
+        <div class="certificate">
+          <div class="cert-eyebrow">Certificate of Completion</div>
+          <h2>Managing Partner</h2>
+          <p>This certifies that</p>
+          <div class="cert-name">${name}</div>
+          <p>has reviewed and made the call on all ${CASES.length} cases in the Analytics Playground's Business Case Challenge, with a final score of ${profile.xp} XP.</p>
+        </div>
+      `;
+    }
+
+    function renderAll(){
+      renderProfile();
+      renderFeatured();
+      renderCaseGrid();
+      renderCertificate();
+    }
+
+    loadProfile();
+    renderAll();
+  </script>
+</body>
+</html>

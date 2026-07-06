@@ -38,6 +38,10 @@
     .lab-card.kpi{border-color:rgba(63,184,138,.28)}
     .lab-card.det::before{background:radial-gradient(circle, rgba(212,175,90,.4), transparent 68%)}
     .lab-card.det{border-color:rgba(212,175,90,.28)}
+    .lab-card.biz::before{background:radial-gradient(circle, rgba(232,130,63,.4), transparent 68%)}
+    .lab-card.biz{border-color:rgba(232,130,63,.28)}
+    .lab-card.sql::before{background:radial-gradient(circle, rgba(57,255,156,.4), transparent 68%)}
+    .lab-card.sql{border-color:rgba(57,255,156,.28)}
     .lab-card.soon{opacity:.6;border-style:dashed}
     .lab-icon{font-size:1.7rem;margin-bottom:10px;display:block}
     .lab-tags{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 14px}
@@ -65,7 +69,7 @@
     .mini-kpis .mk-val{font-family:Fraunces,serif;font-size:1.05rem;color:var(--money1)}
   </style>
 </head>
-<body class="rich-bg-subtle">
+<body class="rich-bg-analytics">
   <div class="progress" id="progress"></div>
   <div class="cursor" id="cursor"></div>
 
@@ -221,7 +225,7 @@
             </div>
           </a>
 
-          <div class="lab-card soon">
+          <a class="lab-card biz live" href="business-case.html">
             <div class="lab-thumb">
               <svg viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -240,10 +244,45 @@
               </svg>
             </div>
             <span class="lab-icon">📦</span>
-            <h3><span class="lab-dot" style="background:#e08a3c"></span>Business Case Challenge</h3>
-            <p>Work a realistic consulting case end to end — data, dashboards, and a recommendation.</p>
-            <div class="lab-tags"><span class="lab-tag soon-badge">Coming soon</span></div>
-          </div>
+            <h3>Business Case Challenge</h3>
+            <p>Read a real business situation, weigh the data, and pick the recommendation you'd defend to a board.</p>
+            <div class="lab-tags">
+              <span class="lab-tag">Intermediate</span>
+              <span class="lab-tag">~15 min</span>
+              <span class="lab-tag">New</span>
+            </div>
+          </a>
+
+          <a class="lab-card sql live" href="sql-playground.html">
+            <div class="lab-thumb">
+              <svg viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="sqlGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#39ff9c"/><stop offset="100%" stop-color="#ffb454"/>
+                  </linearGradient>
+                </defs>
+                <rect width="400" height="220" fill="#050807"/>
+                <circle cx="60" cy="180" r="110" fill="#39ff9c" opacity=".1"/>
+                <rect x="40" y="40" width="320" height="140" rx="8" fill="#0a0f0c" stroke="#39ff9c" stroke-opacity=".3"/>
+                <rect x="40" y="40" width="320" height="24" rx="8" fill="#0e1512"/>
+                <circle cx="56" cy="52" r="4" fill="#ffb454" opacity=".7"/>
+                <circle cx="70" cy="52" r="4" fill="#39ff9c" opacity=".7"/>
+                <circle cx="84" cy="52" r="4" fill="#eafffb" opacity=".4"/>
+                <text x="58" y="92" font-family="monospace" font-size="13" fill="#39ff9c">SELECT name, plan</text>
+                <text x="58" y="112" font-family="monospace" font-size="13" fill="#7fe8c0">FROM users</text>
+                <text x="58" y="132" font-family="monospace" font-size="13" fill="#ffb454">WHERE plan = 'pro';</text>
+                <rect x="58" y="146" width="8" height="14" fill="#39ff9c" opacity=".8"/>
+              </svg>
+            </div>
+            <span class="lab-icon">💻</span>
+            <h3>SQL Playground</h3>
+            <p>A real SQLite engine in your browser — write actual queries against two sample datasets, or work through challenges.</p>
+            <div class="lab-tags">
+              <span class="lab-tag">All levels</span>
+              <span class="lab-tag">~15 min</span>
+              <span class="lab-tag">New</span>
+            </div>
+          </a>
         </div>
       </section>
 
