@@ -331,7 +331,7 @@
 
     // ---------- State ----------
     const STORE_KEY = 'sqlPlaygroundV1';
-    let progress = { solved: [] };
+    let sqlProgress = { solved: [] };
     let currentDs = 'ecommerce';
     let currentChallengeId = null;
     let dbEngine = null;
@@ -341,14 +341,14 @@
     function loadProgress(){
       try{
         const raw = localStorage.getItem(STORE_KEY);
-        if (raw) progress = Object.assign({ solved: [] }, JSON.parse(raw));
+        if (raw) sqlProgress = Object.assign({ solved: [] }, JSON.parse(raw));
       }catch(e){}
     }
     function saveProgress(){
-      try{ localStorage.setItem(STORE_KEY, JSON.stringify(progress)); }catch(e){}
+      try{ localStorage.setItem(STORE_KEY, JSON.stringify(sqlProgress)); }catch(e){}
     }
-    function isSolved(id){ return progress.solved.includes(id); }
-    function markSolved(id){ if (!progress.solved.includes(id)) { progress.solved.push(id); saveProgress(); } }
+    function isSolved(id){ return sqlProgress.solved.includes(id); }
+    function markSolved(id){ if (!sqlProgress.solved.includes(id)) { sqlProgress.solved.push(id); saveProgress(); } }
 
     function renderSchema(){
       document.getElementById('schemaRef').innerHTML = DATASETS[currentDs].schemaHtml;
