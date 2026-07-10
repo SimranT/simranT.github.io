@@ -88,7 +88,7 @@
         <a href="index.html">Home</a>
         <a href="work.html">Work</a>
         <a href="travel.html">Travel</a>
-        <a href="itineraries.html" class="active">Shop</a>
+        <a href="shop.html" class="active">Shop</a>
         <a href="analytics.html">Analytics</a>
       </nav>
       <button class="toggle" id="theme" aria-label="Toggle theme">◐</button>
@@ -100,7 +100,7 @@
         <span class="accent-line" aria-hidden="true"></span>
         <div class="level-chip">🎮 Level 0 · The Beginning</div>
         <h1 class="name" style="font-size:clamp(2.4rem,6vw,4rem);max-width:16ch">Your data career starts here.</h1>
-        <p class="lead">8 levels. 1 skill tree. Countless "aha" moments. This is a preview of <strong>The Data Analyst Career Planner</strong> — built like a game, because getting good at this job should feel like one.</p>
+        <p class="lead">8 levels. 3 skill tracks. Countless "aha" moments. This is a preview of <strong>The Data Analyst Career Planner</strong> — built like a game, because getting good at this job should feel like one.</p>
         <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px">
           <a class="quest-cta" href="#quiz">Start Your Journey →</a>
           <a class="btn" href="career-planner-level1-pilot.pdf" style="margin-top:0" download>Download Level 1 free (PDF)</a>
@@ -130,10 +130,10 @@
         <div class="quiz-panel">
           <div class="quiz-q">"When you find messy data, your first instinct is to..."</div>
           <div class="quiz-opts" id="quizOpts">
-            <div class="quiz-opt" data-result="The Detective">🔍 Investigate every anomaly until it makes sense</div>
-            <div class="quiz-opt" data-result="The Storyteller">📊 Visualize it immediately to see the shape</div>
-            <div class="quiz-opt" data-result="The Automation Wizard">⚙️ Build a pipeline so it never happens again</div>
-            <div class="quiz-opt" data-result="The Business Translator">📖 Ask what story the business needs from it</div>
+            <div class="quiz-opt" data-result="a Detective" data-levels="Level 6 (Data Detective), with a foundation in Level 1">🔍 Investigate every anomaly until it makes sense</div>
+            <div class="quiz-opt" data-result="a Storyteller" data-levels="Levels 3 and 5 (Dashboard Builder, Business Storyteller)">📊 Visualize it immediately to see the shape</div>
+            <div class="quiz-opt" data-result="an Automation Wizard" data-levels="Level 4 (Automation Wizard), building on Level 2's SQL foundation">⚙️ Build a pipeline so it never happens again</div>
+            <div class="quiz-opt" data-result="a Business Translator" data-levels="Level 5 (Business Storyteller), leading into Level 7's stakeholder work">📖 Ask what story the business needs from it</div>
           </div>
           <div class="quiz-result" id="quizResult"></div>
         </div>
@@ -302,7 +302,7 @@ WHERE rnk = 1;</div>
           <div class="actions" style="margin-top:16px">
             <a class="btn primary" href="career-planner-level1-pilot.pdf" download>Download Level 1 free (PDF)</a>
             <a class="btn" href="mailto:simran.st1197@gmail.com">Email me for updates</a>
-            <a class="btn" href="itineraries.html">Back to Shop</a>
+            <a class="btn" href="shop.html">Back to Shop</a>
           </div>
         </div>
       </section>
@@ -321,7 +321,7 @@ WHERE rnk = 1;</div>
         document.querySelectorAll('.quiz-opt').forEach(o => o.classList.remove('selected'));
         opt.classList.add('selected');
         const result = document.getElementById('quizResult');
-        result.textContent = `You're ${opt.dataset.result} — that path leans hardest into Levels 2, 5, and 6 of the planner.`;
+        result.textContent = `You're ${opt.dataset.result} — that instinct leans hardest into ${opt.dataset.levels}.`;
         result.classList.add('show');
       });
     });
@@ -333,9 +333,9 @@ WHERE rnk = 1;</div>
       const checked = [...checkboxes].filter(c => c.checked).length;
       const verdicts = [
         "Worth exploring — everyone starts somewhere.",
+        "There's raw material here, even if it's early days.",
         "You've got real raw material here.",
-        "You've got real raw material here.",
-        "Solid foundation — you'd pick this up fast.",
+        "More than half these are already true — that's a real head start.",
         "Solid foundation — you'd pick this up fast.",
         "You basically already think like an analyst."
       ];
