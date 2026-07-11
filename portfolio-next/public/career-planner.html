@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Data Analyst Career Planner — Simran's Space</title>
+  <meta name="description" content="An interactive preview of The Data Analyst Career Planner by Simran Tiwari — a gamified career roadmap from beginner to senior analyst." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .level-chip{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:999px;background:var(--w06);border:1px solid var(--w10);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+    .quest-cta{display:inline-flex;gap:10px;align-items:center;padding:13px 26px;border-radius:999px;background:linear-gradient(135deg,var(--hero1),var(--hero2));color:#06101a;font-weight:700;margin-top:20px;transition:transform .2s ease}
+    .quest-cta:hover{transform:scale(1.04)}
+
+    .quiz-panel{background:var(--surface);border:1px solid var(--w08);border-radius:24px;padding:26px;box-shadow:var(--glow);margin-bottom:20px}
+    .quiz-q{font-family:Fraunces,serif;font-size:1.3rem;margin-bottom:16px}
+    .quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .quiz-opt{padding:14px 16px;border-radius:16px;background:var(--w04);border:1px solid var(--w08);cursor:pointer;transition:.2s ease;font-size:.95rem}
+    .quiz-opt:hover{background:var(--w08);transform:translateY(-2px)}
+    .quiz-opt.selected{background:linear-gradient(135deg,rgba(255,143,216,.22),rgba(142,203,255,.16));border-color:rgba(255,143,216,.5)}
+    .quiz-result{margin-top:18px;padding:18px;border-radius:18px;background:linear-gradient(135deg,rgba(255,208,168,.14),rgba(255,159,203,.10));border:1px solid var(--w08);display:none}
+    .quiz-result.show{display:block}
+
+    .roadmap-track{display:flex;gap:0;overflow-x:auto;padding:20px 4px 30px;margin:10px 0}
+    .roadmap-node{flex:0 0 auto;text-align:center;width:120px;position:relative}
+    .roadmap-node .rn-icon{width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 8px;background:var(--w06);border:1px dashed var(--w18)}
+    .roadmap-node.unlocked .rn-icon{background:linear-gradient(135deg,var(--hero1),var(--hero2));border:none}
+    .roadmap-node .rn-label{font-size:.78rem;font-weight:700}
+    .roadmap-node .rn-sub{font-size:.68rem;color:var(--muted)}
+    .roadmap-node:not(:last-child)::after{content:"";position:absolute;top:28px;left:50%;width:100%;height:2px;background:repeating-linear-gradient(90deg,var(--w18) 0 6px,transparent 6px 12px);z-index:-1}
+
+    .salary-bars{display:flex;align-items:flex-end;gap:16px;height:180px;margin:20px 0 10px;padding:0 6px}
+    .salary-bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+    .salary-bar .sb-fill{width:100%;border-radius:10px 10px 0 0;background:linear-gradient(180deg,var(--hero1),var(--hero2))}
+    .salary-bar .sb-amt{font-size:.85rem;font-weight:700;margin-bottom:6px}
+    .salary-bar .sb-label{font-size:.72rem;color:var(--muted);margin-top:8px;text-align:center}
+
+    .assess-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--w03);border:1px solid var(--w07);margin-bottom:8px;cursor:pointer;transition:.2s ease}
+    .assess-item:hover{background:var(--w08)}
+    .assess-item input{width:18px;height:18px;accent-color:var(--hero1)}
+    .assess-score{margin-top:16px;padding:18px;border-radius:18px;background:var(--surface2);border:1px solid var(--w08);text-align:center}
+    .assess-score .score-num{font-family:Fraunces,serif;font-size:2.4rem;color:var(--hero1)}
+
+    .badge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .badge{text-align:center;padding:16px 8px;border-radius:18px;background:var(--w03);border:1px solid var(--w08)}
+    .badge .b-icon{font-size:28px;margin-bottom:8px}
+    .badge .b-name{font-size:.75rem;font-weight:700}
+    .badge .b-desc{font-size:.66rem;color:var(--muted);margin-top:4px}
+    .badge.locked{opacity:.35}
+
+    .locked-card{position:relative;overflow:hidden}
+    .locked-card .lock-badge{position:absolute;top:14px;right:14px;font-size:18px;opacity:.6}
+
+    .sql-panel{background:#0a0e1a;border:1px solid var(--w10);border-radius:18px;padding:18px;font-family:'Courier New',monospace;font-size:.85rem;color:#c9f2d8;overflow-x:auto;margin-bottom:14px}
+    .reveal-btn{padding:10px 18px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-weight:700;font-size:.85rem;color:var(--text);transition:.2s ease}
+    .reveal-btn:hover{background:var(--w08);transform:translateY(-2px)}
+    .sql-solution{display:none;margin-top:14px}
+    .sql-solution.show{display:block}
+
+    .testimonial-card{padding:20px;border-radius:20px;background:var(--w03);border:1px solid var(--w08);border-style:dashed}
+    .testimonial-card .t-name{font-weight:700;margin-top:10px;font-size:.85rem}
+    .testimonial-card .t-role{font-size:.75rem;color:var(--muted)}
+
+    .future-you textarea{
+      width:100%;min-height:140px;padding:16px;border-radius:16px;
+      background:var(--w04);border:1px solid var(--w12);
+      color:var(--text);font-family:Inter,sans-serif;font-size:.95rem;line-height:1.6;resize:vertical;
+    }
+    .future-you textarea:focus{outline:1px solid var(--hero1)}
+
+    @media (max-width:720px){
+      .quiz-opts{grid-template-columns:1fr}
+      .badge-grid{grid-template-columns:repeat(2,1fr)}
+      .salary-bars{height:140px}
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="cursor" id="cursor"></div>
+
+  <div class="wrap">
+    <header class="nav reveal">
+      <a class="brand" href="index.html#top"><span class="dot"></span> Simran's Space</a>
+      <nav class="navlinks">
+        <a href="index.html">Home</a>
+        <a href="work.html">Work</a>
+        <a href="travel.html">Travel</a>
+        <a href="shop.html" class="active">Shop</a>
+        <a href="analytics.html">Analytics</a>
+      </nav>
+      <button class="toggle" id="theme" aria-label="Toggle theme">◐</button>
+    </header>
+
+    <main id="top">
+      <!-- WELCOME -->
+      <section class="hero reveal">
+        <span class="accent-line" aria-hidden="true"></span>
+        <div class="level-chip">🎮 Level 0 · The Beginning</div>
+        <h1 class="name" style="font-size:clamp(2.4rem,6vw,4rem);max-width:16ch">Your data career starts here.</h1>
+        <p class="lead">8 levels. 3 skill tracks. Countless "aha" moments. This is a preview of <strong>The Data Analyst Career Planner</strong> — built like a game, because getting good at this job should feel like one.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px">
+          <a class="quest-cta" href="#quiz">Start Your Journey →</a>
+          <a class="btn" href="career-planner-level1-pilot.pdf" style="margin-top:0" download>Download Level 1 free (PDF)</a>
+        </div>
+      </section>
+
+      <!-- JUMP NAV -->
+      <nav class="jump-nav reveal" aria-label="Page sections">
+        <a href="#quiz">Quiz</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#salary">Salary</a>
+        <a href="#self-check">Self-Check</a>
+        <a href="#whats-inside">What's Inside</a>
+        <a href="#achievements">Badges</a>
+        <a href="#sql-challenge">SQL Challenge</a>
+        <a href="#dashboards">Dashboards</a>
+      </nav>
+
+      <!-- QUIZ -->
+      <section id="quiz" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Choose Your Analyst Path</div>
+            <h2 class="section-title">What kind of analyst are you?</h2>
+          </div>
+        </div>
+        <div class="quiz-panel">
+          <div class="quiz-q">"When you find messy data, your first instinct is to..."</div>
+          <div class="quiz-opts" id="quizOpts">
+            <div class="quiz-opt" data-result="a Detective" data-levels="Level 6 (Data Detective), with a foundation in Level 1">🔍 Investigate every anomaly until it makes sense</div>
+            <div class="quiz-opt" data-result="a Storyteller" data-levels="Levels 3 and 5 (Dashboard Builder, Business Storyteller)">📊 Visualize it immediately to see the shape</div>
+            <div class="quiz-opt" data-result="an Automation Wizard" data-levels="Level 4 (Automation Wizard), building on Level 2's SQL foundation">⚙️ Build a pipeline so it never happens again</div>
+            <div class="quiz-opt" data-result="a Business Translator" data-levels="Level 5 (Business Storyteller), leading into Level 7's stakeholder work">📖 Ask what story the business needs from it</div>
+          </div>
+          <div class="quiz-result" id="quizResult"></div>
+        </div>
+      </section>
+
+      <!-- ROADMAP -->
+      <section id="roadmap" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Career Roadmap</div>
+            <h2 class="section-title">8 levels, beginner to leader</h2>
+          </div>
+        </div>
+        <div class="roadmap-track">
+          <div class="roadmap-node unlocked"><div class="rn-icon">🔎</div><div class="rn-label">Curious Analyst</div><div class="rn-sub">Level 1</div></div>
+          <div class="roadmap-node unlocked"><div class="rn-icon">🧩</div><div class="rn-label">SQL Apprentice</div><div class="rn-sub">Level 2</div></div>
+          <div class="roadmap-node"><div class="rn-icon">📊</div><div class="rn-label">Dashboard Builder</div><div class="rn-sub">Level 3</div></div>
+          <div class="roadmap-node"><div class="rn-icon">⚙️</div><div class="rn-label">Automation Wizard</div><div class="rn-sub">Level 4</div></div>
+          <div class="roadmap-node"><div class="rn-icon">📖</div><div class="rn-label">Business Storyteller</div><div class="rn-sub">Level 5</div></div>
+          <div class="roadmap-node"><div class="rn-icon">🕵️</div><div class="rn-label">Data Detective</div><div class="rn-sub">Level 6</div></div>
+          <div class="roadmap-node"><div class="rn-icon">🏆</div><div class="rn-label">Senior Analyst</div><div class="rn-sub">Level 7</div></div>
+          <div class="roadmap-node"><div class="rn-icon">👑</div><div class="rn-label">Analytics Leader</div><div class="rn-sub">Level 8</div></div>
+        </div>
+      </section>
+
+      <!-- SALARY PROGRESSION -->
+      <section id="salary" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Salary Progression</div>
+            <h2 class="section-title">Where each level tends to land</h2>
+            <p>General market ranges (USD) — actual pay varies a lot by region, company size, and industry. Treat this as a compass, not a promise.</p>
+          </div>
+        </div>
+        <div class="card work-accent">
+          <div class="salary-bars">
+            <div class="salary-bar"><div class="sb-amt">$50–65k</div><div class="sb-fill" style="height:38%"></div><div class="sb-label">Curious Analyst<br>Levels 1–2</div></div>
+            <div class="salary-bar"><div class="sb-amt">$65–80k</div><div class="sb-fill" style="height:52%"></div><div class="sb-label">Dashboard Builder<br>Levels 3–4</div></div>
+            <div class="salary-bar"><div class="sb-amt">$80–100k</div><div class="sb-fill" style="height:68%"></div><div class="sb-label">Storyteller / Detective<br>Levels 5–6</div></div>
+            <div class="salary-bar"><div class="sb-amt">$100–130k</div><div class="sb-fill" style="height:85%"></div><div class="sb-label">Senior Analyst<br>Level 7</div></div>
+            <div class="salary-bar"><div class="sb-amt">$130k+</div><div class="sb-fill" style="height:100%"></div><div class="sb-label">Analytics Leader<br>Level 8</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SELF ASSESSMENT -->
+      <section id="self-check" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Self-Assessment</div>
+            <h2 class="section-title">Can you become a data analyst?</h2>
+            <p>Check what's already true for you.</p>
+          </div>
+        </div>
+        <div class="card about-accent">
+          <div id="assessList">
+            <label class="assess-item"><input type="checkbox" value="1"> I'm comfortable in spreadsheets (formulas, pivot tables)</label>
+            <label class="assess-item"><input type="checkbox" value="1"> I enjoy finding patterns in numbers</label>
+            <label class="assess-item"><input type="checkbox" value="1"> I can explain a complicated idea simply</label>
+            <label class="assess-item"><input type="checkbox" value="1"> I'm curious enough to Google something until I understand it</label>
+            <label class="assess-item"><input type="checkbox" value="1"> I don't mind being wrong and re-checking my work</label>
+            <label class="assess-item"><input type="checkbox" value="1"> I want a career with clear, learnable skills</label>
+          </div>
+          <div class="assess-score" id="assessScore">
+            <div class="score-num">0 / 6</div>
+            <div style="color:var(--muted);font-size:.9rem;margin-top:6px">Check a few boxes above to see your score.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- WHAT'S INSIDE (merged Skill Tree + Locked Chapters) -->
+      <section id="whats-inside" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">What's Inside</div>
+            <h2 class="section-title">Three skill tracks, eight levels to unlock them</h2>
+          </div>
+        </div>
+        <div class="grid cols3 stagger">
+          <div class="card money-accent"><h3>🧩 SQL Track</h3><p>SELECT → JOINs → window functions → query optimization. From "what's a JOIN" to writing queries senior engineers respect.</p></div>
+          <div class="card money-accent"><h3>📊 Excel &amp; Power BI Track</h3><p>Pivot tables → DAX → data modeling → building dashboards executives actually open.</p></div>
+          <div class="card money-accent"><h3>🐍 Python Track</h3><p>pandas basics → automation scripts → your first end-to-end data pipeline.</p></div>
+        </div>
+        <div class="grid cols3 stagger" style="margin-top:14px">
+          <div class="card work-accent locked-card"><span class="lock-badge">🔒</span><h3>Level 4: Automation Wizard</h3><p>The chapter where you stop doing the same report by hand every Monday. Teaser: the "3-click report" challenge.</p></div>
+          <div class="card work-accent locked-card"><span class="lock-badge">🔒</span><h3>Level 6: Data Detective</h3><p>Root-cause analysis, A/B testing, and the "someone's wrong in the dashboard" boss battle.</p></div>
+          <div class="card work-accent locked-card"><span class="lock-badge">🔒</span><h3>Level 8: Analytics Leader</h3><p>Managing stakeholders, mentoring juniors, and the quarterly review that becomes a promotion case.</p></div>
+        </div>
+      </section>
+
+      <!-- ACHIEVEMENTS -->
+      <section id="achievements" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Achievements</div>
+            <h2 class="section-title">Badges you can earn</h2>
+          </div>
+        </div>
+        <div class="badge-grid">
+          <div class="badge"><div class="b-icon">🥇</div><div class="b-name">First Query</div><div class="b-desc">Wrote your first SQL SELECT</div></div>
+          <div class="badge"><div class="b-icon">🔥</div><div class="b-name">7-Day Streak</div><div class="b-desc">Practiced a week straight</div></div>
+          <div class="badge"><div class="b-icon">📈</div><div class="b-name">Dashboard Shipped</div><div class="b-desc">Published your first dashboard</div></div>
+          <div class="badge locked"><div class="b-icon">🎯</div><div class="b-name">Boss Battle Won</div><div class="b-desc">Passed a mock interview</div></div>
+          <div class="badge locked"><div class="b-icon">🤖</div><div class="b-name">Automator</div><div class="b-desc">Automated a manual report</div></div>
+          <div class="badge locked"><div class="b-icon">🏆</div><div class="b-name">Promoted</div><div class="b-desc">Leveled up at work</div></div>
+          <div class="badge locked"><div class="b-icon">🧠</div><div class="b-name">Mentor</div><div class="b-desc">Taught someone else SQL</div></div>
+          <div class="badge locked"><div class="b-icon">👑</div><div class="b-name">Analytics Leader</div><div class="b-desc">Completed all 8 levels</div></div>
+        </div>
+      </section>
+
+      <!-- SQL CHALLENGE -->
+      <section id="sql-challenge" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">XP Challenge</div>
+            <h2 class="section-title">One-page SQL challenge</h2>
+            <p>Find the top spending customer per month. Try it, then reveal the elegant solution.</p>
+          </div>
+        </div>
+        <div class="card travel-accent">
+          <div class="sql-panel">customers_orders(customer_id, customer_name, order_month, amount)<br><br>-- Your task: for each order_month, find the customer<br>-- with the highest total amount.</div>
+          <button class="reveal-btn" id="revealSql">Reveal elegant solution →</button>
+          <div class="sql-solution" id="sqlSolution">
+            <div class="sql-panel">WITH monthly AS (
+  SELECT order_month, customer_name,
+         SUM(amount) AS total_spend,
+         RANK() OVER (PARTITION BY order_month ORDER BY SUM(amount) DESC) AS rnk
+  FROM customers_orders
+  GROUP BY order_month, customer_name
+)
+SELECT order_month, customer_name, total_spend
+FROM monthly
+WHERE rnk = 1;</div>
+            <p style="color:var(--muted);font-size:.85rem;margin-top:10px">💡 Pro analyst secret: <code>RANK()</code> beats a nested subquery here — it's more readable and handles ties gracefully. This exact pattern shows up in real interviews constantly.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- DASHBOARD PREVIEW -->
+      <section id="dashboards" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">What You'll Build</div>
+            <h2 class="section-title">By the end, this is normal for you</h2>
+          </div>
+        </div>
+        <div class="dash-grid">
+          <article class="dash-card work-accent">
+            <img src="Nails.png" alt="Example dashboard">
+            <h3>A dashboard people actually open</h3>
+            <p>Clean, decision-ready, built the way a senior analyst builds — not just charts, but answers.</p>
+          </article>
+          <article class="dash-card travel-accent">
+            <img src="TVS.png" alt="Example dashboard">
+            <h3>Reporting that runs itself</h3>
+            <p>By Level 4 you're not manually refreshing anything — it's automated and you know why.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="planner-cta" class="reveal">
+        <div class="section-band">
+          <div class="eyebrow">Level 1 is free — the rest is coming</div>
+          <h2 class="section-title" style="font-size:1.6rem">Get the first chapter now</h2>
+          <p class="section-sub">"The Curious Analyst" — the full first level of the planner — is ready to download, free, right now. Levels 2 through 8 are still in production. Email me and I'll let you know the moment the complete 8-level ebook ships.</p>
+          <div class="actions" style="margin-top:16px">
+            <a class="btn primary" href="career-planner-level1-pilot.pdf" download>Download Level 1 free (PDF)</a>
+            <a class="btn" href="mailto:simran.st1197@gmail.com">Email me for updates</a>
+            <a class="btn" href="shop.html">Back to Shop</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer reveal">
+      <a href="index.html#contact">Contact</a> · Built to feel beautiful, personal, and alive.
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    // Quiz
+    document.querySelectorAll('.quiz-opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('.quiz-opt').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        const result = document.getElementById('quizResult');
+        result.textContent = `You're ${opt.dataset.result} — that instinct leans hardest into ${opt.dataset.levels}.`;
+        result.classList.add('show');
+      });
+    });
+
+    // Self-assessment
+    const checkboxes = document.querySelectorAll('#assessList input[type="checkbox"]');
+    const scoreEl = document.getElementById('assessScore');
+    function updateScore() {
+      const checked = [...checkboxes].filter(c => c.checked).length;
+      const verdicts = [
+        "Worth exploring — everyone starts somewhere.",
+        "There's raw material here, even if it's early days.",
+        "You've got real raw material here.",
+        "More than half these are already true — that's a real head start.",
+        "Solid foundation — you'd pick this up fast.",
+        "You basically already think like an analyst."
+      ];
+      scoreEl.innerHTML = `<div class="score-num">${checked} / 6</div><div style="color:var(--muted);font-size:.9rem;margin-top:6px">${verdicts[checked]}</div>`;
+    }
+    checkboxes.forEach(c => c.addEventListener('change', updateScore));
+
+    // SQL reveal
+    document.getElementById('revealSql').addEventListener('click', function() {
+      const sol = document.getElementById('sqlSolution');
+      sol.classList.toggle('show');
+      this.textContent = sol.classList.contains('show') ? 'Hide solution' : 'Reveal elegant solution →';
+    });
+
+    // Jump-nav scrollspy — always show which section you're in
+    const jumpLinks = document.querySelectorAll('.jump-nav a');
+    const jumpTargets = [...jumpLinks].map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+    const spy = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const link = document.querySelector(`.jump-nav a[href="#${entry.target.id}"]`);
+        if (!link) return;
+        if (entry.isIntersecting) {
+          jumpLinks.forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-40% 0px -50% 0px' });
+    jumpTargets.forEach(t => spy.observe(t));
+  </script>
+</body>
+</html>

@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Detective — Solve Real Business Mysteries | Simran's Space</title>
+  <meta name="description" content="An interactive analytics mystery game by Simran Tiwari — investigate dashboards, read SQL evidence, and find the real root cause behind five business cases." />
+  <meta name="keywords" content="data analysis game, root cause analysis, business case study, SQL practice, data analyst portfolio project" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .det-hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+    @media (max-width:720px){.det-hero-stats{grid-template-columns:1fr}}
+
+    .det-panel{padding:26px;border-radius:22px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--glow);margin-bottom:20px}
+    .det-panel h3{margin-bottom:6px}
+    .det-panel .tool-sub{color:var(--muted);margin:0 0 18px;line-height:1.7}
+
+    /* Detective profile bar */
+    .profile-bar{display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:18px 22px;border-radius:18px;background:var(--surface2);border:1px solid var(--line)}
+    .profile-name-field{display:flex;flex-direction:column;gap:4px}
+    .profile-name-field label{font-size:.7rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+    .profile-name-field input{padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--w04);color:var(--text);font-family:inherit;font-size:.86rem}
+    .profile-stat{text-align:center}
+    .profile-stat .ps-lbl{font-size:.68rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+    .profile-stat .ps-val{font-family:Fraunces,serif;font-size:1.3rem;color:var(--det1)}
+    .profile-badges{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+    .badge-chip{padding:5px 11px;border-radius:999px;background:linear-gradient(135deg,var(--det1),var(--det2));color:#0b0f1e;font-size:.72rem;font-weight:700}
+    .badge-chip.locked{background:var(--w05);color:var(--muted);font-weight:500;border:1px dashed var(--w14)}
+
+    /* Case files grid */
+    .case-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+    .case-file{
+      padding:20px;border-radius:16px;background:var(--w03);border:1px solid var(--w08);
+      cursor:pointer;transition:.25s ease;position:relative;
+    }
+    .case-file:hover{transform:translateY(-4px);border-color:rgba(212,175,90,.4)}
+    .case-file.solved{border-color:rgba(63,184,138,.4)}
+    .case-file .cf-check{position:absolute;top:14px;right:14px;color:var(--money1);font-size:1.1rem}
+    .cf-diff{font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;color:var(--det1);margin-bottom:8px}
+    .case-file h4{margin:0 0 8px;font-size:1.05rem;font-family:Fraunces,serif}
+    .case-file p{color:var(--muted);font-size:.84rem;line-height:1.6;margin:0 0 10px}
+    .cf-meta{display:flex;gap:8px;font-size:.72rem;color:var(--muted)}
+
+    .featured-case{
+      border:1px solid rgba(212,175,90,.35);border-radius:18px;padding:22px;
+      background:linear-gradient(135deg, rgba(212,175,90,.1), rgba(58,95,217,.08));
+      cursor:pointer;
+    }
+    .featured-case:hover{transform:translateY(-3px)}
+    .featured-case .fc-tag{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--det1);font-weight:700;margin-bottom:8px}
+
+    /* Investigation room */
+    .briefing-box{
+      background:linear-gradient(135deg, rgba(212,175,90,.1), rgba(58,95,217,.08));
+      border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:20px;
+      font-size:.96rem;line-height:1.75;
+    }
+    .evidence-board{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-bottom:20px}
+    .evidence-pin{
+      padding:16px;border-radius:4px;position:relative;font-size:.86rem;
+      box-shadow:0 8px 20px rgba(0,0,0,.3);
+    }
+    .evidence-pin::before{
+      content:"";position:absolute;top:-6px;left:50%;transform:translateX(-50%);
+      width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,#e8c86a,#a8802e);
+      box-shadow:0 2px 4px rgba(0,0,0,.4);
+    }
+    .evidence-pin.type-note{background:#f0dfa0;color:#3a2f10;transform:rotate(-2deg);font-family:'Fraunces',serif}
+    .evidence-pin.type-note:nth-child(even){transform:rotate(1.5deg)}
+    .evidence-pin.type-sql{background:#0a0f1a;color:#a8e6d0;font-family:'JetBrains Mono',monospace;font-size:.74rem;transform:rotate(1deg);border:1px solid var(--w10)}
+    .evidence-pin.type-chart{background:var(--surface2);color:var(--text);border:1px solid var(--w10);transform:rotate(-1deg)}
+    .evidence-pin .ep-title{font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;opacity:.7;margin-bottom:8px;font-family:Inter,sans-serif}
+    .evidence-pin pre{margin:0;white-space:pre-wrap;word-break:break-word}
+    .ep-chart-row{display:grid;grid-template-columns:1fr 50px 50px;gap:6px;align-items:center;font-size:.76rem;margin-bottom:5px}
+    .ep-chart-track{height:7px;border-radius:999px;background:var(--w08);overflow:hidden}
+    .ep-chart-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--det1),var(--det2))}
+
+    .hint-area{margin-bottom:20px}
+    .hint-btn{
+      padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--w04);
+      color:var(--text);cursor:pointer;font-size:.85rem;margin-bottom:10px;
+    }
+    .hint-btn:hover:not(:disabled){background:var(--w08);transform:translateY(-2px)}
+    .hint-btn:disabled{opacity:.4;cursor:not-allowed}
+    .hint-item{padding:10px 14px;border-radius:10px;background:var(--w04);border:1px dashed var(--w14);font-size:.86rem;margin-bottom:8px;color:var(--muted)}
+
+    .accusation-list{display:grid;gap:8px;margin-bottom:16px}
+    .accusation-opt{
+      padding:12px 16px;border-radius:12px;border:1px solid var(--line);background:var(--w03);
+      cursor:pointer;font-size:.92rem;transition:.2s ease;
+    }
+    .accusation-opt:hover{border-color:rgba(212,175,90,.4)}
+    .accusation-opt.selected{border-color:var(--det1);background:rgba(212,175,90,.1)}
+    .accuse-btn{
+      padding:11px 22px;border-radius:999px;border:none;cursor:pointer;
+      background:linear-gradient(135deg,var(--det1),var(--det2));color:#0b0f1e;font-weight:700;
+    }
+    .accuse-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 20px rgba(212,175,90,.3)}
+    .accuse-btn:disabled{opacity:.4;cursor:not-allowed}
+
+    .result-panel{padding:16px 18px;border-radius:14px;margin-top:16px;font-size:.92rem;line-height:1.7}
+    .result-panel.correct{background:rgba(63,184,138,.12);border:1px solid rgba(63,184,138,.35)}
+    .result-panel.wrong{background:rgba(255,120,120,.1);border:1px solid rgba(255,120,120,.3)}
+
+    .det-empty{text-align:center;padding:36px 20px;border-radius:16px;border:1px dashed var(--line);background:var(--w03);color:var(--muted)}
+    .det-empty .empty-glyph{font-size:2rem;margin-bottom:10px;display:block;opacity:.7}
+
+    /* Certificate */
+    .certificate{
+      border:2px solid var(--det1);border-radius:18px;padding:36px;text-align:center;
+      background:linear-gradient(180deg, rgba(212,175,90,.08), rgba(58,95,217,.05));
+      position:relative;
+    }
+    .certificate::before{content:"";position:absolute;inset:8px;border:1px solid rgba(212,175,90,.35);border-radius:12px;pointer-events:none}
+    .certificate .cert-eyebrow{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--det1);margin-bottom:10px}
+    .certificate h2{font-size:2rem;margin-bottom:6px}
+    .certificate .cert-name{font-family:Fraunces,serif;font-style:italic;font-size:1.5rem;margin:14px 0;color:var(--det1)}
+    .certificate p{color:var(--muted);line-height:1.7}
+
+    .build-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    @media (max-width:900px){.build-steps{grid-template-columns:repeat(2,1fr)}}
+    .build-step{padding:18px;border-radius:18px;background:var(--surface);border:1px solid var(--line)}
+    .build-step .step-num{font-family:Fraunces,serif;font-size:1.3rem;color:var(--det1);margin-bottom:6px}
+    .build-step h4{margin:0 0 6px;font-size:.98rem}
+    .build-step p{color:var(--muted);font-size:.85rem;line-height:1.6;margin:0}
+
+    .lesson-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    @media (max-width:720px){.lesson-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body class="rich-bg-detective">
+  <div class="progress" id="progress"></div>
+  <div class="cursor" id="cursor"></div>
+
+  <div class="wrap">
+    <header class="nav reveal">
+      <a class="brand" href="index.html#top"><span class="dot"></span> Simran's Space</a>
+      <nav class="navlinks">
+        <a href="index.html">Home</a>
+        <a href="work.html">Work</a>
+        <a href="travel.html">Travel</a>
+        <a href="shop.html">Shop</a>
+        <a href="analytics.html" class="active">Analytics</a>
+      </nav>
+      <button class="toggle" id="theme" aria-label="Toggle theme">◐</button>
+    </header>
+
+    <main id="top">
+      <!-- HERO -->
+      <section class="page-hero reveal">
+        <div class="eyebrow">Analytics Playground · Data Detective</div>
+        <h1>Every dashboard has a story. Some of them are hiding something.</h1>
+        <p>Five real business mysteries, each with a metric that moved and a reason nobody's found yet. Read the evidence, form a hypothesis, make your accusation — no sign-up, just five cases and your own reasoning.</p>
+        <div class="det-hero-stats">
+          <div class="stat gold-accent"><strong>5</strong><span>Cases across easy to hard difficulty</span></div>
+          <div class="stat blue-accent"><strong>Weekly</strong><span>A featured case rotates every week</span></div>
+          <div class="stat gold-accent"><strong>XP &amp; badges</strong><span>Earn more for solving clean, first try</span></div>
+        </div>
+        <div class="actions" style="margin-top:20px">
+          <a class="btn primary" href="#cases">Open the case files ↓</a>
+        </div>
+      </section>
+
+      <!-- PROFILE -->
+      <section id="profile" class="reveal">
+        <div class="profile-bar">
+          <div class="profile-name-field">
+            <label for="detName">Detective name</label>
+            <input type="text" id="detName" placeholder="Type your name" maxlength="30">
+          </div>
+          <div class="profile-stat"><div class="ps-lbl">XP</div><div class="ps-val" id="profXp">0</div></div>
+          <div class="profile-stat"><div class="ps-lbl">Rank</div><div class="ps-val" id="profRank" style="font-size:1rem">Rookie Analyst</div></div>
+          <div class="profile-stat"><div class="ps-lbl">Solved</div><div class="ps-val" id="profSolved">0/5</div></div>
+          <div class="profile-badges" id="profBadges"></div>
+        </div>
+      </section>
+
+      <!-- THIS WEEK -->
+      <section class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">This Week's Case</div>
+            <h2 class="section-title">Featured mystery</h2>
+          </div>
+        </div>
+        <div class="featured-case" id="featuredCase"></div>
+      </section>
+
+      <!-- CASE FILES -->
+      <section id="cases" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Case Files</div>
+            <h2 class="section-title">Pick a case to investigate</h2>
+            <p>Every case is open from the start — solve them in any order, revisit ones you've already closed.</p>
+          </div>
+        </div>
+        <div class="case-grid" id="caseGrid"></div>
+      </section>
+
+      <!-- INVESTIGATION ROOM -->
+      <section id="investigation" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Investigation Room</div>
+            <h2 class="section-title" id="invTitle">Pick a case above</h2>
+          </div>
+        </div>
+
+        <div id="invEmpty" class="det-empty">
+          <span class="empty-glyph">🗂️</span>
+          <p>Open a case file above to see the briefing and evidence.</p>
+        </div>
+
+        <div id="invContent" style="display:none">
+          <div class="briefing-box" id="invBriefing"></div>
+
+          <div class="det-panel">
+            <h3>Evidence board</h3>
+            <p class="tool-sub">Everything you have so far. Read it before making an accusation.</p>
+            <div class="evidence-board" id="evidenceBoard"></div>
+          </div>
+
+          <div class="det-panel hint-area">
+            <h3>Need a nudge?</h3>
+            <p class="tool-sub">Hints cost a little XP off this case's total — but a wrong guess costs more.</p>
+            <button class="hint-btn" id="hintBtn" type="button">Reveal a hint (−15 XP)</button>
+            <div id="hintList"></div>
+          </div>
+
+          <div class="det-panel">
+            <h3>Make your accusation</h3>
+            <p class="tool-sub">What actually caused this?</p>
+            <div class="accusation-list" id="accusationList"></div>
+            <button class="accuse-btn" id="accuseBtn" type="button" disabled>Make accusation</button>
+            <div id="resultPanel"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CERTIFICATE -->
+      <section id="certificate-section" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Certificate</div>
+            <h2 class="section-title">Master Detective certificate</h2>
+          </div>
+        </div>
+        <div id="certOutput"></div>
+      </section>
+
+      <!-- HOW IT'S BUILT -->
+      <section class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">How it's built</div>
+            <h2 class="section-title">The thinking behind the cases</h2>
+          </div>
+        </div>
+        <div class="build-steps">
+          <div class="build-step">
+            <div class="step-num">01</div>
+            <h4>Every case has a real analytical lesson</h4>
+            <p>Ad spend flatlining, cohort concentration, cost breakdowns, bot traffic, margin vs. revenue — each mystery teaches one root-cause pattern that shows up constantly in real BI work.</p>
+          </div>
+          <div class="build-step">
+            <div class="step-num">02</div>
+            <h4>Wrong answers are plausible, not silly</h4>
+            <p>Every red herring is a real thing that does happen in business — just not the thing that happened here. That's what makes the evidence worth reading closely.</p>
+          </div>
+          <div class="build-step">
+            <div class="step-num">03</div>
+            <h4>Hints cost less than guessing wrong</h4>
+            <p>The scoring rewards asking for help over blind guessing — the same trade-off a real analyst faces between digging deeper and jumping to conclusions.</p>
+          </div>
+          <div class="build-step">
+            <div class="step-num">04</div>
+            <h4>Progress lives in your browser</h4>
+            <p>XP, badges, and solved cases persist locally — no account needed, and nothing leaves your device.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- LESSONS -->
+      <section class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">What this taught me</div>
+            <h2 class="section-title">A few lessons baked into this lab</h2>
+          </div>
+        </div>
+        <div class="lesson-grid">
+          <div class="card gold-accent">
+            <h3>The first plausible answer isn't always the right one</h3>
+            <p>Every case has at least one tempting wrong answer. Real root-cause analysis means ruling things out with evidence, not picking the first story that sounds right.</p>
+          </div>
+          <div class="card blue-accent">
+            <h3>One anomalous segment beats a scary headline number</h3>
+            <p>"Churn doubled" sounds like a crisis. "Churn doubled in exactly one new cohort" is a completely different, much smaller problem.</p>
+          </div>
+          <div class="card money-accent">
+            <h3>Timing is the cheapest clue you'll ever get</h3>
+            <p>In almost every real investigation, lining up "when it changed" against "what else changed that day" solves half the mystery immediately.</p>
+          </div>
+          <div class="card about-accent">
+            <h3>Revenue and profit ask different questions</h3>
+            <p>A best-seller by revenue can be a money-loser once returns, costs, and rework are counted — the headline metric and the real answer aren't always the same number.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="footer reveal">
+      <a href="index.html#contact">Contact</a> · Built to feel beautiful, personal, and alive.
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    // ---------- Case data ----------
+    const CASES = [
+      {
+        id:'vanishing_conversions', title:'The Vanishing Conversions', difficulty:'Easy', baseXp:60,
+        briefing:"Yesterday, checkout conversion rate fell off a cliff — down 22% overnight, with no warning. Marketing swears nothing changed. Find out what actually happened.",
+        evidence:[
+          { type:'chart', title:'Traffic by channel — typical day vs. yesterday',
+            rows:[['Organic',420,410],['Paid',310,18],['Direct',260,250],['Referral',95,90]] },
+          { type:'sql', title:'Campaign spend log',
+            code:"SELECT date, campaign_id, spend\nFROM campaigns\nWHERE date >= CURRENT_DATE - 3\nORDER BY date;\n\n-- results:\n-- 06-01  camp_112  $940\n-- 06-02  camp_112  $890\n-- 06-03  camp_112  $0" },
+          { type:'note', title:'Slack — #marketing, 9:14am',
+            text:'"hey did we accidentally pause camp_112? doing cleanup on old test campaigns and wanna make sure we didn\'t nuke the live one 😅"' }
+        ],
+        hypotheses:[
+          'The website had a checkout outage',
+          'A live paid campaign was accidentally paused during cleanup',
+          'A competitor launched a big sale',
+          'The payment processor had an outage'
+        ],
+        correct:1,
+        explanation:"Paid traffic — and only paid traffic — collapsed. Campaign spend flatlined to $0 on the same day, and the Slack message confirms someone paused a live campaign by mistake. A checkout or payment outage would have hit every channel equally, not just paid."
+      },
+      {
+        id:'churn_spike', title:'The Churn Spike', difficulty:'Medium', baseXp:90,
+        briefing:"Monthly churn just doubled — from 4% to 8.5%. Leadership wants to know if this is the start of a real problem or a one-off.",
+        evidence:[
+          { type:'chart', title:'Churn rate by signup cohort — this month',
+            rows:[['Direct signups',3.1,null],['Content / SEO',3.8,null],['Partner referral program',22.4,null],['Paid ads',4.5,null]], singleSeries:true, unit:'%' },
+          { type:'sql', title:'Churned users by source',
+            code:"SELECT signup_source, COUNT(*) AS churned\nFROM users\nWHERE churn_date IS NOT NULL\n  AND churn_date >= '2024-06-01'\nGROUP BY signup_source;\n\n-- results:\n-- direct           12\n-- content_seo       15\n-- partner_referral 140\n-- paid_ads          18" },
+          { type:'note', title:'Email — Partnerships, May 3rd',
+            text:'"Great news — new referral partner sending us ~500 signups/week starting this month!"' }
+        ],
+        hypotheses:[
+          'A recent price increase pushed customers away',
+          'A new partner-referral channel brought in a wave of low-intent signups who churn fast',
+          'A widely-reported product bug drove people away',
+          'A normal seasonal dip in usage'
+        ],
+        correct:1,
+        explanation:"Churn is almost entirely concentrated in one cohort — the new partner-referral signups — not spread evenly the way a price increase or a bug would cause. The timing lines up exactly with the new partner program's launch."
+      },
+      {
+        id:'margin_mystery', title:'The Margin Mystery', difficulty:'Medium', baseXp:90,
+        briefing:"Revenue was flat this quarter, but gross margin dropped 8 points. Finance wants an explanation before the board meeting.",
+        evidence:[
+          { type:'chart', title:'Cost per order by category — Q2 vs Q3 ($)',
+            rows:[['Product cost',18.20,18.40],['Payment fees',1.10,1.15],['Shipping',4.30,8.90],['Packaging',0.60,0.65]] },
+          { type:'sql', title:'Average shipping cost by month',
+            code:"SELECT DATE_TRUNC('month', ship_date) AS month,\n       AVG(shipping_cost) AS avg_shipping\nFROM orders\nGROUP BY 1\nORDER BY 1;\n\n-- results:\n-- April  $4.25\n-- May    $4.40\n-- June   $8.85" },
+          { type:'note', title:'Email — Shipping carrier, May 28th',
+            text:'"Effective June 1: new fuel surcharge added to all shipments, approx +$4.50/parcel average."' }
+        ],
+        hypotheses:[
+          'A spike in product returns',
+          'A new shipping carrier fuel surcharge that started in June',
+          'Discounts got out of control',
+          'Currency exchange losses on overseas suppliers'
+        ],
+        correct:1,
+        explanation:"Shipping cost per order roughly doubled starting exactly in June — almost matching the carrier's fuel surcharge notice dollar for dollar. Product cost and fees barely moved, which rules out sourcing or payment issues."
+      },
+      {
+        id:'phantom_users', title:'The Phantom Users', difficulty:'Hard', baseXp:130,
+        briefing:"Daily active users tripled overnight with zero marketing spend behind it. Is this the best day ever, or something else?",
+        evidence:[
+          { type:'chart', title:'New sessions by market — typical vs. yesterday',
+            rows:[['Home market',4200,4100],['Next 5 markets combined',3100,2950],['One unfamiliar market',90,41000]] },
+          { type:'sql', title:'Login attempts by user agent',
+            code:"SELECT user_agent, COUNT(*)\nFROM login_events\nWHERE event_date = CURRENT_DATE - 1\nGROUP BY user_agent\nORDER BY 2 DESC LIMIT 3;\n\n-- results:\n-- python-requests/2.31   38500\n-- Mozilla/5.0 (mixed)      8900\n-- curl/8.1                 1200" },
+          { type:'note', title:'Security team Slack, 6:02am',
+            text:'"Seeing a big spike in login attempts from a narrow IP range overnight — flagging as possible credential stuffing, investigating."' }
+        ],
+        hypotheses:[
+          'A social media post went viral overnight',
+          'Automated bot traffic, likely a credential-stuffing attack',
+          'An untracked marketing campaign is underreporting its spend',
+          'A tracking bug is double-counting real users'
+        ],
+        correct:1,
+        explanation:"The spike is concentrated almost entirely in one unfamiliar market and dominated by scripted user agents like python-requests and curl — real users don't log in with those. Security independently flagged the exact same pattern."
+      },
+      {
+        id:'profitable_product', title:"The Profitable Product That Wasn't", difficulty:'Hard', baseXp:130,
+        briefing:"Product X is the best-selling item on the site by revenue. Someone in finance says it's actually losing the company money. Who's right?",
+        evidence:[
+          { type:'chart', title:'Revenue vs. return rate by product',
+            rows:[['Product X — revenue ($k)',410,null],['Product X — return rate (%)',41,null],['Product Y — return rate (%)',6,null],['Product Z — return rate (%)',4,null]], singleSeries:true },
+          { type:'sql', title:'Return rate by product',
+            code:"SELECT product_id, COUNT(*) AS orders,\n       AVG(CASE WHEN returned THEN 1.0 ELSE 0 END) AS return_rate\nFROM orders\nGROUP BY product_id;\n\n-- results:\n-- product_x   41% return rate\n-- product_y    6% return rate\n-- product_z    4% return rate" },
+          { type:'note', title:'Support ticket summary',
+            text:'"38% of Product X returns cite \'item arrived damaged\' — packaging appears insufficient for this item\'s weight."' }
+        ],
+        hypotheses:[
+          "Product X's high return rate isn't reflected in the headline revenue number, so it looks profitable when it isn't",
+          'Costs were allocated to the wrong product line',
+          "Product X's price is simply too low",
+          'A wave of fraudulent orders inflated the numbers'
+        ],
+        correct:0,
+        explanation:"Revenue counts every order placed, including the 41% that come right back as returns — each one still costs shipping, packaging, and processing both ways. Product X only looks like a top seller if you stop looking right after checkout."
+      }
+    ];
+
+    const RANKS = [
+      { min:0, label:'Rookie Analyst' },
+      { min:80, label:'Junior Detective' },
+      { min:200, label:'Detective' },
+      { min:350, label:'Senior Detective' },
+      { min:480, label:'Master Detective' }
+    ];
+    const ALL_BADGES = [
+      { key:'first_case', label:'Case Closed', desc:'Solve your first case' },
+      { key:'clean_read', label:'Clean Read', desc:'Solve a case with no hints and no wrong guesses' },
+      { key:'persistent', label:'Persistent', desc:'Solve a case after 2+ wrong guesses' },
+      { key:'master_detective', label:'Master Detective', desc:'Solve all 5 cases' }
+    ];
+
+    // ---------- State ----------
+    const STORE_KEY = 'dataDetectiveV1';
+    let profile = { name:'', xp:0, badges:[], progress:{} };
+    let currentCaseId = null;
+    let selectedHypothesis = null;
+
+    function defaultProgress(caseId){
+      return { solved:false, hintsUsed:0, wrongGuesses:0 };
+    }
+    function getProgress(caseId){
+      if (!profile.progress[caseId]) profile.progress[caseId] = defaultProgress(caseId);
+      return profile.progress[caseId];
+    }
+
+    function loadProfile(){
+      try{
+        const raw = localStorage.getItem(STORE_KEY);
+        if (raw) profile = Object.assign({ name:'', xp:0, badges:[], progress:{} }, JSON.parse(raw));
+      }catch(e){}
+    }
+    function saveProfile(){
+      try{ localStorage.setItem(STORE_KEY, JSON.stringify(profile)); }catch(e){}
+    }
+
+    function rankFor(xp){
+      let r = RANKS[0];
+      for (const entry of RANKS) if (xp >= entry.min) r = entry;
+      return r.label;
+    }
+
+    function isoWeek(d = new Date()){
+      const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      const dayNum = date.getUTCDay() || 7;
+      date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+      return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+    }
+
+    function renderProfile(){
+      document.getElementById('detName').value = profile.name || '';
+      document.getElementById('profXp').textContent = profile.xp;
+      document.getElementById('profRank').textContent = rankFor(profile.xp);
+      const solvedCount = CASES.filter(c => getProgress(c.id).solved).length;
+      document.getElementById('profSolved').textContent = `${solvedCount}/${CASES.length}`;
+      document.getElementById('profBadges').innerHTML = ALL_BADGES.map(b => {
+        const earned = profile.badges.includes(b.key);
+        return `<span class="badge-chip ${earned?'':'locked'}" title="${b.desc}">${earned?'🏅 ':'🔒 '}${b.label}</span>`;
+      }).join('');
+    }
+
+    document.getElementById('detName').addEventListener('input', e => {
+      profile.name = e.target.value;
+      saveProfile();
+      renderCertificate();
+    });
+
+    function awardBadge(key){
+      if (!profile.badges.includes(key)) profile.badges.push(key);
+    }
+
+    function renderFeatured(){
+      const idx = isoWeek() % CASES.length;
+      const c = CASES[idx];
+      const solved = getProgress(c.id).solved;
+      document.getElementById('featuredCase').innerHTML = `
+        <div class="fc-tag">Week ${isoWeek()} · ${c.difficulty}${solved ? ' · Already solved' : ''}</div>
+        <h3>${c.title}</h3>
+        <p style="color:var(--muted);line-height:1.7;margin:8px 0 14px">${c.briefing}</p>
+        <button class="btn primary" type="button" data-open-case="${c.id}">Investigate this case →</button>
+      `;
+      document.querySelector('[data-open-case]').addEventListener('click', e => openCase(e.target.dataset.openCase));
+    }
+
+    function renderCaseGrid(){
+      document.getElementById('caseGrid').innerHTML = CASES.map(c => {
+        const solved = getProgress(c.id).solved;
+        return `
+        <div class="case-file ${solved?'solved':''}" data-case="${c.id}">
+          ${solved ? '<span class="cf-check">✓</span>' : ''}
+          <div class="cf-diff">${c.difficulty}</div>
+          <h4>${c.title}</h4>
+          <p>${c.briefing.slice(0, 90)}${c.briefing.length > 90 ? '…' : ''}</p>
+          <div class="cf-meta"><span>${c.evidence.length} pieces of evidence</span><span>·</span><span>${c.baseXp} XP</span></div>
+        </div>`;
+      }).join('');
+      document.querySelectorAll('[data-case]').forEach(el => {
+        el.addEventListener('click', () => openCase(el.dataset.case));
+      });
+    }
+
+    function chartRows(ev){
+      const max = Math.max(...ev.rows.map(r => Math.max(r[1]||0, r[2]||0)), 1);
+      return ev.rows.map(r => `
+        <div class="ep-chart-row">
+          <span>${r[0]}</span>
+          <div class="ep-chart-track"><div class="ep-chart-fill" style="width:${((r[1]||0)/max*100).toFixed(0)}%"></div></div>
+          <span>${r[1]}${ev.unit||''}</span>
+        </div>
+        ${r[2] !== null && r[2] !== undefined ? `
+        <div class="ep-chart-row">
+          <span style="opacity:.6">↳ yesterday/actual</span>
+          <div class="ep-chart-track"><div class="ep-chart-fill" style="width:${((r[2]||0)/max*100).toFixed(0)}%;opacity:.6"></div></div>
+          <span>${r[2]}${ev.unit||''}</span>
+        </div>` : ''}
+      `).join('');
+    }
+
+    function renderEvidence(c){
+      document.getElementById('evidenceBoard').innerHTML = c.evidence.map(ev => {
+        if (ev.type === 'note') {
+          return `<div class="evidence-pin type-note"><div class="ep-title">${ev.title}</div><p style="margin:0">${ev.text}</p></div>`;
+        }
+        if (ev.type === 'sql') {
+          return `<div class="evidence-pin type-sql"><div class="ep-title" style="color:#a8e6d0">${ev.title}</div><pre>${ev.code}</pre></div>`;
+        }
+        return `<div class="evidence-pin type-chart"><div class="ep-title">${ev.title}</div>${chartRows(ev)}</div>`;
+      }).join('');
+    }
+
+    function renderHints(c){
+      const prog = getProgress(c.id);
+      const hints = [
+        'Look closely at which segment or category moved — is it spread evenly, or concentrated in one place?',
+        'Line up the exact date something changed against the SQL evidence — what else happened on that same date?'
+      ];
+      const btn = document.getElementById('hintBtn');
+      const list = document.getElementById('hintList');
+      const revealed = Math.min(prog.hintsUsed, hints.length);
+      list.innerHTML = hints.slice(0, revealed).map((h,i) => `<div class="hint-item">Hint ${i+1}: ${h}</div>`).join('');
+      btn.disabled = revealed >= hints.length || prog.solved;
+      btn.textContent = prog.solved ? 'Case already solved' : (revealed >= hints.length ? 'No more hints for this case' : 'Reveal a hint (−15 XP)');
+      btn.onclick = () => {
+        if (prog.solved || prog.hintsUsed >= hints.length) return;
+        prog.hintsUsed++;
+        saveProfile();
+        renderHints(c);
+      };
+    }
+
+    function renderAccusation(c){
+      const prog = getProgress(c.id);
+      selectedHypothesis = null;
+      document.getElementById('accusationList').innerHTML = c.hypotheses.map((h,i) => `
+        <div class="accusation-opt" data-idx="${i}">${h}</div>
+      `).join('');
+      const accuseBtn = document.getElementById('accuseBtn');
+      const resultPanel = document.getElementById('resultPanel');
+      accuseBtn.disabled = true;
+      accuseBtn.textContent = prog.solved ? 'Case closed' : 'Make accusation';
+
+      document.querySelectorAll('.accusation-opt').forEach(el => {
+        el.addEventListener('click', () => {
+          if (prog.solved) return;
+          document.querySelectorAll('.accusation-opt').forEach(o => o.classList.remove('selected'));
+          el.classList.add('selected');
+          selectedHypothesis = +el.dataset.idx;
+          accuseBtn.disabled = false;
+        });
+      });
+
+      if (prog.solved) {
+        resultPanel.innerHTML = `<div class="result-panel correct"><strong>Case closed.</strong> ${c.explanation}</div>`;
+        document.querySelectorAll('.accusation-opt')[c.correct]?.classList.add('selected');
+      } else {
+        resultPanel.innerHTML = '';
+      }
+
+      accuseBtn.onclick = () => {
+        if (prog.solved || selectedHypothesis === null) return;
+        if (selectedHypothesis === c.correct) {
+          const penalty = prog.hintsUsed * 15 + prog.wrongGuesses * 10;
+          const earned = Math.max(Math.round(c.baseXp * 0.2), c.baseXp - penalty);
+          prog.solved = true;
+          profile.xp += earned;
+          awardBadge('first_case');
+          if (prog.hintsUsed === 0 && prog.wrongGuesses === 0) awardBadge('clean_read');
+          if (prog.wrongGuesses >= 2) awardBadge('persistent');
+          if (CASES.every(cc => getProgress(cc.id).solved)) awardBadge('master_detective');
+          saveProfile();
+          resultPanel.innerHTML = `<div class="result-panel correct"><strong>Case closed — +${earned} XP.</strong> ${c.explanation}</div>`;
+          renderProfile();
+          renderCaseGrid();
+          renderCertificate();
+          accuseBtn.disabled = true;
+          accuseBtn.textContent = 'Case closed';
+        } else {
+          prog.wrongGuesses++;
+          saveProfile();
+          resultPanel.innerHTML = `<div class="result-panel wrong"><strong>Not quite.</strong> That's a real possibility, but the evidence points somewhere else. Look again, or reveal a hint.</div>`;
+        }
+      };
+    }
+
+    function openCase(caseId){
+      currentCaseId = caseId;
+      const c = CASES.find(x => x.id === caseId);
+      if (!c) return;
+      document.getElementById('invEmpty').style.display = 'none';
+      document.getElementById('invContent').style.display = 'block';
+      document.getElementById('invTitle').textContent = c.title;
+      document.getElementById('invBriefing').innerHTML = `<strong>The situation:</strong> ${c.briefing}`;
+      renderEvidence(c);
+      renderHints(c);
+      renderAccusation(c);
+      document.getElementById('investigation').scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    function renderCertificate(){
+      const out = document.getElementById('certOutput');
+      const allSolved = CASES.every(c => getProgress(c.id).solved);
+      if (!allSolved) {
+        const solvedCount = CASES.filter(c => getProgress(c.id).solved).length;
+        out.innerHTML = `<div class="det-empty"><span class="empty-glyph">🎓</span><p>Solve all ${CASES.length} cases to unlock your Master Detective certificate. Currently: ${solvedCount}/${CASES.length}.</p></div>`;
+        return;
+      }
+      const name = profile.name && profile.name.trim() ? profile.name.trim() : 'Anonymous Detective';
+      out.innerHTML = `
+        <div class="certificate">
+          <div class="cert-eyebrow">Certificate of Completion</div>
+          <h2>Master Detective</h2>
+          <p>This certifies that</p>
+          <div class="cert-name">${name}</div>
+          <p>has investigated and solved all ${CASES.length} cases in the Analytics Playground's Data Detective lab, with a final score of ${profile.xp} XP.</p>
+        </div>
+      `;
+    }
+
+    function renderAll(){
+      renderProfile();
+      renderFeatured();
+      renderCaseGrid();
+      renderCertificate();
+    }
+
+    loadProfile();
+    renderAll();
+  </script>
+</body>
+</html>

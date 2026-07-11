@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KPI Builder — Pick the Right Metrics for Any Business | Simran's Space</title>
+  <meta name="description" content="An interactive KPI Builder by Simran Tiwari — choose an industry and objective, get back a curated set of KPIs, chart types, SQL starters, and a dashboard blueprint." />
+  <meta name="keywords" content="KPI selection tool, business metrics generator, dashboard blueprint, SQL starter queries, data analyst portfolio project" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .kpi-hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+    @media (max-width:720px){.kpi-hero-stats{grid-template-columns:1fr}}
+
+    /* Executive report visual language — sharper corners, thinner borders, less glow than other labs */
+    .kpi-panel{padding:26px;border-radius:14px;background:var(--surface);border:1px solid var(--line);box-shadow:0 1px 0 var(--w08);margin-bottom:20px}
+    .kpi-panel h3{margin-bottom:6px}
+    .kpi-panel .tool-sub{color:var(--muted);margin:0 0 18px;line-height:1.7}
+
+    .step-label{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px}
+    .pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+    .pill-btn{
+      padding:10px 16px;border-radius:8px;border:1px solid var(--line);background:var(--w04);
+      color:var(--text);cursor:pointer;font-size:.88rem;font-family:inherit;transition:.2s ease;
+    }
+    .pill-btn:hover:not(.active){background:var(--w08);transform:translateY(-2px)}
+    .pill-btn.active{background:linear-gradient(135deg,var(--kpi1),var(--kpi2));color:#05130e;font-weight:700;border-color:transparent}
+    .pill-sub{font-size:.72rem;color:var(--muted);margin-top:-16px;margin-bottom:20px}
+
+    .kpi-empty{
+      text-align:center;padding:36px 20px;border-radius:14px;
+      border:1px dashed var(--line);background:var(--w03);color:var(--muted);
+    }
+    .kpi-empty .empty-glyph{font-size:2rem;margin-bottom:10px;display:block;opacity:.7}
+
+    /* KPI cards — metric-card / report style */
+    .kpi-card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    @media (max-width:760px){.kpi-card-grid{grid-template-columns:1fr}}
+    .kpi-metric-card{
+      padding:16px 18px;border-radius:12px;background:var(--w03);border:1px solid var(--w08);
+      border-left:3px solid var(--kpi1);
+    }
+    .kpi-metric-card h4{margin:0 0 6px;font-size:.98rem;font-family:Fraunces,serif}
+    .kpi-metric-card .kmc-def{color:var(--muted);font-size:.86rem;line-height:1.65;margin:0 0 8px}
+    .kpi-metric-card .kmc-formula{
+      font-family:'JetBrains Mono',monospace;font-size:.76rem;color:var(--kpi1);
+      background:var(--w04);padding:6px 10px;border-radius:6px;margin-bottom:8px;display:block;
+    }
+    .kmc-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+    .kmc-tag{padding:3px 9px;border-radius:6px;background:var(--w05);border:1px solid var(--w08);font-size:.68rem;color:var(--muted)}
+    .kmc-watch{font-size:.78rem;color:var(--muted);opacity:.85;line-height:1.6;border-top:1px dashed var(--w08);padding-top:8px;margin-top:4px}
+    .kmc-watch strong{color:var(--text);opacity:.9}
+
+    /* SQL block */
+    .sql-select{
+      padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--w04);
+      color:var(--text);font-family:inherit;font-size:.85rem;margin-bottom:12px;
+    }
+    .sql-block{
+      background:#0a0f1a;border:1px solid var(--w08);border-radius:12px;padding:16px 18px;
+      font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.7;color:#a8e6d0;
+      overflow-x:auto;white-space:pre;
+    }
+    [data-theme="light"] .sql-block{background:#161d2b;color:#9fe8ce}
+    .sql-note{font-size:.78rem;color:var(--muted);margin-top:8px;line-height:1.6}
+
+    /* Dashboard blueprint — clean wireframe, distinct from other labs' glowing cards */
+    .blueprint{
+      border:1px dashed var(--w14);border-radius:12px;padding:18px;background:var(--w03);
+    }
+    .bp-kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;margin-bottom:14px}
+    .bp-kpi{padding:10px 8px;border:1px dashed var(--w14);border-radius:8px;text-align:center;font-size:.68rem;color:var(--muted)}
+    .bp-chart-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+    .bp-chart{
+      padding:22px 10px;border:1px dashed var(--w14);border-radius:8px;text-align:center;
+      font-size:.74rem;color:var(--muted);background:var(--w04);
+    }
+    .bp-chart .bp-chart-icon{font-size:1.3rem;display:block;margin-bottom:6px;opacity:.7}
+
+    .build-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    @media (max-width:900px){.build-steps{grid-template-columns:repeat(2,1fr)}}
+    .build-step{padding:18px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+    .build-step .step-num{font-family:Fraunces,serif;font-size:1.3rem;color:var(--kpi1);margin-bottom:6px}
+    .build-step h4{margin:0 0 6px;font-size:.98rem}
+    .build-step p{color:var(--muted);font-size:.85rem;line-height:1.6;margin:0}
+
+    .lesson-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    @media (max-width:720px){.lesson-grid{grid-template-columns:1fr}}
+    .card.kpi-card-flat{border-radius:14px}
+  </style>
+</head>
+<body class="rich-bg-kpi">
+  <div class="progress" id="progress"></div>
+  <div class="cursor" id="cursor"></div>
+
+  <div class="wrap">
+    <header class="nav reveal">
+      <a class="brand" href="index.html#top"><span class="dot"></span> Simran's Space</a>
+      <nav class="navlinks">
+        <a href="index.html">Home</a>
+        <a href="work.html">Work</a>
+        <a href="travel.html">Travel</a>
+        <a href="shop.html">Shop</a>
+        <a href="analytics.html" class="active">Analytics</a>
+      </nav>
+      <button class="toggle" id="theme" aria-label="Toggle theme">◐</button>
+    </header>
+
+    <main id="top">
+      <!-- HERO -->
+      <section class="page-hero reveal">
+        <div class="eyebrow">Analytics Playground · KPI Lab</div>
+        <h1>Pick an industry. Pick an objective. Get the metrics that actually fit.</h1>
+        <p>Most "top 10 KPIs" lists are generic and forgettable. This one asks what you're actually trying to do first — grow, retain, run leaner, or protect margin — then builds the metric set, the charts, and a starting SQL query around that answer.</p>
+        <div class="kpi-hero-stats">
+          <div class="stat kpi-accent"><strong>6</strong><span>Industries, each with its own schema</span></div>
+          <div class="stat slate-accent"><strong>24</strong><span>Curated KPIs across 4 objectives</span></div>
+          <div class="stat kpi-accent"><strong>Live SQL</strong><span>A real starting query for every metric</span></div>
+        </div>
+        <div class="actions" style="margin-top:20px">
+          <a class="btn primary" href="#builder">Build a KPI set ↓</a>
+        </div>
+      </section>
+
+      <!-- BUILDER -->
+      <section id="builder" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Step 1 &amp; 2</div>
+            <h2 class="section-title">Choose your industry and objective</h2>
+            <p>Every combination pulls from the same 24-KPI library, but the schema, examples, and SQL change to match what you picked.</p>
+          </div>
+        </div>
+
+        <div class="kpi-panel kpi-accent">
+          <div class="step-label">Industry</div>
+          <div class="pill-row" id="industryRow"></div>
+
+          <div class="step-label">Business objective</div>
+          <div class="pill-row" id="objectiveRow"></div>
+          <div class="pill-sub" id="objectiveDesc"></div>
+        </div>
+      </section>
+
+      <!-- RESULTS: KPI CARDS -->
+      <section id="results" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Recommended KPIs</div>
+            <h2 class="section-title" id="resultsTitle">Your metric set</h2>
+            <p id="resultsSub">Pick an industry and objective above to generate a KPI set.</p>
+          </div>
+        </div>
+
+        <div class="kpi-card-grid" id="kpiCards"></div>
+      </section>
+
+      <!-- SQL -->
+      <section id="sql-section" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Starting Point</div>
+            <h2 class="section-title">A real query for each metric</h2>
+            <p>Pick one of your recommended KPIs to see a starting SQL query against a realistic schema for this industry. Written in generic ANSI SQL — adjust date functions for your specific warehouse.</p>
+          </div>
+        </div>
+        <div class="kpi-panel slate-accent">
+          <select class="sql-select" id="sqlKpiSelect"></select>
+          <div class="sql-block" id="sqlBlock">Pick an industry and objective above first.</div>
+          <p class="sql-note" id="schemaNote"></p>
+        </div>
+      </section>
+
+      <!-- DASHBOARD BLUEPRINT -->
+      <section id="blueprint-section" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Dashboard Blueprint</div>
+            <h2 class="section-title">Where each metric belongs on a dashboard</h2>
+            <p>A rough wireframe, not a finished design — a starting layout so you're not staring at a blank canvas.</p>
+          </div>
+        </div>
+        <div class="kpi-panel kpi-accent">
+          <div class="blueprint" id="blueprintOutput">
+            <div class="kpi-empty"><span class="empty-glyph">📐</span><p>Your dashboard blueprint will appear here once you've picked an industry and objective.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HOW IT'S BUILT -->
+      <section class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">How it's built</div>
+            <h2 class="section-title">The thinking behind the builder</h2>
+          </div>
+        </div>
+        <div class="build-steps">
+          <div class="build-step">
+            <div class="step-num">01</div>
+            <h4>Objective first, industry second</h4>
+            <p>The 24 KPIs are organized by what you're trying to achieve, not by industry — industry only changes the schema and framing, not the underlying logic.</p>
+          </div>
+          <div class="build-step">
+            <div class="step-num">02</div>
+            <h4>Every metric has a watchout</h4>
+            <p>A KPI without a caveat is how dashboards mislead people. Each card includes the way this specific number tends to get misread.</p>
+          </div>
+          <div class="build-step">
+            <div class="step-num">03</div>
+            <h4>SQL as a starting point</h4>
+            <p>These queries won't run against your actual warehouse unchanged — they're a structurally correct starting point for the shape of the problem.</p>
+          </div>
+          <div class="build-step">
+            <div class="step-num">04</div>
+            <h4>Layout before design</h4>
+            <p>The blueprint answers "what goes where" before anyone opens a BI tool — the layout decision, made first, on purpose.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- LESSONS -->
+      <section class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">What this taught me</div>
+            <h2 class="section-title">A few lessons baked into this lab</h2>
+          </div>
+        </div>
+        <div class="lesson-grid">
+          <div class="card kpi-accent kpi-card-flat">
+            <h3>A KPI is an answer to a question, not a number</h3>
+            <p>"What's our churn rate" means nothing until you know why you're asking — growth, retention, and profitability all care about different numbers.</p>
+          </div>
+          <div class="card slate-accent kpi-card-flat">
+            <h3>More metrics isn't more clarity</h3>
+            <p>Six well-chosen KPIs beat twenty scattered ones. The hard part is deciding what not to track.</p>
+          </div>
+          <div class="card money-accent kpi-card-flat">
+            <h3>The watchout matters more than the formula</h3>
+            <p>Almost any KPI can be gamed or misread. Knowing how is what separates someone who reports a number from someone who understands it.</p>
+          </div>
+          <div class="card about-accent kpi-card-flat">
+            <h3>Schema shapes thinking</h3>
+            <p>The same business question looks different once you have to name the actual tables and columns involved — it forces precision that a KPI name alone doesn't.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="footer reveal">
+      <a href="index.html#contact">Contact</a> · Built to feel beautiful, personal, and alive.
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    // ---------- Industry schemas ----------
+    const INDUSTRIES = {
+      ecommerce: { name:'E-commerce & Retail', unit:'customer', table:'orders', idCol:'order_id', entityCol:'customer_id', amountCol:'amount', dateCol:'order_date', custTable:'customers', custIdCol:'customer_id', signupCol:'signup_date', extraCol:'status' },
+      saas:      { name:'SaaS & Subscriptions', unit:'user', table:'subscriptions', idCol:'sub_id', entityCol:'user_id', amountCol:'mrr', dateCol:'start_date', custTable:'users', custIdCol:'user_id', signupCol:'signup_date', extraCol:'churn_date' },
+      marketing: { name:'Marketing & Advertising', unit:'channel', table:'campaigns', idCol:'campaign_id', entityCol:'channel', amountCol:'spend', dateCol:'campaign_date', custTable:'campaigns', custIdCol:'channel', signupCol:'campaign_date', extraCol:'conversions' },
+      fintech:   { name:'Fintech & Banking', unit:'account', table:'transactions', idCol:'txn_id', entityCol:'account_id', amountCol:'amount', dateCol:'txn_date', custTable:'accounts', custIdCol:'account_id', signupCol:'opened_date', extraCol:'txn_type' },
+      healthcare:{ name:'Healthcare', unit:'patient', table:'visits', idCol:'visit_id', entityCol:'patient_id', amountCol:'cost', dateCol:'visit_date', custTable:'patients', custIdCol:'patient_id', signupCol:'first_visit_date', extraCol:'provider_id' },
+      nonprofit: { name:'Nonprofit & Fundraising', unit:'donor', table:'donations', idCol:'donation_id', entityCol:'donor_id', amountCol:'amount', dateCol:'donation_date', custTable:'donors', custIdCol:'donor_id', signupCol:'first_gift_date', extraCol:'campaign' }
+    };
+
+    const OBJECTIVES = {
+      growth:        { name:'Growth', desc:'Acquiring new customers and expanding reach.' },
+      retention:     { name:'Retention', desc:'Keeping the customers you already have.' },
+      efficiency:    { name:'Efficiency', desc:'Doing more with the same or fewer resources.' },
+      profitability: { name:'Profitability', desc:'Making sure growth actually makes money.' }
+    };
+
+    // ---------- KPI library (24 KPIs, tagged by objective) ----------
+    const KPI_LIBRARY = [
+      // GROWTH
+      { key:'new_rate', objective:'growth', name:'New Customer Rate', chart:'Line chart', cadence:'Monthly',
+        def:(i)=>`The share of your active ${i.unit} base that's new this period.`,
+        formula:'New customers this period ÷ total active customers this period',
+        watch:'A single bulk import or campaign spike can make one month look like a trend.',
+        sql:(i)=>`SELECT DATE_TRUNC('month', ${i.signupCol}) AS month,\n       COUNT(DISTINCT ${i.custIdCol}) AS new_${i.unit}s\nFROM ${i.custTable}\nGROUP BY 1\nORDER BY 1;` },
+      { key:'rev_growth', objective:'growth', name:'Revenue Growth Rate (MoM)', chart:'Line chart', cadence:'Monthly',
+        def:()=>'How fast total revenue is compounding, period over period.',
+        formula:'(Revenue this period − revenue last period) ÷ revenue last period',
+        watch:'Small base periods make % growth look dramatic in either direction — pair with absolute revenue.',
+        sql:(i)=>`WITH monthly AS (\n  SELECT DATE_TRUNC('month', ${i.dateCol}) AS month, SUM(${i.amountCol}) AS revenue\n  FROM ${i.table}\n  GROUP BY 1\n)\nSELECT month, revenue,\n       (revenue - LAG(revenue) OVER (ORDER BY month)) / NULLIF(LAG(revenue) OVER (ORDER BY month), 0) AS growth_rate\nFROM monthly\nORDER BY month;` },
+      { key:'cac', objective:'growth', name:'Customer Acquisition Cost (CAC)', chart:'Bar chart', cadence:'Monthly',
+        def:(i)=>`What it costs to win one new ${i.unit}.`,
+        formula:'Total acquisition spend ÷ new customers acquired',
+        watch:'Only counting paid spend understates CAC if organic and referral channels are doing real work too.',
+        sql:(i)=>`SELECT DATE_TRUNC('month', s.${i.signupCol}) AS month,\n       SUM(m.spend) / NULLIF(COUNT(DISTINCT s.${i.custIdCol}), 0) AS cac\nFROM ${i.custTable} s\nJOIN marketing_spend m ON DATE_TRUNC('month', m.spend_date) = DATE_TRUNC('month', s.${i.signupCol})\nGROUP BY 1\nORDER BY 1;` },
+      { key:'conv_rate', objective:'growth', name:'Conversion Rate', chart:'Funnel / bar chart', cadence:'Weekly',
+        def:()=>'The share of prospects who actually become customers.',
+        formula:'Customers ÷ leads or visitors',
+        watch:'Compare like-for-like traffic quality — a cheap traffic source can tank this number without meaning anything is wrong.',
+        sql:(i)=>`SELECT DATE_TRUNC('week', l.created_at) AS week,\n       COUNT(DISTINCT c.${i.custIdCol})::FLOAT / NULLIF(COUNT(DISTINCT l.lead_id), 0) AS conversion_rate\nFROM leads l\nLEFT JOIN ${i.custTable} c ON c.${i.custIdCol} = l.converted_${i.custIdCol}\nGROUP BY 1\nORDER BY 1;` },
+      { key:'channel_contrib', objective:'growth', name:'Channel Contribution', chart:'Stacked bar chart', cadence:'Monthly',
+        def:()=>'Where growth is actually coming from, by acquisition channel.',
+        formula:'New customers (or revenue) by channel ÷ total',
+        watch:'Attribution models disagree with each other — pick one and stay consistent rather than chasing "true" attribution.',
+        sql:(i)=>`SELECT acquisition_channel,\n       COUNT(DISTINCT ${i.custIdCol}) AS new_${i.unit}s,\n       COUNT(DISTINCT ${i.custIdCol})::FLOAT / SUM(COUNT(DISTINCT ${i.custIdCol})) OVER () AS share\nFROM ${i.custTable}\nGROUP BY 1\nORDER BY 2 DESC;` },
+      { key:'pipeline_velocity', objective:'growth', name:'Pipeline Velocity', chart:'Line chart', cadence:'Monthly',
+        def:()=>'How fast opportunities are moving toward becoming revenue.',
+        formula:'(Qualified leads × win rate × avg deal size) ÷ sales cycle length',
+        watch:'Only meaningful with a real, consistently-defined sales pipeline behind it.',
+        sql:(i)=>`SELECT DATE_TRUNC('month', created_at) AS month,\n       COUNT(*) FILTER (WHERE stage = 'qualified') AS qualified_leads,\n       AVG(deal_size) AS avg_deal_size,\n       AVG(DATEDIFF('day', created_at, closed_at)) AS avg_cycle_days\nFROM pipeline\nGROUP BY 1\nORDER BY 1;` },
+
+      // RETENTION
+      { key:'churn_rate', objective:'retention', name:'Churn Rate', chart:'Line chart', cadence:'Monthly',
+        def:(i)=>`The share of ${i.unit}s (or revenue) you're losing.`,
+        formula:'Customers (or revenue) lost this period ÷ customers (or revenue) at start of period',
+        watch:'Logo churn and revenue churn tell different stories — a few big accounts leaving can dwarf many small ones staying.',
+        sql:(i)=>`SELECT DATE_TRUNC('month', ${i.extraCol}) AS month,\n       COUNT(DISTINCT ${i.custIdCol}) AS churned\nFROM ${i.custTable}\nWHERE ${i.extraCol} IS NOT NULL\nGROUP BY 1\nORDER BY 1;` },
+      { key:'nrr', objective:'retention', name:'Net Revenue Retention (NRR)', chart:'Line chart', cadence:'Quarterly',
+        def:()=>'Whether your existing base is growing or shrinking on its own, ignoring new customers.',
+        formula:'(Starting revenue + expansion − contraction − churn) ÷ starting revenue',
+        watch:'Above 100% can hide churn problems if a few accounts are expanding a lot.',
+        sql:(i)=>`WITH cohort AS (\n  SELECT ${i.entityCol}, SUM(${i.amountCol}) AS revenue, DATE_TRUNC('quarter', ${i.dateCol}) AS quarter\n  FROM ${i.table}\n  GROUP BY 1, 3\n)\nSELECT quarter,\n       SUM(revenue) AS total_revenue\nFROM cohort\nGROUP BY 1\nORDER BY 1;\n-- join consecutive quarters on ${i.entityCol} to split expansion / contraction / churn` },
+      { key:'repeat_rate', objective:'retention', name:'Repeat Rate', chart:'Bar chart', cadence:'Monthly',
+        def:(i)=>`How often ${i.unit}s come back.`,
+        formula:'Customers with 2+ transactions ÷ total customers',
+        watch:'Needs a sensible time window — "ever" repeat rate looks great and means nothing.',
+        sql:(i)=>`SELECT COUNT(*) FILTER (WHERE txn_count >= 2)::FLOAT / COUNT(*) AS repeat_rate\nFROM (\n  SELECT ${i.entityCol}, COUNT(*) AS txn_count\n  FROM ${i.table}\n  WHERE ${i.dateCol} >= CURRENT_DATE - INTERVAL '90 days'\n  GROUP BY 1\n) t;` },
+      { key:'ltv', objective:'retention', name:'Customer Lifetime Value (LTV)', chart:'Bar chart, by segment', cadence:'Quarterly',
+        def:(i)=>`What a ${i.unit} is worth over the whole relationship.`,
+        formula:'Average revenue per customer × average customer lifespan',
+        watch:'Easy to inflate with unrealistic lifespan assumptions — sanity-check against actual cohort data.',
+        sql:(i)=>`SELECT AVG(total_revenue) AS avg_revenue,\n       AVG(DATEDIFF('month', first_${i.dateCol}, last_${i.dateCol})) AS avg_lifespan_months\nFROM (\n  SELECT ${i.entityCol}, SUM(${i.amountCol}) AS total_revenue,\n         MIN(${i.dateCol}) AS first_${i.dateCol}, MAX(${i.dateCol}) AS last_${i.dateCol}\n  FROM ${i.table}\n  GROUP BY 1\n) t;` },
+      { key:'active_rate', objective:'retention', name:'Active Usage Rate', chart:'Line chart', cadence:'Weekly',
+        def:(i)=>`How many of your ${i.unit}s are actually engaged, not just on the books.`,
+        formula:'Active entities in period ÷ total entities',
+        watch:'Define "active" narrowly — a real action — or this becomes a vanity number.',
+        sql:(i)=>`SELECT DATE_TRUNC('week', ${i.dateCol}) AS week,\n       COUNT(DISTINCT ${i.entityCol})::FLOAT /\n       (SELECT COUNT(DISTINCT ${i.custIdCol}) FROM ${i.custTable}) AS active_rate\nFROM ${i.table}\nGROUP BY 1\nORDER BY 1;` },
+      { key:'cohort_curve', objective:'retention', name:'Cohort Retention Curve', chart:'Multi-line chart', cadence:'Monthly',
+        def:()=>'How a group of customers decays over time from their start date.',
+        formula:'% of a signup cohort still active at month 1, 2, 3…',
+        watch:'Needs enough cohort size to not be noise — small cohorts swing wildly.',
+        sql:(i)=>`SELECT DATE_TRUNC('month', c.${i.signupCol}) AS cohort_month,\n       DATEDIFF('month', c.${i.signupCol}, t.${i.dateCol}) AS month_number,\n       COUNT(DISTINCT c.${i.custIdCol}) AS active_in_month\nFROM ${i.custTable} c\nJOIN ${i.table} t ON t.${i.entityCol} = c.${i.custIdCol}\nGROUP BY 1, 2\nORDER BY 1, 2;` },
+
+      // EFFICIENCY
+      { key:'cost_per_txn', objective:'efficiency', name:'Cost per Transaction', chart:'Bar chart', cadence:'Monthly',
+        def:()=>'What it costs to process one unit of activity.',
+        formula:'Total operating cost ÷ number of transactions',
+        watch:'Fixed costs divided by a small volume can look artificially high in slow periods.',
+        sql:(i)=>`SELECT DATE_TRUNC('month', ${i.dateCol}) AS month,\n       SUM(operating_cost) / NULLIF(COUNT(${i.idCol}), 0) AS cost_per_txn\nFROM ${i.table}\nJOIN operating_costs oc ON DATE_TRUNC('month', oc.cost_date) = DATE_TRUNC('month', ${i.table}.${i.dateCol})\nGROUP BY 1\nORDER BY 1;` },
+      { key:'op_margin', objective:'efficiency', name:'Operating Margin', chart:'Line chart', cadence:'Monthly',
+        def:()=>'How much of revenue survives after operating costs.',
+        formula:'(Revenue − operating costs) ÷ revenue',
+        watch:'One-time costs (a big hire, a lawsuit) can distort a single month — watch the trend, not one point.',
+        sql:(i)=>`SELECT DATE_TRUNC('month', ${i.dateCol}) AS month,\n       (SUM(${i.amountCol}) - SUM(operating_cost)) / NULLIF(SUM(${i.amountCol}), 0) AS operating_margin\nFROM ${i.table}\nJOIN operating_costs oc ON DATE_TRUNC('month', oc.cost_date) = DATE_TRUNC('month', ${i.table}.${i.dateCol})\nGROUP BY 1\nORDER BY 1;` },
+      { key:'cycle_time', objective:'efficiency', name:'Cycle Time', chart:'Histogram / bar chart', cadence:'Weekly',
+        def:()=>'How long it takes to get something done, start to finish.',
+        formula:'Average (completion timestamp − start timestamp)',
+        watch:'Averages hide the long tail — check the 90th percentile too, not just the mean.',
+        sql:(i)=>`SELECT DATE_TRUNC('week', ${i.dateCol}) AS week,\n       AVG(DATEDIFF('hour', created_at, completed_at)) AS avg_cycle_hours,\n       PERCENTILE_CONT(0.9) WITHIN GROUP (ORDER BY DATEDIFF('hour', created_at, completed_at)) AS p90_cycle_hours\nFROM ${i.table}\nGROUP BY 1\nORDER BY 1;` },
+      { key:'utilization', objective:'efficiency', name:'Resource Utilization', chart:'Bar chart', cadence:'Weekly',
+        def:()=>'How much of available capacity is actually being used.',
+        formula:'Time or capacity used ÷ time or capacity available',
+        watch:'100% utilization sounds good but usually means no slack for spikes or problems.',
+        sql:(i)=>`SELECT resource_id,\n       SUM(hours_used) / NULLIF(SUM(hours_available), 0) AS utilization\nFROM resource_log\nWHERE log_date >= CURRENT_DATE - INTERVAL '30 days'\nGROUP BY 1\nORDER BY 2 DESC;` },
+      { key:'error_rate', objective:'efficiency', name:'Error / Defect Rate', chart:'Line chart', cadence:'Weekly',
+        def:()=>'How often something goes wrong.',
+        formula:'Errors or defects ÷ total transactions',
+        watch:'A drop in errors could mean fewer are being logged, not fewer happening — check reporting behavior too.',
+        sql:(i)=>`SELECT DATE_TRUNC('week', ${i.dateCol}) AS week,\n       COUNT(*) FILTER (WHERE ${i.extraCol} = 'error')::FLOAT / COUNT(*) AS error_rate\nFROM ${i.table}\nGROUP BY 1\nORDER BY 1;` },
+      { key:'automation_rate', objective:'efficiency', name:'Automation Rate', chart:'Bar chart', cadence:'Monthly',
+        def:()=>'How much runs without a human touching it.',
+        formula:'Transactions handled without manual intervention ÷ total transactions',
+        watch:'High automation on the easy cases can mask a growing pile of manual exceptions.',
+        sql:(i)=>`SELECT DATE_TRUNC('month', ${i.dateCol}) AS month,\n       COUNT(*) FILTER (WHERE handled_by = 'system')::FLOAT / COUNT(*) AS automation_rate\nFROM ${i.table}\nGROUP BY 1\nORDER BY 1;` },
+
+      // PROFITABILITY
+      { key:'gross_margin', objective:'profitability', name:'Gross Margin', chart:'Line chart', cadence:'Monthly',
+        def:()=>"What's left after the direct cost of what you sold.",
+        formula:'(Revenue − cost of goods/service) ÷ revenue',
+        watch:'Make sure "cost of goods" is defined consistently — it\'s the most commonly fudged number in this list.',
+        sql:(i)=>`SELECT DATE_TRUNC('month', ${i.dateCol}) AS month,\n       (SUM(${i.amountCol}) - SUM(cost_of_service)) / NULLIF(SUM(${i.amountCol}), 0) AS gross_margin\nFROM ${i.table}\nGROUP BY 1\nORDER BY 1;` },
+      { key:'net_margin', objective:'profitability', name:'Net Profit Margin', chart:'Line chart', cadence:'Quarterly',
+        def:()=>"What's actually left after everything.",
+        formula:'Net profit ÷ revenue',
+        watch:'Sensitive to one-time items (tax adjustments, write-offs) — look at a few periods, not one.',
+        sql:(i)=>`SELECT DATE_TRUNC('quarter', ${i.dateCol}) AS quarter,\n       SUM(net_profit) / NULLIF(SUM(${i.amountCol}), 0) AS net_margin\nFROM ${i.table}\nJOIN financials f ON DATE_TRUNC('quarter', f.period) = DATE_TRUNC('quarter', ${i.table}.${i.dateCol})\nGROUP BY 1\nORDER BY 1;` },
+      { key:'arpu', objective:'profitability', name:'Revenue per Customer (ARPU)', chart:'Bar chart, by segment', cadence:'Monthly',
+        def:(i)=>`How much value each ${i.unit} is worth on average, right now.`,
+        formula:'Total revenue ÷ number of active customers',
+        watch:'An average across very different customer sizes can mislead — segment it before trusting it.',
+        sql:(i)=>`SELECT DATE_TRUNC('month', ${i.dateCol}) AS month,\n       SUM(${i.amountCol}) / NULLIF(COUNT(DISTINCT ${i.entityCol}), 0) AS arpu\nFROM ${i.table}\nGROUP BY 1\nORDER BY 1;` },
+      { key:'contribution_margin', objective:'profitability', name:'Contribution Margin', chart:'Bar chart, by segment', cadence:'Monthly',
+        def:()=>'Whether a specific product or segment is worth doing more of.',
+        formula:'(Segment revenue − segment variable cost) ÷ segment revenue',
+        watch:'Only useful if variable costs are actually tracked at the segment level, not allocated after the fact.',
+        sql:(i)=>`SELECT segment,\n       (SUM(${i.amountCol}) - SUM(variable_cost)) / NULLIF(SUM(${i.amountCol}), 0) AS contribution_margin\nFROM ${i.table}\nGROUP BY 1\nORDER BY 2 DESC;` },
+      { key:'roas', objective:'profitability', name:'Return on Ad Spend (ROAS)', chart:'Bar chart, by channel', cadence:'Weekly',
+        def:()=>"Whether marketing spend is paying for itself.",
+        formula:'Revenue attributed to ads ÷ ad spend',
+        watch:'Depends entirely on attribution accuracy — a generous attribution model flatters every channel equally.',
+        sql:(i)=>`SELECT acquisition_channel,\n       SUM(attributed_revenue) / NULLIF(SUM(spend), 0) AS roas\nFROM ${i.custTable === i.table ? i.table : 'marketing_spend'} m\nGROUP BY 1\nORDER BY 2 DESC;` },
+      { key:'cash_conversion', objective:'profitability', name:'Cash Conversion Cycle', chart:'Line chart', cadence:'Quarterly',
+        def:()=>'How long cash is tied up before it comes back.',
+        formula:'Days inventory + days receivable − days payable',
+        watch:'Mostly relevant where inventory/receivables exist — less meaningful for pure digital/subscription businesses.',
+        sql:(i)=>`SELECT DATE_TRUNC('quarter', period) AS quarter,\n       days_inventory + days_receivable - days_payable AS cash_conversion_cycle\nFROM financials\nORDER BY 1;` }
+    ];
+
+    const CHART_ICONS = {
+      'Line chart':'📈','Bar chart':'📊','Funnel / bar chart':'🔻','Stacked bar chart':'📶',
+      'Multi-line chart':'📉','Histogram / bar chart':'📊','Bar chart, by segment':'📊',
+      'Bar chart, by channel':'📊'
+    };
+    function chartIcon(chart){
+      for (const k in CHART_ICONS) if (chart.startsWith(k)) return CHART_ICONS[k];
+      return '📈';
+    }
+
+    // ---------- State ----------
+    let state = { industry:null, objective:null };
+    const STORE_KEY = 'kpiBuilderV1';
+    function loadState(){
+      try{ const raw = localStorage.getItem(STORE_KEY); if (raw) state = JSON.parse(raw); }catch(e){}
+    }
+    function saveState(){
+      try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){}
+    }
+
+    function renderPills(){
+      document.getElementById('industryRow').innerHTML = Object.entries(INDUSTRIES).map(([k,v]) => `
+        <button type="button" class="pill-btn ${state.industry===k?'active':''}" data-industry="${k}">${v.name}</button>
+      `).join('');
+      document.getElementById('objectiveRow').innerHTML = Object.entries(OBJECTIVES).map(([k,v]) => `
+        <button type="button" class="pill-btn ${state.objective===k?'active':''}" data-objective="${k}">${v.name}</button>
+      `).join('');
+      document.getElementById('objectiveDesc').textContent = state.objective ? OBJECTIVES[state.objective].desc : '';
+
+      document.querySelectorAll('[data-industry]').forEach(btn => {
+        btn.addEventListener('click', () => { state.industry = btn.dataset.industry; saveState(); renderAll(); });
+      });
+      document.querySelectorAll('[data-objective]').forEach(btn => {
+        btn.addEventListener('click', () => { state.objective = btn.dataset.objective; saveState(); renderAll(); });
+      });
+    }
+
+    function currentKpis(){
+      if (!state.objective) return [];
+      return KPI_LIBRARY.filter(k => k.objective === state.objective);
+    }
+
+    function renderResults(){
+      const title = document.getElementById('resultsTitle');
+      const sub = document.getElementById('resultsSub');
+      const cards = document.getElementById('kpiCards');
+
+      if (!state.industry || !state.objective) {
+        title.textContent = 'Your metric set';
+        sub.textContent = 'Pick an industry and objective above to generate a KPI set.';
+        cards.innerHTML = `<div class="kpi-empty" style="grid-column:1/-1"><span class="empty-glyph">📋</span><p>No metric set yet — choose an industry and an objective to generate one.</p></div>`;
+        return;
+      }
+
+      const ind = INDUSTRIES[state.industry];
+      const obj = OBJECTIVES[state.objective];
+      const kpis = currentKpis();
+
+      title.textContent = `${obj.name} metrics for ${ind.name}`;
+      sub.textContent = `Six KPIs built around ${obj.desc.toLowerCase()} for ${ind.name.toLowerCase()}.`;
+
+      cards.innerHTML = kpis.map(k => `
+        <div class="kpi-metric-card">
+          <h4>${k.name}</h4>
+          <p class="kmc-def">${k.def(ind)}</p>
+          <code class="kmc-formula">${k.formula}</code>
+          <div class="kmc-meta">
+            <span class="kmc-tag">${chartIcon(k.chart)} ${k.chart}</span>
+            <span class="kmc-tag">${k.cadence}</span>
+          </div>
+          <div class="kmc-watch"><strong>Watch out:</strong> ${k.watch}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderSqlSelect(){
+      const sel = document.getElementById('sqlKpiSelect');
+      const kpis = currentKpis();
+      if (kpis.length === 0) {
+        sel.innerHTML = '<option>Pick an industry and objective first</option>';
+        sel.disabled = true;
+        return;
+      }
+      sel.disabled = false;
+      const prev = sel.value;
+      sel.innerHTML = kpis.map(k => `<option value="${k.key}">${k.name}</option>`).join('');
+      if (kpis.some(k => k.key === prev)) sel.value = prev;
+    }
+
+    function renderSql(){
+      const block = document.getElementById('sqlBlock');
+      const note = document.getElementById('schemaNote');
+      if (!state.industry || !state.objective) {
+        block.textContent = 'Pick an industry and objective above first.';
+        note.textContent = '';
+        return;
+      }
+      const ind = INDUSTRIES[state.industry];
+      const kpis = currentKpis();
+      const sel = document.getElementById('sqlKpiSelect');
+      const key = sel.value || kpis[0].key;
+      const kpi = kpis.find(k => k.key === key) || kpis[0];
+      block.textContent = kpi.sql(ind);
+      note.textContent = `Schema assumed for ${ind.name}: ${ind.table}(${ind.idCol}, ${ind.entityCol}, ${ind.amountCol}, ${ind.dateCol}) and ${ind.custTable}(${ind.custIdCol}, ${ind.signupCol}). Table/column names not in this list (like operating_costs or pipeline) are illustrative placeholders for tables most real businesses have somewhere.`;
+    }
+
+    function renderBlueprint(){
+      const out = document.getElementById('blueprintOutput');
+      if (!state.industry || !state.objective) {
+        out.innerHTML = `<div class="kpi-empty"><span class="empty-glyph">📐</span><p>Your dashboard blueprint will appear here once you've picked an industry and objective.</p></div>`;
+        return;
+      }
+      const kpis = currentKpis();
+      const kpiRow = kpis.map(k => `<div class="bp-kpi">${k.name}</div>`).join('');
+      const chartTypes = [...new Set(kpis.map(k => k.chart))];
+      const chartRow = chartTypes.map(c => `<div class="bp-chart"><span class="bp-chart-icon">${chartIcon(c)}</span>${c}</div>`).join('');
+      out.innerHTML = `
+        <p class="tool-sub" style="margin-bottom:14px">Top row: KPI cards, glanceable in under 5 seconds. Below: one chart per chart type this metric set actually needs.</p>
+        <div class="bp-kpi-row">${kpiRow}</div>
+        <div class="bp-chart-row">${chartRow}</div>
+      `;
+    }
+
+    function renderAll(){
+      renderPills();
+      renderResults();
+      renderSqlSelect();
+      renderSql();
+      renderBlueprint();
+    }
+
+    document.getElementById('sqlKpiSelect').addEventListener('change', renderSql);
+
+    loadState();
+    renderAll();
+  </script>
+</body>
+</html>

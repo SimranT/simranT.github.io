@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Turkey Road Trip Itinerary — Simran's Space</title>
+  <meta name="description" content="A real Turkey road trip itinerary by Simran Tiwari: Istanbul, Cappadocia, Antalya, Kaş, Fethiye, Pamukkale, Ephesus, Bodrum, and Izmir." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="cursor" id="cursor"></div>
+
+  <div class="wrap">
+    <header class="nav reveal">
+      <a class="brand" href="index.html#top"><span class="dot"></span> Simran's Space</a>
+      <nav class="navlinks">
+        <a href="index.html">Home</a>
+        <a href="work.html">Work</a>
+        <a href="travel.html">Travel</a>
+        <a href="shop.html" class="active">Shop</a>
+        <a href="analytics.html">Analytics</a>
+      </nav>
+      <button class="toggle" id="theme" aria-label="Toggle theme">◐</button>
+    </header>
+
+    <main id="top">
+      <section class="page-hero reveal">
+        <div class="eyebrow">Itinerary · Turkey Road Trip</div>
+        <h1>One road, eight stops, all of Turkey's range.</h1>
+        <p>This was a proper road trip — Byzantine and Ottoman history in Istanbul, sunrise balloons over Cappadocia, ancient ruins down the Turquoise Coast, and Aegean towns to finish. Built from the actual route I planned and drove in August.</p>
+        <div class="route-line">
+          <span>Istanbul</span><span>→</span><span>Cappadocia</span><span>→</span><span>Antalya</span><span>→</span><span>Kaş</span><span>→</span><span>Fethiye</span><span>→</span><span>Pamukkale &amp; Ephesus</span><span>→</span><span>Bodrum</span><span>→</span><span>Izmir</span>
+        </div>
+      </section>
+
+      <section class="reveal">
+        <div class="route-map">
+          <svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="routeGradient" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ff8fd8"/>
+                <stop offset="100%" stop-color="#8ecbff"/>
+              </linearGradient>
+            </defs>
+            <path class="route-path" d="M 80 60 C 200 20, 280 30, 320 60 S 400 130, 420 140 S 380 180, 350 190 S 300 210, 280 210 S 210 200, 180 190 S 120 210, 100 220 S 60 190, 60 160 S 60 90, 80 60"/>
+            <circle class="route-dot" cx="80" cy="60" r="7"/>
+            <circle class="route-dot" cx="320" cy="60" r="7" style="animation-delay:.2s"/>
+            <circle class="route-dot" cx="420" cy="140" r="7" style="animation-delay:.4s"/>
+            <circle class="route-dot" cx="350" cy="190" r="7" style="animation-delay:.6s"/>
+            <circle class="route-dot" cx="280" cy="210" r="7" style="animation-delay:.8s"/>
+            <circle class="route-dot" cx="180" cy="190" r="7" style="animation-delay:1s"/>
+            <circle class="route-dot" cx="100" cy="220" r="7" style="animation-delay:1.2s"/>
+            <circle class="route-dot" cx="60" cy="160" r="7" style="animation-delay:1.4s"/>
+            <text class="route-label" x="80" y="42" text-anchor="middle">Istanbul</text>
+            <text class="route-label" x="320" y="42" text-anchor="middle">Cappadocia</text>
+            <text class="route-label" x="440" y="140" text-anchor="start">Antalya</text>
+            <text class="route-label" x="370" y="205" text-anchor="start">Kaş</text>
+            <text class="route-label" x="280" y="232" text-anchor="middle">Fethiye</text>
+            <text class="route-label" x="180" y="212" text-anchor="middle">Pamukkale/Ephesus</text>
+            <text class="route-label" x="100" y="242" text-anchor="middle">Bodrum</text>
+            <text class="route-label" x="30" y="160" text-anchor="middle">Izmir</text>
+          </svg>
+        </div>
+      </section>
+
+      <section id="itinerary-legs" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">The route</div>
+            <h2 class="section-title">City by city</h2>
+          </div>
+        </div>
+
+        <div class="leg-card travel-accent">
+          <div class="leg-label"><span class="leg-num">Istanbul</span><span class="leg-days">5 days</span></div>
+          <h3>History, bazaars, and two continents</h3>
+          <ul>
+            <li><strong>Hagia Sophia &amp; the Blue Mosque</strong> — the obvious must-sees, and worth every bit of the hype.</li>
+            <li><strong>Topkapi Palace &amp; Basilica Cistern</strong> — Ottoman history above ground, Byzantine engineering below it.</li>
+            <li><strong>Grand Bazaar &amp; İstiklal</strong> — one for bargaining, one for people-watching and Beyoğlu's energy.</li>
+            <li><strong>Galata Tower</strong> for panoramic views, plus day trips to <strong>Adalar</strong> (Princes' Islands) and the colorful streets of <strong>Balat</strong>.</li>
+          </ul>
+          <div class="fun-fact">Istanbul is the only city in the world that sits on two continents — cross the Bosphorus and you've gone from Europe to Asia in about 15 minutes.</div>
+        </div>
+
+        <div class="leg-card work-accent">
+          <div class="leg-label"><span class="leg-num">Cappadocia</span><span class="leg-days">2 days</span></div>
+          <h3>Sunrise balloons and underground cities</h3>
+          <ul>
+            <li><strong>Hot air balloon at sunrise</strong> — the reason most people come, and it delivers.</li>
+            <li><strong>Göreme Open Air Museum</strong> — rock-cut churches with frescoes still intact.</li>
+            <li><strong>Kaymaklı Underground City</strong> and <strong>Uçhisar Castle</strong> for the region's strangest history.</li>
+            <li><strong>Ihlara Valley</strong> — a hike along a canyon dotted with more rock-cut churches.</li>
+          </ul>
+          <div class="fun-fact">Cappadocia's "fairy chimneys" formed over millions of years as wind and rain eroded soft volcanic rock, leaving harder caps balanced on softer pillars.</div>
+        </div>
+
+        <div class="leg-card about-accent">
+          <div class="leg-label"><span class="leg-num">Antalya</span><span class="leg-days">1 day</span></div>
+          <h3>Ottoman harbor, ancient ruins</h3>
+          <ul>
+            <li><strong>Kaleiçi Yat Limanı</strong> — the old harbor, Ottoman houses, and Hadrian's Gate.</li>
+            <li><strong>Düden Waterfalls</strong> cascading straight into the Mediterranean.</li>
+            <li><strong>Aspendos Theater</strong> and <strong>Perge Ancient City</strong> if ruins are your thing — both well preserved.</li>
+          </ul>
+          <div class="fun-fact">Antalya's old harbor, Kaleiçi, has been in continuous use since Hellenistic times — over 2,000 years of ships docking in the same bay.</div>
+        </div>
+
+        <div class="leg-card money-accent">
+          <div class="leg-label"><span class="leg-num">Kaş</span><span class="leg-days">1 day</span></div>
+          <h3>Quiet coast, turquoise water</h3>
+          <ul>
+            <li><strong>Kaş Old Town</strong> — pedestrian streets that feel like a different country from Istanbul entirely.</li>
+            <li><strong>Kaputaş Beach</strong> — the turquoise-water cliff beach you've seen in photos.</li>
+            <li><strong>Küçük Çakıl</strong> for a beach within walking distance of town when you don't want to drive.</li>
+          </ul>
+          <div class="fun-fact">Kaş sits so close to Greece that the island of Meis (Kastellorizo) is clearly visible from town, just a few kilometers offshore.</div>
+        </div>
+
+        <div class="leg-card travel-accent">
+          <div class="leg-label"><span class="leg-num">Fethiye</span><span class="leg-days">1 day</span></div>
+          <h3>Blue lagoon and hiking trails</h3>
+          <ul>
+            <li><strong>Ölüdeniz</strong> — the famous blue lagoon, crystal clear and worth the crowds.</li>
+            <li><strong>Butterfly Valley</strong> — a secluded beach reachable by boat or a proper hike.</li>
+            <li><strong>Saklıkent Canyon</strong> for icy water and canyon trails, plus a stretch of the <strong>Lycian Way</strong>.</li>
+          </ul>
+          <div class="fun-fact">Ölüdeniz's blue lagoon is one of the most paraglided-over spots on Earth — jumpers launch from Babadağ mountain, 1,900 metres above the beach.</div>
+        </div>
+
+        <div class="leg-card work-accent">
+          <div class="leg-label"><span class="leg-num">Pamukkale &amp; Ephesus</span><span class="leg-days">day trip</span></div>
+          <h3>Travertines and one of the best-preserved ancient cities</h3>
+          <ul>
+            <li><strong>Pamukkale</strong> — the white travertine terraces, plus the Hierapolis ruins right above them.</li>
+            <li><strong>Ephesus</strong> — the Library of Celsus and the ancient theater, genuinely one of the best-preserved ancient cities anywhere.</li>
+            <li><strong>House of the Virgin Mary</strong> and the <strong>Basilica of St John</strong> nearby if you have extra time.</li>
+          </ul>
+          <div class="fun-fact">Pamukkale means "cotton castle" in Turkish — named for its white travertine terraces, built up by mineral-rich hot springs over thousands of years.</div>
+        </div>
+
+        <div class="leg-card about-accent">
+          <div class="leg-label"><span class="leg-num">Bodrum</span><span class="leg-days">1 day</span></div>
+          <h3>Castle, marina, and Aegean cafes</h3>
+          <ul>
+            <li><strong>Bodrum Castle</strong> and its Museum of Underwater Archaeology.</li>
+            <li><strong>Mausoleum at Halicarnassus</strong> — one of the Seven Wonders of the Ancient World, in ruins but still worth seeing.</li>
+            <li><strong>Bodrum Marina</strong> for a slow evening and seaside cafes, plus the iconic windmills overlooking the bay.</li>
+          </ul>
+          <div class="fun-fact">The Mausoleum at Halicarnassus in Bodrum was one of the Seven Wonders of the Ancient World — the word "mausoleum" comes directly from its name.</div>
+        </div>
+
+        <div class="leg-card money-accent">
+          <div class="leg-label"><span class="leg-num">Izmir</span><span class="leg-days">1 day</span></div>
+          <h3>The last stop — Aegean city life</h3>
+          <ul>
+            <li><strong>Kordonboyu</strong> — a promenade along the Aegean Sea, cafes and all.</li>
+            <li><strong>Konak</strong> for the Clock Tower and Ottoman architecture, and the <strong>Agora Open Air Museum</strong> for ancient Greek ruins.</li>
+            <li><strong>Asansör</strong> — a historical elevator with panoramic views to end the trip on.</li>
+          </ul>
+          <div class="fun-fact">Izmir was known as Smyrna for most of its history and is considered one of the oldest continuously inhabited cities in the world, dating back over 8,000 years.</div>
+        </div>
+      </section>
+
+      <section id="budget-note" class="reveal">
+        <div class="section-band">
+          <div class="eyebrow">Budget snapshot</div>
+          <h2 class="section-title" style="font-size:1.6rem">This one ran on a real multi-currency budget</h2>
+          <p class="section-sub">Visa, embassy fees, and international flights were tracked separately from day-to-day spend, split by percentage across accommodation, food, and misc for each city — Istanbul and Cappadocia had different splits since one was a long stay and the other a short, activity-heavy stop. That structure is exactly what shaped the updated version of the Trip Budget &amp; Expense Planner template in the Shop.</p>
+        </div>
+      </section>
+
+      <section id="itinerary-cta" class="reveal">
+        <div class="section-band">
+          <div class="eyebrow">Want the full version?</div>
+          <h2 class="section-title" style="font-size:1.6rem">Full write-up coming soon</h2>
+          <p class="section-sub">The finished version will include day-by-day driving times, exact costs per leg, and where to stay in each town.</p>
+          <div class="actions" style="margin-top:16px">
+            <a class="btn primary" href="mailto:simran.st1197@gmail.com?subject=Turkey%20Travel%20Pack">Get notified when it's ready</a>
+            <a class="btn" href="shop.html#turkey-pack">See the full Turkey Travel Pack</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer reveal">
+      <a href="index.html#contact">Contact</a> · Built to feel beautiful, personal, and alive.
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

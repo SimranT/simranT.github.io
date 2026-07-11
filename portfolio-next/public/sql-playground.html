@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SQL Playground — Write Real Queries in the Browser | Simran's Space</title>
+  <meta name="description" content="A real SQLite engine running in the browser by Simran Tiwari — write and run actual SQL against two sample datasets, no sign-up, no backend." />
+  <meta name="keywords" content="SQL playground, SQLite in browser, SQL practice, window functions, CTE, joins, data analyst portfolio project" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .sql-hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+    @media (max-width:720px){.sql-hero-stats{grid-template-columns:1fr}}
+
+    .sql-panel{padding:24px;border-radius:14px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--glow);margin-bottom:20px}
+
+    /* Dataset toggle */
+    .dataset-toggle{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+    .ds-btn{
+      padding:10px 18px;border-radius:8px;border:1px solid var(--line);background:var(--w04);
+      color:var(--text);cursor:pointer;font-size:.9rem;font-family:inherit;transition:.2s ease;
+    }
+    .ds-btn:hover:not(.active){background:var(--w08)}
+    .ds-btn.active{background:linear-gradient(135deg,var(--sql1),var(--sql2));color:#04120a;font-weight:700;border-color:transparent}
+
+    /* Terminal window chrome */
+    .term-window{border-radius:10px;overflow:hidden;background:#050807;border:1px solid rgba(57,255,156,.18)}
+    .term-bar{display:flex;gap:6px;padding:10px 14px;background:#0a0f0c;border-bottom:1px solid rgba(57,255,156,.12)}
+    .term-bar span{width:10px;height:10px;border-radius:50%;background:var(--w14)}
+    .term-body{padding:0}
+
+    /* Schema reference */
+    .schema-ref{font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.9;color:#a8ffd0;padding:16px 18px}
+    .schema-ref .tbl-name{color:var(--sql2);font-weight:700}
+    .schema-ref .note{display:block;margin-top:10px;color:var(--muted);font-family:Inter,sans-serif;font-size:.8rem;line-height:1.6}
+
+    /* Query editor */
+    .sql-editor{
+      width:100%;min-height:150px;padding:16px 18px;background:transparent;border:none;outline:none;resize:vertical;
+      font-family:'JetBrains Mono',monospace;font-size:.88rem;line-height:1.7;color:#c9f2d8;
+    }
+    .editor-actions{display:flex;gap:10px;align-items:center;padding:12px 18px;background:#0a0f0c;border-top:1px solid rgba(57,255,156,.12)}
+    .run-btn{
+      padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-weight:700;
+      background:linear-gradient(135deg,var(--sql1),var(--sql2));color:#04120a;transition:.2s ease;
+    }
+    .run-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 20px rgba(57,255,156,.3)}
+    .run-btn:disabled{opacity:.4;cursor:not-allowed}
+    .clear-btn{
+      padding:10px 16px;border-radius:8px;border:1px solid var(--w14);background:transparent;
+      color:var(--muted);cursor:pointer;font-size:.85rem;transition:.2s ease;
+    }
+    .clear-btn:hover{background:var(--w06);color:var(--text)}
+    .run-status{color:var(--muted);font-size:.82rem;margin-left:auto}
+
+    /* Results */
+    .results-area{margin-top:16px}
+    .results-table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--w08)}
+    table.results-table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.82rem}
+    table.results-table th{text-align:left;padding:10px 14px;background:var(--w06);color:var(--sql1);border-bottom:1px solid var(--w10);white-space:nowrap}
+    table.results-table td{padding:9px 14px;border-bottom:1px solid var(--w05);white-space:nowrap}
+    table.results-table tr:last-child td{border-bottom:none}
+    .sql-error{padding:14px 18px;border-radius:10px;background:rgba(255,120,120,.1);border:1px solid rgba(255,120,120,.3);font-family:'JetBrains Mono',monospace;font-size:.84rem;color:#ffb3b3}
+    .sql-empty{text-align:center;padding:30px 20px;border-radius:10px;border:1px dashed var(--line);background:var(--w03);color:var(--muted)}
+    .sql-empty .empty-glyph{font-size:1.8rem;margin-bottom:8px;display:block;opacity:.7}
+    .check-result{margin-top:12px;padding:12px 16px;border-radius:10px;font-size:.88rem;line-height:1.6}
+    .check-result.pass{background:rgba(63,184,138,.12);border:1px solid rgba(63,184,138,.35)}
+    .check-result.fail{background:rgba(255,120,120,.1);border:1px solid rgba(255,120,120,.3)}
+
+    /* Challenges */
+    .challenge-progress{color:var(--muted);font-size:.85rem;margin-bottom:14px}
+    .challenge-list{display:grid;gap:10px}
+    .challenge-card{
+      padding:14px 18px;border-radius:10px;background:var(--w03);border:1px solid var(--w08);
+      cursor:pointer;transition:.2s ease;display:flex;align-items:center;gap:12px;
+    }
+    .challenge-card:hover{border-color:rgba(57,255,156,.35);background:var(--w05)}
+    .challenge-card.active{border-color:var(--sql1);background:rgba(57,255,156,.08)}
+    .challenge-card.solved{border-color:rgba(63,184,138,.4)}
+    .ch-check{flex:0 0 auto;font-size:1rem;width:20px;text-align:center}
+    .ch-diff{flex:0 0 auto;font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;color:var(--sql1);width:60px}
+    .ch-text{flex:1;font-size:.9rem}
+
+    .lesson-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    @media (max-width:720px){.lesson-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body class="rich-bg-sql">
+  <div class="progress" id="progress"></div>
+  <div class="cursor" id="cursor"></div>
+
+  <div class="wrap">
+    <header class="nav reveal">
+      <a class="brand" href="index.html#top"><span class="dot"></span> Simran's Space</a>
+      <nav class="navlinks">
+        <a href="index.html">Home</a>
+        <a href="work.html">Work</a>
+        <a href="travel.html">Travel</a>
+        <a href="shop.html">Shop</a>
+        <a href="analytics.html" class="active">Analytics</a>
+      </nav>
+      <button class="toggle" id="theme" aria-label="Toggle theme">◐</button>
+    </header>
+
+    <main id="top">
+      <!-- HERO -->
+      <section class="page-hero reveal">
+        <div class="eyebrow">Analytics Playground · SQL Playground</div>
+        <h1>A real database, running right here in your browser.</h1>
+        <p>This isn't a quiz with multiple-choice SQL — it's an actual SQLite engine (compiled to WebAssembly) sitting under a text box. Write any query you want against two sample datasets and see real results, or work through a set of challenges built to cover joins, aggregation, window functions, and CTEs.</p>
+        <div class="sql-hero-stats">
+          <div class="stat sql-accent"><strong>2</strong><span>Sample datasets — e-commerce and SaaS product analytics</span></div>
+          <div class="stat amber-accent"><strong>12</strong><span>Challenges spanning beginner to window-function level</span></div>
+          <div class="stat sql-accent"><strong>Real SQL</strong><span>Your queries actually run — nothing is canned</span></div>
+        </div>
+        <div class="actions" style="margin-top:20px">
+          <a class="btn primary" href="#editor">Start querying ↓</a>
+        </div>
+      </section>
+
+      <!-- DATASET + EDITOR -->
+      <section id="editor" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Query Editor</div>
+            <h2 class="section-title">Pick a dataset, write a query, run it</h2>
+          </div>
+        </div>
+
+        <div class="dataset-toggle" id="datasetToggle">
+          <button class="ds-btn active" data-ds="ecommerce" type="button">E-commerce</button>
+          <button class="ds-btn" data-ds="saas" type="button">SaaS Analytics</button>
+        </div>
+
+        <div class="sql-panel" style="padding:0;overflow:hidden">
+          <div class="term-window">
+            <div class="term-bar"><span></span><span></span><span></span></div>
+            <div class="schema-ref" id="schemaRef"></div>
+          </div>
+        </div>
+
+        <div class="sql-panel" style="padding:0">
+          <div class="term-window">
+            <div class="term-bar"><span></span><span></span><span></span></div>
+            <textarea class="sql-editor" id="sqlEditor" spellcheck="false" placeholder="SELECT * FROM customers LIMIT 5;"></textarea>
+            <div class="editor-actions">
+              <button class="run-btn" id="runBtn" type="button">Run query ▸</button>
+              <button class="clear-btn" id="clearBtn" type="button">Clear</button>
+              <span class="run-status" id="runStatus">Loading SQL engine…</span>
+            </div>
+          </div>
+
+          <div style="padding:18px">
+            <div class="results-area" id="resultsArea">
+              <div class="sql-empty"><span class="empty-glyph">💻</span><p>Run a query to see results here.</p></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CHALLENGES -->
+      <section id="challenges" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Challenges</div>
+            <h2 class="section-title">Or work through a set of challenges</h2>
+            <p>Click one to load its prompt, write the query above, and run it — a green check means your results matched.</p>
+          </div>
+        </div>
+        <div class="challenge-progress" id="challengeProgress"></div>
+        <div class="challenge-list" id="challengeList"></div>
+      </section>
+
+      <!-- LESSONS -->
+      <section class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">What this taught me</div>
+            <h2 class="section-title">A couple of lessons baked into this lab</h2>
+          </div>
+        </div>
+        <div class="lesson-grid">
+          <div class="card sql-accent">
+            <h3>A denormalized column and a history table can both be "right"</h3>
+            <p>The SaaS dataset keeps a user's current plan on the users table for easy filtering, and a full plan-change history in a separate table — the same trade-off real schemas make constantly.</p>
+          </div>
+          <div class="card amber-accent">
+            <h3>Window functions replace a lot of awkward subqueries</h3>
+            <p>"Top result per group" used to mean a correlated subquery or a self-join. RANK() OVER (PARTITION BY...) does it in one clean pass — worth reaching for before anything more contorted.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer reveal">
+      <a href="index.html#contact">Contact</a> · Built to feel beautiful, personal, and alive.
+    </footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/sql-wasm.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // ---------- Dataset definitions ----------
+    const DATASETS = {
+      ecommerce: {
+        label: 'E-commerce',
+        schemaHtml: `
+          <span class="tbl-name">customers</span>(id, name, country, signup_date)<br>
+          <span class="tbl-name">products</span>(id, name, category, price)<br>
+          <span class="tbl-name">orders</span>(id, customer_id, order_date, status)<br>
+          <span class="tbl-name">order_items</span>(id, order_id, product_id, quantity)
+          <span class="note">order_items links orders to products — an order's total is SUM(quantity * price) across its items. status is one of 'completed', 'pending', 'cancelled'.</span>
+        `,
+        setupSQL: `
+          CREATE TABLE customers (id INTEGER PRIMARY KEY, name TEXT, country TEXT, signup_date TEXT);
+          CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT, category TEXT, price REAL);
+          CREATE TABLE orders (id INTEGER PRIMARY KEY, customer_id INTEGER, order_date TEXT, status TEXT);
+          CREATE TABLE order_items (id INTEGER PRIMARY KEY, order_id INTEGER, product_id INTEGER, quantity INTEGER);
+          INSERT INTO customers VALUES
+          (1,'Maria Alvarez','Spain','2023-11-02'),
+          (2,'James Kim','USA','2024-01-15'),
+          (3,'Priya Nair','India','2024-03-08'),
+          (4,'Tomas Novak','Czechia','2023-06-19'),
+          (5,'Aiko Tanaka','Japan','2024-02-27'),
+          (6,'Liam O''Connor','Ireland','2023-09-10'),
+          (7,'Fatima Zahra','Morocco','2024-04-01'),
+          (8,'Noah Becker','Germany','2022-12-05');
+          INSERT INTO products VALUES
+          (1,'Wireless Mouse','Electronics',24.99),
+          (2,'Mechanical Keyboard','Electronics',89.99),
+          (3,'Desk Lamp','Home',34.50),
+          (4,'Notebook Set','Office',12.00),
+          (5,'Standing Desk','Home',249.00),
+          (6,'Webcam HD','Electronics',59.99);
+          INSERT INTO orders VALUES
+          (1,1,'2024-01-05','completed'),
+          (2,2,'2024-01-20','completed'),
+          (3,3,'2024-03-10','completed'),
+          (4,1,'2024-04-02','completed'),
+          (5,4,'2024-02-14','cancelled'),
+          (6,2,'2024-05-01','completed'),
+          (7,5,'2024-03-01','completed'),
+          (8,3,'2024-05-15','completed'),
+          (9,6,'2023-10-01','completed'),
+          (10,7,'2024-04-20','completed'),
+          (11,1,'2024-06-01','pending'),
+          (12,8,'2023-12-10','completed');
+          INSERT INTO order_items VALUES
+          (1,1,1,2),(2,1,4,3),(3,2,2,1),(4,3,3,1),(5,4,2,1),(6,4,6,1),
+          (7,5,5,1),(8,6,1,1),(9,6,4,5),(10,7,3,2),(11,8,2,1),(12,8,1,2),
+          (13,9,4,10),(14,10,6,1),(15,11,1,1),(16,12,5,1);
+        `,
+        challenges: [
+          { id:'e1', difficulty:'Easy', prompt:"List the name and country of every customer who signed up in 2024.", expectCols:['name','country'],
+            expected:[['James Kim','USA'],['Priya Nair','India'],['Aiko Tanaka','Japan'],['Fatima Zahra','Morocco']] },
+          { id:'e2', difficulty:'Easy', prompt:"Count how many products exist in each category. Return category and product_count.", expectCols:['category','product_count'],
+            expected:[['Electronics',3],['Home',2],['Office',1]] },
+          { id:'e3', difficulty:'Medium', prompt:"For each completed order, find its total revenue (quantity × price, summed across its items). Return order_id and revenue.", expectCols:['order_id','revenue'],
+            expected:[[1,85.98],[2,89.99],[3,34.5],[4,149.98],[6,84.99],[7,69],[8,139.97],[9,120],[10,59.99],[12,249]] },
+          { id:'e4', difficulty:'Medium', prompt:"List each customer's name and their number of completed orders — only customers with 2 or more. Return name and completed_orders.", expectCols:['name','completed_orders'],
+            expected:[['Maria Alvarez',2],['James Kim',2],['Priya Nair',2]] },
+          { id:'e5', difficulty:'Hard', prompt:"For each product category, find the single best-selling product by total quantity sold (completed orders only). Return category, product_name, total_quantity. (Window function territory.)", expectCols:['category','product_name','total_quantity'],
+            expected:[['Electronics','Wireless Mouse',5],['Home','Desk Lamp',3],['Office','Notebook Set',18]] },
+          { id:'e6', difficulty:'Hard', prompt:"Using a CTE, find customers whose total completed-order revenue is above the average across all customers. Return name and total_revenue.", expectCols:['name','total_revenue'],
+            expected:[['Maria Alvarez',235.96],['James Kim',174.98],['Priya Nair',174.47],['Noah Becker',249]] }
+        ]
+      },
+      saas: {
+        label: 'SaaS Analytics',
+        schemaHtml: `
+          <span class="tbl-name">users</span>(id, name, plan, signup_date)<br>
+          <span class="tbl-name">events</span>(id, user_id, event_type, event_date)<br>
+          <span class="tbl-name">subscriptions</span>(id, user_id, plan, start_date, end_date)
+          <span class="note">users.plan is each user's current plan. subscriptions holds full plan history — end_date IS NULL means that row is still active. event_type is one of 'login', 'feature_use', 'export'.</span>
+        `,
+        setupSQL: `
+          CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, plan TEXT, signup_date TEXT);
+          CREATE TABLE events (id INTEGER PRIMARY KEY, user_id INTEGER, event_type TEXT, event_date TEXT);
+          CREATE TABLE subscriptions (id INTEGER PRIMARY KEY, user_id INTEGER, plan TEXT, start_date TEXT, end_date TEXT);
+          INSERT INTO users VALUES
+          (1,'Grace Liu','pro','2024-01-10'),
+          (2,'Ethan Ross','free','2024-02-01'),
+          (3,'Sofia Martins','enterprise','2023-11-20'),
+          (4,'Omar Haddad','pro','2024-03-05'),
+          (5,'Ines Duarte','free','2024-04-10'),
+          (6,'Marcus Webb','pro','2023-12-01'),
+          (7,'Hana Suzuki','enterprise','2024-01-25'),
+          (8,'Carlos Mendes','free','2024-05-01');
+          INSERT INTO subscriptions VALUES
+          (1,1,'pro','2024-01-10',NULL),
+          (2,2,'free','2024-02-01',NULL),
+          (3,3,'enterprise','2023-11-20',NULL),
+          (4,4,'free','2024-03-05','2024-04-01'),
+          (5,4,'pro','2024-04-01',NULL),
+          (6,5,'free','2024-04-10',NULL),
+          (7,6,'pro','2023-12-01',NULL),
+          (8,7,'enterprise','2024-01-25',NULL),
+          (9,8,'free','2024-05-01',NULL);
+          INSERT INTO events VALUES
+          (1,1,'login','2024-01-12'),(2,1,'login','2024-02-10'),(3,1,'feature_use','2024-03-15'),
+          (4,1,'login','2024-05-20'),(5,1,'feature_use','2024-06-01'),(6,1,'export','2024-06-10'),
+          (7,2,'login','2024-02-05'),(8,2,'login','2024-02-20'),
+          (9,3,'login','2023-11-25'),(10,3,'feature_use','2023-12-05'),(11,3,'login','2024-02-01'),
+          (12,3,'feature_use','2024-03-10'),(13,3,'login','2024-05-25'),(14,3,'export','2024-06-05'),(15,3,'feature_use','2024-06-12'),
+          (16,4,'login','2024-04-05'),(17,4,'feature_use','2024-04-20'),(18,4,'login','2024-05-18'),
+          (19,4,'export','2024-06-02'),(20,4,'feature_use','2024-06-08'),
+          (21,5,'login','2024-04-12'),(22,5,'login','2024-04-25'),(23,5,'feature_use','2024-05-01'),
+          (24,6,'login','2023-12-05'),(25,6,'feature_use','2024-01-10'),(26,6,'login','2024-02-20'),(27,6,'feature_use','2024-03-15'),
+          (28,7,'login','2024-01-28'),(29,7,'feature_use','2024-03-01'),(30,7,'login','2024-05-22'),
+          (31,7,'export','2024-06-05'),(32,7,'feature_use','2024-06-11'),
+          (33,8,'feature_use','2024-05-05');
+        `,
+        challenges: [
+          { id:'s1', difficulty:'Easy', prompt:"List the name and plan of every user on the 'pro' plan.", expectCols:['name','plan'],
+            expected:[['Grace Liu','pro'],['Omar Haddad','pro'],['Marcus Webb','pro']] },
+          { id:'s2', difficulty:'Easy', prompt:"Count how many events exist for each event_type. Return event_type and event_count.", expectCols:['event_type','event_count'],
+            expected:[['export',4],['feature_use',13],['login',16]] },
+          { id:'s3', difficulty:'Medium', prompt:"Find how many distinct users have logged in (event_type = 'login') at least once. Return one column, active_user_count.", expectCols:['active_user_count'],
+            expected:[[7]] },
+          { id:'s4', difficulty:'Medium', prompt:"List each user's name and their total event count — only users with more than 3 events. Return name and event_count.", expectCols:['name','event_count'],
+            expected:[['Grace Liu',6],['Sofia Martins',7],['Omar Haddad',5],['Marcus Webb',4],['Hana Suzuki',5]] },
+          { id:'s5', difficulty:'Hard', prompt:"Rank users by total event count within their own plan, and return only the top-ranked user per plan. Return name, plan, event_count. (Window function territory.)", expectCols:['name','plan','event_count'],
+            expected:[['Sofia Martins','enterprise',7],['Ines Duarte','free',3],['Grace Liu','pro',6]] },
+          { id:'s6', difficulty:'Hard', prompt:"Using a CTE, find users with an active subscription (end_date IS NULL) who have had zero events on or after 2024-05-16 — these are your at-risk users. Return name and plan.", expectCols:['name','plan'],
+            expected:[['Ethan Ross','free'],['Ines Duarte','free'],['Marcus Webb','pro'],['Carlos Mendes','free']] }
+        ]
+      }
+    };
+
+    // ---------- State ----------
+    const STORE_KEY = 'sqlPlaygroundV1';
+    let sqlProgress = { solved: [] };
+    let currentDs = 'ecommerce';
+    let currentChallengeId = null;
+    let dbEngine = null;
+    let sqlAvailable = false;
+    const dbCache = {};
+
+    function loadProgress(){
+      try{
+        const raw = localStorage.getItem(STORE_KEY);
+        if (raw) sqlProgress = Object.assign({ solved: [] }, JSON.parse(raw));
+      }catch(e){}
+    }
+    function saveProgress(){
+      try{ localStorage.setItem(STORE_KEY, JSON.stringify(sqlProgress)); }catch(e){}
+    }
+    function isSolved(id){ return sqlProgress.solved.includes(id); }
+    function markSolved(id){ if (!sqlProgress.solved.includes(id)) { sqlProgress.solved.push(id); saveProgress(); } }
+
+    function renderSchema(){
+      document.getElementById('schemaRef').innerHTML = DATASETS[currentDs].schemaHtml;
+    }
+
+    function renderChallenges(){
+      const ds = DATASETS[currentDs];
+      const solvedCount = ds.challenges.filter(c => isSolved(c.id)).length;
+      document.getElementById('challengeProgress').textContent = `${solvedCount}/${ds.challenges.length} solved in ${ds.label}`;
+      document.getElementById('challengeList').innerHTML = ds.challenges.map(c => `
+        <div class="challenge-card ${isSolved(c.id) ? 'solved' : ''} ${currentChallengeId === c.id ? 'active' : ''}" data-challenge="${c.id}">
+          <span class="ch-check">${isSolved(c.id) ? '✓' : '○'}</span>
+          <span class="ch-diff">${c.difficulty}</span>
+          <span class="ch-text">${c.prompt}</span>
+        </div>
+      `).join('');
+      document.querySelectorAll('[data-challenge]').forEach(el => {
+        el.addEventListener('click', () => selectChallenge(el.dataset.challenge));
+      });
+    }
+
+    function selectChallenge(id){
+      currentChallengeId = id;
+      const c = DATASETS[currentDs].challenges.find(x => x.id === id);
+      renderChallenges();
+      document.getElementById('sqlEditor').value = `-- ${c.prompt}\n-- Expected columns: ${c.expectCols.join(', ')}\n\n`;
+      document.getElementById('editor').scrollIntoView({ behavior:'smooth', block:'start' });
+      document.getElementById('sqlEditor').focus();
+    }
+
+    function normalizeVal(v){
+      if (typeof v === 'number') return Math.round(v * 100) / 100;
+      return v;
+    }
+    function checkChallenge(c, result){
+      if (!result) return false;
+      if (result.columns.length !== c.expectCols.length) return false;
+      const actualRows = result.values.map(row => JSON.stringify(row.map(normalizeVal))).sort();
+      const expectedRows = c.expected.map(row => JSON.stringify(row.map(normalizeVal))).sort();
+      if (actualRows.length !== expectedRows.length) return false;
+      return actualRows.every((v,i) => v === expectedRows[i]);
+    }
+
+    function renderResultsTable(result){
+      const area = document.getElementById('resultsArea');
+      if (!result || result.values.length === 0) {
+        area.innerHTML = `<div class="sql-empty"><span class="empty-glyph">📭</span><p>Query ran fine — zero rows came back.</p></div>`;
+        return;
+      }
+      const thead = result.columns.map(c => `<th>${c}</th>`).join('');
+      const rows = result.values.map(row => `<tr>${row.map(v => `<td>${v === null ? '<em>null</em>' : v}</td>`).join('')}</tr>`).join('');
+      area.innerHTML = `<div class="results-table-wrap"><table class="results-table"><thead><tr>${thead}</tr></thead><tbody>${rows}</tbody></table></div>`;
+    }
+
+    function renderError(message){
+      document.getElementById('resultsArea').innerHTML = `<div class="sql-error">${message}</div>`;
+    }
+
+    async function getDb(dsKey){
+      if (dbCache[dsKey]) return dbCache[dsKey];
+      const SQLModule = await dbEngine;
+      const db = new SQLModule.Database();
+      db.run(DATASETS[dsKey].setupSQL);
+      dbCache[dsKey] = db;
+      return db;
+    }
+
+    async function runQuery(){
+      const runStatus = document.getElementById('runStatus');
+      const query = document.getElementById('sqlEditor').value.trim();
+      if (!sqlAvailable) { renderError('The SQL engine failed to load (probably a network hiccup) — try refreshing the page.'); return; }
+      if (!query) { renderError('Write a query first.'); return; }
+      try {
+        const db = await getDb(currentDs);
+        const res = db.exec(query);
+        const result = res[0] || { columns: [], values: [] };
+        renderResultsTable(result);
+
+        if (currentChallengeId) {
+          const c = DATASETS[currentDs].challenges.find(x => x.id === currentChallengeId);
+          const pass = checkChallenge(c, result);
+          const resultsArea = document.getElementById('resultsArea');
+          const note = document.createElement('div');
+          note.className = `check-result ${pass ? 'pass' : 'fail'}`;
+          note.textContent = pass
+            ? '✓ Matches the expected result for this challenge.'
+            : "Not quite — your query ran, but the result doesn't match this challenge yet.";
+          resultsArea.appendChild(note);
+          if (pass) { markSolved(c.id); renderChallenges(); }
+        }
+        runStatus.textContent = `${result.values.length} row${result.values.length === 1 ? '' : 's'} returned`;
+      } catch (err) {
+        renderError(err.message || 'That query didn\'t run — check the syntax and try again.');
+        runStatus.textContent = 'Query failed';
+      }
+    }
+
+    function switchDataset(dsKey){
+      currentDs = dsKey;
+      currentChallengeId = null;
+      document.querySelectorAll('.ds-btn').forEach(b => b.classList.toggle('active', b.dataset.ds === dsKey));
+      renderSchema();
+      renderChallenges();
+      document.getElementById('sqlEditor').value = '';
+      document.getElementById('resultsArea').innerHTML = `<div class="sql-empty"><span class="empty-glyph">💻</span><p>Run a query to see results here.</p></div>`;
+    }
+
+    document.getElementById('datasetToggle').addEventListener('click', e => {
+      const btn = e.target.closest('.ds-btn');
+      if (btn) switchDataset(btn.dataset.ds);
+    });
+    document.getElementById('runBtn').addEventListener('click', runQuery);
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      document.getElementById('sqlEditor').value = '';
+      currentChallengeId = null;
+      renderChallenges();
+    });
+
+    async function init(){
+      loadProgress();
+      renderSchema();
+      renderChallenges();
+      const runStatus = document.getElementById('runStatus');
+      try {
+        if (typeof initSqlJs !== 'function') throw new Error('sql.js did not load');
+        dbEngine = initSqlJs({ locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/${file}` });
+        await dbEngine;
+        sqlAvailable = true;
+        runStatus.textContent = 'Ready';
+      } catch (err) {
+        sqlAvailable = false;
+        runStatus.textContent = 'SQL engine unavailable';
+        renderError("The SQL engine couldn't load — this usually means the CDN request was blocked. Everything else on the page (schema reference, challenge prompts) still works; try refreshing to run real queries.");
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

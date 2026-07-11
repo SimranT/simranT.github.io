@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Travel Cost Explorer — Compare Destinations Like a Data Analyst | Simran's Space</title>
+  <meta name="description" content="An interactive travel cost explorer by Simran Tiwari — compare destinations, simulate trip budgets, explore seasonal pricing, and plan on a live map, all in your browser." />
+  <meta name="keywords" content="travel cost calculator, destination comparison tool, trip budget simulator, travel planning dashboard, data analyst portfolio project" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .tce-hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+    @media (max-width:720px){.tce-hero-stats{grid-template-columns:1fr}}
+
+    .tce-panel{padding:26px;border-radius:28px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--glow);margin-bottom:20px}
+    .tce-panel h3{margin-bottom:6px}
+    .tce-panel .tool-sub{color:var(--muted);margin:0 0 18px;line-height:1.7}
+
+    /* destination cards */
+    .dest-add-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+    .dest-add-row select{
+      padding:10px 14px;border-radius:12px;border:1px solid var(--line);
+      background:var(--w04);color:var(--text);font-family:inherit;font-size:.92rem;flex:1;min-width:200px;
+    }
+    .dest-add-btn{
+      padding:10px 18px;border-radius:999px;border:none;cursor:pointer;
+      background:linear-gradient(135deg,var(--tce1),var(--tce2));color:#06231d;font-weight:700;
+      transition:transform .2s ease;
+    }
+    .dest-add-btn:hover{transform:scale(1.04)}
+    .dest-add-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+    .dest-cards{display:grid;gap:14px}
+    .dest-card{
+      padding:18px;border-radius:20px;background:var(--w03);border:1px solid var(--line);
+      position:relative;overflow:hidden;
+    }
+    .dest-card-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+    .dest-card-title{font-family:Fraunces,serif;font-size:1.2rem}
+    .dest-card-region{color:var(--muted);font-size:.78rem;letter-spacing:.04em;text-transform:uppercase}
+    .dest-remove{width:30px;height:30px;border-radius:10px;border:1px solid var(--line);background:var(--w04);color:var(--muted);cursor:pointer;font-size:.85rem;flex:0 0 auto;transition:.2s ease}
+    .dest-remove:hover{background:var(--w08);color:var(--text)}
+    .dest-field-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+    .dest-field{display:flex;flex-direction:column;gap:5px}
+    .dest-field label{font-size:.76rem;color:var(--muted)}
+    .dest-field input{
+      padding:9px 10px;border-radius:10px;border:1px solid var(--line);
+      background:var(--w04);color:var(--text);font-family:inherit;font-size:.88rem;
+    }
+    .dest-field input:focus{outline:1px solid var(--tce1)}
+    .dest-total{margin-top:12px;font-family:Fraunces,serif;font-size:1.15rem;display:flex;justify-content:space-between;align-items:baseline}
+    .dest-total .per-day{font-family:Inter,sans-serif;font-size:.78rem;color:var(--muted)}
+
+    /* empty state — unique to this lab */
+    .tce-empty{
+      text-align:center;padding:40px 20px;border-radius:20px;
+      border:1px dashed var(--line);background:var(--w03);color:var(--muted);
+    }
+    .tce-empty .empty-glyph{font-size:2.2rem;margin-bottom:10px;display:block;opacity:.7}
+    .tce-empty p{margin:6px 0 0;font-size:.92rem;line-height:1.7}
+
+    /* comparison bars */
+    .cmp-row{display:grid;grid-template-columns:120px 1fr 90px;align-items:center;gap:10px;margin-top:10px;font-size:.88rem}
+    .cmp-track{height:12px;border-radius:999px;background:var(--w08);overflow:hidden}
+    .cmp-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--tce1),var(--tce2))}
+    .cmp-fill.cheapest{background:linear-gradient(90deg,var(--money1),var(--money2))}
+    .cmp-badge{font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;color:var(--tce1);font-weight:700;margin-left:6px}
+
+    /* KPI dashboard */
+    .tce-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    @media (max-width:720px){.tce-kpis{grid-template-columns:repeat(2,1fr)}}
+    .tce-kpi{padding:16px;border-radius:18px;background:var(--surface2);border:1px solid var(--line);text-align:center}
+    .tce-kpi .lbl{font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+    .tce-kpi .val{font-family:Fraunces,serif;font-size:1.3rem;margin-top:6px;color:var(--tce1)}
+
+    /* select for "which destination" detail panels */
+    .detail-select{
+      padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:var(--w04);
+      color:var(--text);font-family:inherit;font-size:.86rem;margin-bottom:16px;
+    }
+
+    /* allocation bars */
+    .alloc-row{display:flex;justify-content:space-between;font-size:.84rem;color:var(--muted);margin-bottom:5px}
+    .alloc-track{height:9px;border-radius:999px;background:var(--w08);overflow:hidden;margin-bottom:12px}
+    .alloc-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--sand1,var(--tce2)),var(--tce1))}
+
+    /* seasonal strip */
+    .season-strip{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin-top:14px}
+    .season-month{
+      text-align:center;padding:10px 2px 8px;border-radius:8px;font-size:.68rem;color:var(--muted);
+      background:var(--w04);border:1px solid transparent;
+    }
+    .season-month .m-label{display:block;margin-bottom:6px;font-weight:600}
+    .season-month .m-bar{height:26px;border-radius:5px;background:var(--w08);position:relative;overflow:hidden}
+    .season-month .m-bar::after{content:"";position:absolute;left:0;right:0;bottom:0;border-radius:5px}
+    .season-month.tier-low .m-bar::after{height:35%;background:linear-gradient(180deg,var(--money2),var(--money1))}
+    .season-month.tier-shoulder .m-bar::after{height:62%;background:linear-gradient(180deg,var(--tce2),var(--tce1))}
+    .season-month.tier-peak .m-bar::after{height:92%;background:linear-gradient(180deg,#ff9f8f,#ff6f8f)}
+    .season-legend{display:flex;gap:16px;margin-top:12px;font-size:.8rem;color:var(--muted);flex-wrap:wrap}
+    .season-legend span{display:inline-flex;align-items:center;gap:6px}
+    .season-swatch{width:10px;height:10px;border-radius:3px;display:inline-block}
+    .season-callout{margin-top:14px;padding:12px 14px;border-radius:14px;background:linear-gradient(135deg, rgba(70,217,192,.14), rgba(240,194,138,.10));border:1px solid var(--line);font-size:.86rem;line-height:1.6}
+
+    /* hotel comparison */
+    .hotel-row{display:grid;grid-template-columns:1.4fr .8fr .8fr 34px;gap:8px;margin-bottom:8px;align-items:center}
+    .hotel-row input{padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--w04);color:var(--text);font-size:.86rem}
+    .hotel-remove{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--w04);color:var(--muted);cursor:pointer;font-size:.85rem;transition:.2s ease}
+    .hotel-remove:hover{background:var(--w08);color:var(--text)}
+    .hotel-add{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--w04);color:var(--text);cursor:pointer;font-size:.85rem;margin-top:6px;transition:.2s ease}
+    .hotel-add:hover{background:var(--w08);transform:translateY(-2px)}
+    .hotel-best{margin-top:14px;padding:12px 14px;border-radius:14px;background:linear-gradient(135deg, rgba(142,255,201,.14), rgba(142,203,255,.10));border:1px solid var(--line);font-size:.88rem}
+
+    /* activity planner */
+    .tag-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+    .tag-pill{
+      padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--w04);
+      color:var(--muted);cursor:pointer;font-size:.86rem;transition:.2s ease;user-select:none;
+    }
+    .tag-pill:hover:not(.active){background:var(--w08);color:var(--text)}
+    .tag-pill.active{background:linear-gradient(135deg,var(--tce1),var(--tce2));color:#06231d;font-weight:700;border-color:transparent}
+    .activity-checklist{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-top:6px}
+    .activity-checklist label{display:flex;gap:10px;align-items:center;padding:9px 12px;border-radius:12px;background:var(--w03);border:1px solid var(--w08);font-size:.9rem}
+
+    /* map */
+    #tripMap{height:420px;border-radius:20px;overflow:hidden;border:1px solid var(--line)}
+    .leaflet-popup-content-wrapper{background:var(--surface2);color:var(--text);border-radius:14px}
+    .leaflet-popup-tip{background:var(--surface2)}
+    .tce-pin{
+      width:16px;height:16px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+      background:linear-gradient(135deg,var(--tce1),var(--tce2));
+      box-shadow:0 0 0 3px rgba(70,217,192,.25);
+    }
+
+    /* loading state — unique flavor for this lab */
+    .tce-loading{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:.9rem}
+    .tce-loading .dots{display:inline-flex;gap:4px}
+    .tce-loading .dots span{width:6px;height:6px;border-radius:50%;background:var(--tce1);animation:tceBounce 1s ease-in-out infinite}
+    .tce-loading .dots span:nth-child(2){animation-delay:.15s}
+    .tce-loading .dots span:nth-child(3){animation-delay:.3s}
+    @keyframes tceBounce{0%,80%,100%{transform:translateY(0);opacity:.5}40%{transform:translateY(-5px);opacity:1}}
+
+    .build-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    @media (max-width:900px){.build-steps{grid-template-columns:repeat(2,1fr)}}
+    .build-step{padding:18px;border-radius:20px;background:var(--surface);border:1px solid var(--line)}
+    .build-step .step-num{font-family:Fraunces,serif;font-size:1.3rem;color:var(--tce1);margin-bottom:6px}
+    .build-step h4{margin:0 0 6px;font-size:.98rem}
+    .build-step p{color:var(--muted);font-size:.85rem;line-height:1.6;margin:0}
+
+    .lesson-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    @media (max-width:720px){.lesson-grid{grid-template-columns:1fr}}
+
+    .not-advice{font-size:.78rem;color:var(--muted);opacity:.8;margin-top:10px;line-height:1.6}
+    .tce-convert-result{margin-top:14px;font-family:Fraunces,serif;font-size:1.3rem}
+    .tce-note{color:var(--muted);font-size:.82rem;margin-top:10px}
+  </style>
+</head>
+<body class="rich-bg-travel">
+  <div class="progress" id="progress"></div>
+  <div class="cursor" id="cursor"></div>
+
+  <div class="wrap">
+    <header class="nav reveal">
+      <a class="brand" href="index.html#top"><span class="dot"></span> Simran's Space</a>
+      <nav class="navlinks">
+        <a href="index.html">Home</a>
+        <a href="work.html">Work</a>
+        <a href="travel.html">Travel</a>
+        <a href="shop.html">Shop</a>
+        <a href="analytics.html" class="active">Analytics</a>
+      </nav>
+      <button class="toggle" id="theme" aria-label="Toggle theme">◐</button>
+    </header>
+
+    <main id="top">
+      <!-- HERO -->
+      <section class="page-hero reveal">
+        <div class="eyebrow">Analytics Playground · Travel Lab</div>
+        <h1>Where should you actually go — and what will it really cost?</h1>
+        <p>Before you book anything, compare destinations side by side the way I'd compare options in any real analysis: same categories, same logic, no guesswork. Add a few places you're considering and watch the numbers reorganize themselves live.</p>
+        <div class="tce-hero-stats">
+          <div class="stat tce-accent"><strong>14</strong><span>Destinations preloaded with realistic cost data</span></div>
+          <div class="stat sand-accent"><strong>Live</strong><span>Currency conversion via real exchange rates</span></div>
+          <div class="stat tce-accent"><strong>1 map</strong><span>See every option you're weighing, side by side</span></div>
+        </div>
+        <div class="actions" style="margin-top:20px">
+          <a class="btn primary" href="#planner">Start exploring ↓</a>
+        </div>
+      </section>
+
+      <!-- JUMP NAV -->
+      <nav class="jump-nav reveal" aria-label="Page sections">
+        <a href="#planner">Planner</a>
+        <a href="#compare">Compare</a>
+        <a href="#details">Destination</a>
+        <a href="#convert">Convert</a>
+        <a href="#hotels">Hotels</a>
+        <a href="#activities">Activities</a>
+        <a href="#map">Map</a>
+      </nav>
+
+      <!-- TRIP PLANNER -->
+      <section id="planner" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Trip Planner</div>
+            <h2 class="section-title">Add the places you're weighing</h2>
+            <p>Pick up to 4 destinations. Each comes preloaded with realistic average costs — edit anything to match your own travel style.</p>
+          </div>
+        </div>
+
+        <div class="tce-panel tce-accent">
+          <div class="dest-add-row">
+            <select id="destSelect"></select>
+            <button class="dest-add-btn" id="destAdd" type="button">+ Add destination</button>
+          </div>
+
+          <div id="destEmpty" class="tce-empty">
+            <span class="empty-glyph">🧭</span>
+            <strong>Your trip board is empty.</strong>
+            <p>Add a destination above to start comparing costs, seasons, and daily budgets.</p>
+          </div>
+
+          <div class="dest-cards" id="destCards"></div>
+        </div>
+      </section>
+
+      <!-- COST SIMULATOR + COMPARISON -->
+      <section id="compare" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Cost Simulator</div>
+            <h2 class="section-title">How your options stack up</h2>
+            <p>Total estimated cost per trip — flights plus every daily category, multiplied out for the length of stay.</p>
+          </div>
+        </div>
+        <div class="tce-panel sand-accent">
+          <div id="cmpEmpty" class="tce-empty">
+            <span class="empty-glyph">📊</span>
+            <p>Add at least one destination above to see a cost comparison.</p>
+          </div>
+          <div id="cmpBars"></div>
+        </div>
+
+        <div class="tce-kpis" id="tceKpis" style="display:none"></div>
+      </section>
+
+      <!-- DETAIL: allocation + seasonal, per selected destination -->
+      <section id="details" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Destination Detail</div>
+            <h2 class="section-title">Look closer at one option</h2>
+          </div>
+        </div>
+
+        <div id="detailsEmpty" class="tce-empty">
+          <span class="empty-glyph">🔎</span>
+          <p>Add a destination to see its budget breakdown and seasonal pricing pattern.</p>
+        </div>
+
+        <div id="detailsContent" style="display:none">
+          <select class="detail-select" id="detailSelect"></select>
+
+          <div class="tce-panel tce-accent">
+            <h3>Budget allocation</h3>
+            <p class="tool-sub">Where your daily spend goes for this destination (flight shown separately as a one-time cost).</p>
+            <div id="allocBars"></div>
+          </div>
+
+          <div class="tce-panel sand-accent">
+            <h3>Seasonal pricing pattern</h3>
+            <p class="tool-sub">An illustrative month-by-month price pattern — not live pricing data, but a realistic guide to when this destination tends to run cheap, moderate, or peak.</p>
+            <div class="season-strip" id="seasonStrip"></div>
+            <div class="season-legend">
+              <span><span class="season-swatch" style="background:var(--money1)"></span> Low season</span>
+              <span><span class="season-swatch" style="background:var(--tce1)"></span> Shoulder season</span>
+              <span><span class="season-swatch" style="background:#ff6f8f"></span> Peak season</span>
+            </div>
+            <div class="season-callout" id="seasonCallout"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CURRENCY CONVERTER -->
+      <section id="convert" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Currency Converter</div>
+            <h2 class="section-title">Real exchange rates, on the spot</h2>
+          </div>
+        </div>
+        <div class="tce-panel tce-accent">
+          <div class="dest-field-row" style="margin-bottom:14px">
+            <div class="dest-field"><label for="tceAmount">Amount</label><input type="number" id="tceAmount" min="0" value="100"></div>
+            <div class="dest-field"><label for="tceFrom">From</label><select id="tceFrom"></select></div>
+            <div class="dest-field"><label for="tceTo">To</label><select id="tceTo"></select></div>
+          </div>
+          <button class="dest-add-btn" id="tceConvertBtn" type="button">Convert</button>
+          <div class="tce-convert-result" id="tceConvertResult"></div>
+          <p class="tce-note">Rates from the free Frankfurter API (European Central Bank data). Requires an internet connection.</p>
+        </div>
+      </section>
+
+      <!-- HOTEL COMPARISON -->
+      <section id="hotels" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Hotel Comparison</div>
+            <h2 class="section-title">Weigh price against rating</h2>
+            <p>Add a few options you're considering — the best value pick gets highlighted automatically.</p>
+          </div>
+        </div>
+        <div class="tce-panel sand-accent">
+          <div id="hotelRows"></div>
+          <button class="hotel-add" id="hotelAdd" type="button">+ Add hotel</button>
+          <div class="hotel-best" id="hotelBest"></div>
+        </div>
+      </section>
+
+      <!-- ACTIVITY PLANNER -->
+      <section id="activities" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Activity Planner</div>
+            <h2 class="section-title">Build a starting itinerary</h2>
+            <p>Pick what kind of trip this is — get a starting list of things to plan for, checked off as you go.</p>
+          </div>
+        </div>
+        <div class="tce-panel tce-accent">
+          <div class="tag-row" id="tagRow"></div>
+          <div class="activity-checklist" id="activityOutput"></div>
+        </div>
+      </section>
+
+      <!-- MAP -->
+      <section id="map" class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Trip Map</div>
+            <h2 class="section-title">Everything you're weighing, in one view</h2>
+          </div>
+        </div>
+        <div class="tce-panel sand-accent">
+          <div id="tripMap"></div>
+        </div>
+      </section>
+
+      <!-- HOW IT'S BUILT -->
+      <section class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">How it's built</div>
+            <h2 class="section-title">The thinking behind the explorer</h2>
+          </div>
+        </div>
+        <div class="build-steps">
+          <div class="build-step">
+            <div class="step-num">01</div>
+            <h4>One shared trip state</h4>
+            <p>Every destination card, chart, and map pin reads from the same underlying array — add or edit one place and everything downstream updates together.</p>
+          </div>
+          <div class="build-step">
+            <div class="step-num">02</div>
+            <h4>Real vs. illustrative, labeled clearly</h4>
+            <p>Currency rates are live and real. Seasonal pricing and hotel data are illustrative — and the page says so, instead of blurring the line.</p>
+          </div>
+          <div class="build-step">
+            <div class="step-num">03</div>
+            <h4>Comparison over single numbers</h4>
+            <p>A single cost estimate is easy to ignore. Seeing four side by side is what actually helps someone decide.</p>
+          </div>
+          <div class="build-step">
+            <div class="step-num">04</div>
+            <h4>No dead ends</h4>
+            <p>Once you've picked a destination, the natural next step is tracking the real trip — which is exactly what the Trip Budget Planner does.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- LESSONS -->
+      <section class="reveal">
+        <div class="head">
+          <div>
+            <div class="eyebrow">What this taught me</div>
+            <h2 class="section-title">A few lessons baked into this lab</h2>
+          </div>
+        </div>
+        <div class="lesson-grid">
+          <div class="card tce-accent">
+            <h3>Flights anchor the decision more than people expect</h3>
+            <p>For short trips, the flight can be the single biggest lever — bigger than picking a "cheap" destination with an expensive flight to reach.</p>
+          </div>
+          <div class="card sand-accent">
+            <h3>Averages hide the expensive days</h3>
+            <p>A daily average smooths over the one splurge day. Real trip tracking (not exploring) needs day-by-day logging — that's a different tool for a different job.</p>
+          </div>
+          <div class="card money-accent">
+            <h3>Shoulder season is usually the real answer</h3>
+            <p>Not the cheapest month, not the busiest — the month right before or after peak is where price and experience are both still good.</p>
+          </div>
+          <div class="card about-accent">
+            <h3>Comparison beats research paralysis</h3>
+            <p>Ten browser tabs of blog posts is worse than three destinations side by side on one screen. Structure beats volume.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section id="get-it" class="reveal">
+        <div class="section-band">
+          <div class="eyebrow">Picked a destination?</div>
+          <h2 class="section-title" style="font-size:1.6rem">This lab is for exploring. The Trip Budget Planner is for tracking.</h2>
+          <p class="section-sub">Once you've decided where you're going, the Trip Budget Planner (a downloadable Excel template) takes over — real day-by-day expense logging, a Trip Health Score, and deadline tracking for visas and bookings.</p>
+          <div class="actions" style="margin-top:16px">
+            <a class="btn primary" href="trip-budget-planner.html">See the Trip Budget Planner →</a>
+            <a class="btn" href="analytics.html">Back to the Analytics Playground</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer reveal">
+      <a href="index.html#contact">Contact</a> · Built to feel beautiful, personal, and alive.
+    </footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // ---------- Destination data ----------
+    // season string = 12 chars, one per month (Jan→Dec), l=low s=shoulder p=peak
+    const DESTINATIONS = {
+      bali:      { name:'Bali, Indonesia',   region:'Southeast Asia', lat:-8.34,  lng:115.09, flight:750, stay:40,  food:15, transport:8,  activities:20, misc:10, season:'lllsspppsssp' },
+      bangkok:   { name:'Bangkok, Thailand',  region:'Southeast Asia', lat:13.75,  lng:100.50, flight:700, stay:35,  food:12, transport:6,  activities:15, misc:8,  season:'ppssllllllpp' },
+      tokyo:     { name:'Tokyo, Japan',       region:'East Asia',      lat:35.68,  lng:139.69, flight:900, stay:110, food:35, transport:12, activities:30, misc:15, season:'ssppslllspps' },
+      paris:     { name:'Paris, France',      region:'Western Europe', lat:48.85,  lng:2.35,   flight:650, stay:130, food:40, transport:10, activities:35, misc:15, season:'llssspppssls' },
+      rome:      { name:'Rome, Italy',        region:'Western Europe', lat:41.90,  lng:12.49,  flight:620, stay:100, food:35, transport:8,  activities:30, misc:12, season:'llssppppssls' },
+      barcelona: { name:'Barcelona, Spain',   region:'Western Europe', lat:41.38,  lng:2.17,   flight:600, stay:90,  food:30, transport:8,  activities:25, misc:10, season:'llssspppssls' },
+      istanbul:  { name:'Istanbul, Turkey',   region:'Southern Europe',lat:41.00,  lng:28.97,  flight:580, stay:55,  food:18, transport:6,  activities:20, misc:8,  season:'llssppppsssl' },
+      dubai:     { name:'Dubai, UAE',         region:'Middle East',   lat:25.20,  lng:55.27,  flight:700, stay:140, food:30, transport:15, activities:40, misc:15, season:'ppsslllllssp' },
+      newyork:   { name:'New York, USA',      region:'North America', lat:40.71,  lng:-74.00, flight:400, stay:180, food:45, transport:15, activities:40, misc:20, season:'llssspppppss' },
+      london:    { name:'London, UK',         region:'Western Europe', lat:51.50,  lng:-0.12,  flight:550, stay:140, food:35, transport:12, activities:35, misc:15, season:'llssspppssls' },
+      capetown:  { name:'Cape Town, South Africa', region:'Africa',   lat:-33.92, lng:18.42,  flight:900, stay:60,  food:20, transport:10, activities:25, misc:10, season:'pppsslllsspp' },
+      sydney:    { name:'Sydney, Australia',  region:'Oceania',       lat:-33.87, lng:151.21, flight:1100,stay:110, food:35, transport:12, activities:30, misc:12, season:'ppssslllsssp' },
+      singapore: { name:'Singapore',          region:'Southeast Asia', lat:1.35,   lng:103.82, flight:800, stay:100, food:20, transport:8,  activities:25, misc:10, season:'pssssppssssp' },
+      kathmandu: { name:'Kathmandu, Nepal',   region:'South Asia',    lat:27.72,  lng:85.32,  flight:750, stay:25,  food:10, transport:5,  activities:15, misc:8,  season:'sssssllllpps' }
+    };
+
+    const MONTH_LABELS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const TIER_NAME = { l:'low', s:'shoulder', p:'peak' };
+    const TIER_MULT = { l:0.85, s:1.0, p:1.25 };
+
+    const STORE_KEY = 'travelExplorerV1';
+    let trip = []; // [{key, days, flight, stay, food, transport, activities, misc}]
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORE_KEY);
+        if (raw) trip = JSON.parse(raw);
+      }catch(e){ trip = []; }
+    }
+    function saveState(){
+      try{ localStorage.setItem(STORE_KEY, JSON.stringify(trip)); }catch(e){}
+    }
+
+    function dailyTotal(d){
+      return d.stay + d.food + d.transport + d.activities + d.misc;
+    }
+    function tripTotal(d){
+      return d.flight + dailyTotal(d) * d.days;
+    }
+    function fmt(n){
+      return '$' + Math.round(n).toLocaleString();
+    }
+
+    // ---------- Destination select dropdown ----------
+    function populateDestSelect(){
+      const sel = document.getElementById('destSelect');
+      const used = new Set(trip.map(t => t.key));
+      const available = Object.entries(DESTINATIONS).filter(([k]) => !used.has(k));
+      sel.innerHTML = available.map(([k,d]) => `<option value="${k}">${d.name}</option>`).join('');
+      document.getElementById('destAdd').disabled = available.length === 0 || trip.length >= 4;
+      if (trip.length >= 4) sel.disabled = true; else sel.disabled = false;
+    }
+
+    document.getElementById('destAdd').addEventListener('click', () => {
+      const sel = document.getElementById('destSelect');
+      const key = sel.value;
+      if (!key || trip.length >= 4) return;
+      const base = DESTINATIONS[key];
+      trip.push({ key, days:7, flight:base.flight, stay:base.stay, food:base.food, transport:base.transport, activities:base.activities, misc:base.misc });
+      saveState();
+      renderAll();
+    });
+
+    function renderDestCards(){
+      const wrap = document.getElementById('destCards');
+      const empty = document.getElementById('destEmpty');
+      empty.style.display = trip.length === 0 ? 'block' : 'none';
+
+      wrap.innerHTML = trip.map((t, i) => {
+        const base = DESTINATIONS[t.key];
+        const total = tripTotal(t);
+        const perDay = dailyTotal(t);
+        return `
+        <div class="dest-card tce-accent">
+          <div class="dest-card-head">
+            <div>
+              <div class="dest-card-title">${base.name}</div>
+              <div class="dest-card-region">${base.region}</div>
+            </div>
+            <button class="dest-remove" data-remove="${i}" type="button" aria-label="Remove">✕</button>
+          </div>
+          <div class="dest-field-row">
+            <div class="dest-field"><label>Trip length (days)</label><input type="number" min="1" value="${t.days}" data-field="days" data-i="${i}"></div>
+            <div class="dest-field"><label>Flight (round-trip)</label><input type="number" min="0" value="${t.flight}" data-field="flight" data-i="${i}"></div>
+            <div class="dest-field"><label>Stay / night</label><input type="number" min="0" value="${t.stay}" data-field="stay" data-i="${i}"></div>
+            <div class="dest-field"><label>Food / day</label><input type="number" min="0" value="${t.food}" data-field="food" data-i="${i}"></div>
+            <div class="dest-field"><label>Transport / day</label><input type="number" min="0" value="${t.transport}" data-field="transport" data-i="${i}"></div>
+            <div class="dest-field"><label>Activities / day</label><input type="number" min="0" value="${t.activities}" data-field="activities" data-i="${i}"></div>
+            <div class="dest-field"><label>Misc / day</label><input type="number" min="0" value="${t.misc}" data-field="misc" data-i="${i}"></div>
+          </div>
+          <div class="dest-total">
+            <span>Estimated total: ${fmt(total)}</span>
+            <span class="per-day">${fmt(perDay)}/day + flight</span>
+          </div>
+        </div>`;
+      }).join('');
+
+      wrap.querySelectorAll('[data-remove]').forEach(btn => {
+        btn.addEventListener('click', e => {
+          trip.splice(+e.target.dataset.remove, 1);
+          saveState();
+          renderAll();
+        });
+      });
+      wrap.querySelectorAll('[data-field]').forEach(inp => {
+        inp.addEventListener('input', e => {
+          const i = +e.target.dataset.i, field = e.target.dataset.field;
+          trip[i][field] = Math.max(0, Number(e.target.value) || 0);
+          saveState();
+          renderAll(true); // skip full re-render of inputs to avoid focus loss
+        });
+      });
+    }
+
+    function renderComparison(){
+      const empty = document.getElementById('cmpEmpty');
+      const barsEl = document.getElementById('cmpBars');
+      const kpisEl = document.getElementById('tceKpis');
+
+      if (trip.length === 0) {
+        empty.style.display = 'block';
+        barsEl.innerHTML = '';
+        kpisEl.style.display = 'none';
+        return;
+      }
+      empty.style.display = 'none';
+
+      const rows = trip.map(t => ({ key:t.key, name:DESTINATIONS[t.key].name, total: tripTotal(t) }));
+      const max = Math.max(...rows.map(r => r.total), 1);
+      const cheapest = rows.reduce((a,b) => a.total < b.total ? a : b);
+
+      barsEl.innerHTML = rows.map(r => `
+        <div class="cmp-row">
+          <span>${r.name}${r.key===cheapest.key ? '<span class="cmp-badge">Best value</span>' : ''}</span>
+          <div class="cmp-track"><div class="cmp-fill ${r.key===cheapest.key?'cheapest':''}" style="width:${(r.total/max*100).toFixed(0)}%"></div></div>
+          <span>${fmt(r.total)}</span>
+        </div>
+      `).join('');
+
+      kpisEl.style.display = 'grid';
+      const totalAll = rows.reduce((s,r) => s + r.total, 0);
+      const avgPerDay = trip.reduce((s,t) => s + dailyTotal(t), 0) / trip.length;
+      let priciestCat = 'Stay', priciestVal = 0;
+      ['stay','food','transport','activities','misc'].forEach(cat => {
+        const v = trip.reduce((s,t) => s + t[cat], 0);
+        if (v > priciestVal) { priciestVal = v; priciestCat = cat; }
+      });
+      kpisEl.innerHTML = `
+        <div class="tce-kpi"><div class="lbl">Options compared</div><div class="val">${trip.length}</div></div>
+        <div class="tce-kpi"><div class="lbl">Cheapest option</div><div class="val">${cheapest.name.split(',')[0]}</div></div>
+        <div class="tce-kpi"><div class="lbl">Avg. daily spend</div><div class="val">${fmt(avgPerDay)}</div></div>
+        <div class="tce-kpi"><div class="lbl">Biggest daily category</div><div class="val" style="text-transform:capitalize">${priciestCat}</div></div>
+      `;
+    }
+
+    function populateDetailSelect(){
+      const sel = document.getElementById('detailSelect');
+      const prev = sel.value;
+      sel.innerHTML = trip.map(t => `<option value="${t.key}">${DESTINATIONS[t.key].name}</option>`).join('');
+      if (trip.some(t => t.key === prev)) sel.value = prev;
+    }
+
+    function renderDetails(){
+      const empty = document.getElementById('detailsEmpty');
+      const content = document.getElementById('detailsContent');
+      if (trip.length === 0) {
+        empty.style.display = 'block';
+        content.style.display = 'none';
+        return;
+      }
+      empty.style.display = 'none';
+      content.style.display = 'block';
+      populateDetailSelect();
+
+      const key = document.getElementById('detailSelect').value || trip[0].key;
+      const t = trip.find(x => x.key === key) || trip[0];
+      const base = DESTINATIONS[t.key];
+
+      // allocation
+      const cats = [['Stay',t.stay],['Food',t.food],['Transport',t.transport],['Activities',t.activities],['Misc',t.misc]];
+      const dayTotal = dailyTotal(t) || 1;
+      document.getElementById('allocBars').innerHTML = cats.map(([label,v]) => `
+        <div class="alloc-row"><span>${label}</span><span>${(v/dayTotal*100).toFixed(0)}% · $${v}/day</span></div>
+        <div class="alloc-track"><div class="alloc-fill" style="width:${(v/dayTotal*100).toFixed(0)}%"></div></div>
+      `).join('') + `<p class="tool-sub" style="margin-top:6px">Flight (one-time): ${fmt(t.flight)} — not included in the daily split above.</p>`;
+
+      // seasonal
+      const season = base.season;
+      document.getElementById('seasonStrip').innerHTML = MONTH_LABELS.map((m,i) => {
+        const tier = TIER_NAME[season[i]] || 'shoulder';
+        return `<div class="season-month tier-${tier}"><span class="m-label">${m}</span><div class="m-bar"></div></div>`;
+      }).join('');
+
+      const lowMonths = MONTH_LABELS.filter((m,i) => season[i] === 'l');
+      const peakMonths = MONTH_LABELS.filter((m,i) => season[i] === 'p');
+      document.getElementById('seasonCallout').textContent =
+        `For ${base.name.split(',')[0]}: cheapest months tend to be ${lowMonths.join(', ') || '—'}. Priciest: ${peakMonths.join(', ') || '—'}.`;
+    }
+
+    document.getElementById('detailSelect')?.addEventListener('change', renderDetails);
+
+    // ---------- Map ----------
+    let map, markers = [], mapAvailable = false;
+    function initMap(){
+      if (typeof L === 'undefined') {
+        document.getElementById('tripMap').innerHTML =
+          '<div class="tce-empty" style="height:100%;display:flex;flex-direction:column;justify-content:center"><span class="empty-glyph">🗺️</span><p>The map couldn\'t load (likely a blocked connection to the map provider) — everything else on this page still works fine.</p></div>';
+        return;
+      }
+      try {
+        map = L.map('tripMap', { scrollWheelZoom:false }).setView([20,10], 2);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom:18
+        }).addTo(map);
+        mapAvailable = true;
+      } catch (e) { mapAvailable = false; }
+    }
+    function renderMap(){
+      if (!mapAvailable) return;
+      markers.forEach(m => map.removeLayer(m));
+      markers = [];
+      if (trip.length === 0) return;
+      const bounds = [];
+      trip.forEach(t => {
+        const base = DESTINATIONS[t.key];
+        const icon = L.divIcon({ className:'', html:'<div class="tce-pin"></div>', iconSize:[16,16], iconAnchor:[8,8] });
+        const marker = L.marker([base.lat, base.lng], { icon }).addTo(map)
+          .bindPopup(`<strong>${base.name}</strong><br>Est. total: ${fmt(tripTotal(t))}<br>${t.days} days`);
+        markers.push(marker);
+        bounds.push([base.lat, base.lng]);
+      });
+      if (bounds.length === 1) map.setView(bounds[0], 5);
+      else map.fitBounds(bounds, { padding:[40,40] });
+    }
+
+    // ---------- Currency converter ----------
+    const currencies = ['USD','EUR','GBP','NPR','INR','SGD','THB','AED','TRY','VND','IDR','JPY','AUD','CAD'];
+    const fromSel = document.getElementById('tceFrom');
+    const toSel = document.getElementById('tceTo');
+    currencies.forEach(c => {
+      fromSel.insertAdjacentHTML('beforeend', `<option value="${c}" ${c==='USD'?'selected':''}>${c}</option>`);
+      toSel.insertAdjacentHTML('beforeend', `<option value="${c}" ${c==='THB'?'selected':''}>${c}</option>`);
+    });
+    document.getElementById('tceConvertBtn').addEventListener('click', async () => {
+      const amount = Number(document.getElementById('tceAmount').value) || 0;
+      const from = fromSel.value, to = toSel.value;
+      const resultEl = document.getElementById('tceConvertResult');
+      resultEl.innerHTML = '<span class="tce-loading">Fetching live rates <span class="dots"><span></span><span></span><span></span></span></span>';
+      try{
+        const res = await fetch(`https://api.frankfurter.app/latest?amount=${amount}&from=${from}&to=${to}`);
+        if (!res.ok) throw new Error('failed');
+        const data = await res.json();
+        resultEl.textContent = `${amount} ${from} ≈ ${data.rates[to].toFixed(2)} ${to}`;
+      }catch(e){
+        resultEl.textContent = 'Could not fetch live rates right now — check your connection and try again.';
+      }
+    });
+
+    // ---------- Hotel comparison ----------
+    let hotels = [
+      { name:'', price:0, rating:0 },
+      { name:'', price:0, rating:0 }
+    ];
+    function renderHotels(){
+      const wrap = document.getElementById('hotelRows');
+      wrap.innerHTML = hotels.map((h,i) => `
+        <div class="hotel-row">
+          <input type="text" placeholder="Hotel name" value="${h.name}" data-h="name" data-i="${i}">
+          <input type="number" placeholder="Price/night" min="0" value="${h.price||''}" data-h="price" data-i="${i}">
+          <input type="number" placeholder="Rating (1-5)" min="0" max="5" step="0.1" value="${h.rating||''}" data-h="rating" data-i="${i}">
+          <button class="hotel-remove" data-hremove="${i}" type="button" aria-label="Remove">✕</button>
+        </div>
+      `).join('');
+      wrap.querySelectorAll('[data-h]').forEach(inp => {
+        inp.addEventListener('input', e => {
+          const i = +e.target.dataset.i, field = e.target.dataset.h;
+          hotels[i][field] = field === 'name' ? e.target.value : (Number(e.target.value) || 0);
+          computeBestHotel();
+        });
+      });
+      wrap.querySelectorAll('[data-hremove]').forEach(btn => {
+        btn.addEventListener('click', e => {
+          hotels.splice(+e.target.dataset.hremove, 1);
+          renderHotels();
+          computeBestHotel();
+        });
+      });
+    }
+    document.getElementById('hotelAdd').addEventListener('click', () => {
+      hotels.push({ name:'', price:0, rating:0 });
+      renderHotels();
+    });
+    function computeBestHotel(){
+      const valid = hotels.filter(h => h.name && h.price > 0 && h.rating > 0);
+      const el = document.getElementById('hotelBest');
+      if (valid.length === 0) {
+        el.textContent = 'Add at least one hotel with a name, price, and rating to see the best value pick.';
+        return;
+      }
+      const scored = valid.map(h => ({ ...h, score: h.rating / h.price * 100 }));
+      const best = scored.reduce((a,b) => a.score > b.score ? a : b);
+      el.innerHTML = `<strong>${best.name}</strong> looks like the best value — ${best.rating}★ for $${best.price}/night.`;
+    }
+
+    // ---------- Activity planner ----------
+    const ACTIVITY_TAGS = {
+      adventure: { label:'Adventure', items:['Book a guided hike or day trip','Check gear rental options','Research permit requirements','Pack a basic first-aid kit'] },
+      relax: { label:'Relaxation', items:['Book at least one spa or wellness slot','Pick a beach or pool day with zero plans','Bring a book you actually want to read'] },
+      culture: { label:'Culture', items:['List 2-3 must-see museums or landmarks','Check if tickets need to be booked ahead','Look up one local festival or event','Learn 5 basic phrases in the local language'] },
+      food: { label:'Foodie', items:['Research 3 local dishes to try','Book one higher-end dinner in advance','Find a local market or street food area','Check for food tours in the area'] },
+      nightlife: { label:'Nightlife', items:['Check local dress codes for venues','Look up safe transport options at night','Note last public transport times'] }
+    };
+    let activeTags = new Set(['culture']);
+    function renderTags(){
+      document.getElementById('tagRow').innerHTML = Object.entries(ACTIVITY_TAGS).map(([k,v]) => `
+        <span class="tag-pill ${activeTags.has(k)?'active':''}" data-tag="${k}">${v.label}</span>
+      `).join('');
+      document.querySelectorAll('[data-tag]').forEach(el => {
+        el.addEventListener('click', () => {
+          const k = el.dataset.tag;
+          if (activeTags.has(k)) activeTags.delete(k); else activeTags.add(k);
+          renderTags();
+          renderActivities();
+        });
+      });
+    }
+    function renderActivities(){
+      const items = [];
+      activeTags.forEach(k => items.push(...ACTIVITY_TAGS[k].items));
+      const base = ['Check passport expiry (6+ months validity)','Confirm travel insurance','Save offline maps for the area'];
+      const all = [...base, ...items];
+      document.getElementById('activityOutput').innerHTML = all.map((item,i) => `
+        <label><input type="checkbox" id="act-${i}"> ${item}</label>
+      `).join('');
+    }
+
+    // ---------- Master render ----------
+    function renderAll(skipCardRebuild){
+      if (!skipCardRebuild) renderDestCards();
+      populateDestSelect();
+      renderComparison();
+      renderDetails();
+      renderMap();
+    }
+
+    loadState();
+    initMap();
+    renderAll();
+    renderHotels();
+    computeBestHotel();
+    renderTags();
+    renderActivities();
+
+    // Jump-nav scrollspy — always show which section you're in
+    if ('IntersectionObserver' in window) {
+      const jumpLinks = document.querySelectorAll('.jump-nav a');
+      const jumpTargets = [...jumpLinks].map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+      const spy = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          const link = document.querySelector(`.jump-nav a[href="#${entry.target.id}"]`);
+          if (!link) return;
+          if (entry.isIntersecting) {
+            jumpLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+          }
+        });
+      }, { rootMargin: '-40% 0px -50% 0px' });
+      jumpTargets.forEach(t => spy.observe(t));
+    }
+  </script>
+</body>
+</html>

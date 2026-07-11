@@ -1,0 +1,321 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+:root {
+  --bg: #06070f;
+  --bg-2: #0b0a1a;
+  --surface: rgba(17, 21, 36, 0.62);
+  --surface-strong: rgba(22, 20, 40, 0.88);
+  --surface-sunken: rgba(3, 4, 9, 0.5);
+  --text: #f6f2ff;
+  --muted: #b8b4d8;
+  --line: rgba(200, 178, 255, 0.14);
+  --line-strong: rgba(200, 178, 255, 0.24);
+
+  /* Vibrant hero duo - pink/blue, the site's original signature identity. */
+  --accent: #ff8fd8;
+  --accent-2: #8ecbff;
+  --accent-soft: rgba(255, 143, 216, 0.16);
+
+  /* Reserved third tone for exactly one highlight per view - a pull-quote,
+     a single featured badge. Never used as a second "primary" color. */
+  --accent-warm: #ffcf7a;
+  --accent-warm-soft: rgba(255, 207, 122, 0.16);
+
+  /* Aurora background hues - deliberately distinct from the UI accent so the
+     ambient backdrop reads as atmosphere, not another interactive color. */
+  --aurora-1: #6ffcde;
+  --aurora-2: #ff8fd8;
+  --aurora-3: #7c9bff;
+
+  --work: #c49bff;
+  --work-2: #ff9ed2;
+  --travel: #ff8cb7;
+  --travel-2: #ffcf7a;
+  --shop: #8effc9;
+  --shop-2: #e8c46f;
+  --analytics: #6ffcde;
+  --analytics-2: #7c9bff;
+
+  --radius: 30px;
+  --radius-sm: 16px;
+  --radius-card: 24px;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-2: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --shadow-3: 0 24px 80px rgba(0, 0, 0, 0.42);
+  --shadow-glow: 0 0 0 1px rgba(255, 255, 255, 0.05), var(--shadow-3);
+
+  --glass-blur: 22px;
+  --glass-saturate: 180%;
+  --glass-highlight: rgba(255, 255, 255, 0.12);
+  --glass-sheen: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    transparent 45%
+  );
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 150ms;
+  --dur-base: 260ms;
+  --dur-slow: 550ms;
+}
+
+[data-theme="light"] {
+  --bg: #fdfbff;
+  --bg-2: #f3edfb;
+  --surface: rgba(255, 255, 255, 0.72);
+  --surface-strong: rgba(255, 255, 255, 0.92);
+  --surface-sunken: rgba(40, 30, 80, 0.035);
+  --text: #211a35;
+  --muted: #6a6285;
+  --line: rgba(120, 90, 200, 0.2);
+  --line-strong: rgba(120, 90, 200, 0.3);
+  --accent-soft: rgba(255, 143, 216, 0.12);
+  --accent-warm: #b5720a;
+  --accent-warm-soft: rgba(181, 114, 10, 0.1);
+
+  --shadow-1: 0 1px 2px rgba(40, 30, 80, 0.06);
+  --shadow-2: 0 10px 30px rgba(40, 30, 80, 0.08);
+  --shadow-3: 0 20px 60px rgba(40, 30, 80, 0.14);
+  --shadow-glow: 0 0 0 1px rgba(30, 16, 60, 0.06), var(--shadow-3);
+
+  --glass-highlight: rgba(255, 255, 255, 0.55);
+  --glass-sheen: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.35),
+    transparent 45%
+  );
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-2: var(--bg-2);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-warm: var(--accent-warm);
+  --color-work: var(--work);
+  --color-work-2: var(--work-2);
+  --color-travel: var(--travel);
+  --color-travel-2: var(--travel-2);
+  --color-shop: var(--shop);
+  --color-shop-2: var(--shop-2);
+  --color-analytics: var(--analytics);
+  --color-analytics-2: var(--analytics-2);
+  --radius-xl: var(--radius);
+  --radius-lg: var(--radius-sm);
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  overflow-x: hidden;
+  background:
+    radial-gradient(
+      circle at 10% 10%,
+      color-mix(in srgb, var(--accent) 18%, transparent),
+      transparent 22%
+    ),
+    radial-gradient(
+      circle at 90% 12%,
+      color-mix(in srgb, var(--aurora-3) 15%, transparent),
+      transparent 20%
+    ),
+    radial-gradient(
+      circle at 50% 105%,
+      color-mix(in srgb, var(--aurora-1) 14%, transparent),
+      transparent 24%
+    ),
+    linear-gradient(180deg, var(--bg), var(--bg-2));
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  z-index: -1;
+  background-image: radial-gradient(var(--line-strong) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.5), transparent 80%);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: -25%;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.35;
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    transparent 0deg,
+    color-mix(in srgb, var(--aurora-1) 24%, transparent) 80deg,
+    transparent 160deg,
+    color-mix(in srgb, var(--aurora-2) 18%, transparent) 220deg,
+    transparent 280deg,
+    color-mix(in srgb, var(--aurora-3) 22%, transparent) 330deg,
+    transparent 360deg
+  );
+  mix-blend-mode: screen;
+  animation: aurora-spin 40s linear infinite;
+}
+
+[data-theme="light"] body::after {
+  mix-blend-mode: multiply;
+  opacity: 0.14;
+}
+
+@keyframes aurora-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+::selection {
+  background: var(--accent);
+  color: #0a0620;
+}
+
+.font-display {
+  font-family: var(--font-display), serif;
+}
+
+.glass {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Semantic type scale - name the role, not the size, so every heading and
+   label in the system stays consistent instead of ad hoc utility clusters. */
+.text-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+}
+
+.text-display-lg {
+  font-family: var(--font-display), serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  font-size: clamp(2.75rem, 2rem + 3.5vw, 5rem);
+}
+
+.text-display-md {
+  font-family: var(--font-display), serif;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+  font-size: clamp(1.875rem, 1.5rem + 1.5vw, 2.75rem);
+}
+
+.text-display-sm {
+  font-family: var(--font-display), serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+}
+
+.text-body-lg {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--muted);
+}
+
+.text-body {
+  font-size: 0.9375rem;
+  line-height: 1.85;
+  color: var(--muted);
+}
+
+/* Card primitive - every card in the system starts here, then adds only
+   what makes its content type different (icon, image, accent). */
+.card {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    var(--shadow-1);
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--glass-sheen);
+  pointer-events: none;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: var(--line-strong);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    var(--shadow-2);
+}
+
+.card:focus-within {
+  border-color: var(--line-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
